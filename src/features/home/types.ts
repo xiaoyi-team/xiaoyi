@@ -10,3 +10,14 @@ export type Announcement = {
 export type AnnouncementsResponse = {
   announcements: Announcement[];
 };
+
+export type AnnouncementPopupStatusResponse = {
+  should_popup: boolean;
+  check_date: string;
+};
+
+export type RecordAnnouncementReadResponse = {
+  success: boolean;
+  announcement_id: number;
+  read_date: string;
+};
