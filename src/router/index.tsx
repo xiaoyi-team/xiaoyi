@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import SplashPage from "../pages/SplashPage";
+import WishBoxPage from "../pages/WishBoxPage";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <HomePage />,
+  },
+  {
+    path: "/wish-box",
+    element: <WishBoxPage />,
   },
 ]);
 
