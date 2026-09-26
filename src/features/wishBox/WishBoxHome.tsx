@@ -1,20 +1,21 @@
 import type { Ref } from "react";
 import { Link } from "react-router";
+import AnnouncementBoard, {
+  type AnnouncementDisplayFixture,
+} from "./AnnouncementBoard";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import gardenBackground from "../../assets/wish-box/wish-box-home-background.png";
 import wishlandSign from "../../assets/wish-box/wishland-sign.png";
 
 type WishBoxHomeProps = {
-  title: string;
-  summary: string;
+  announcement: AnnouncementDisplayFixture;
   onOpenAnnouncement: () => void;
   announcementButtonRef: Ref<HTMLButtonElement>;
   inactive: boolean;
 };
 
 function WishBoxHome({
-  title,
-  summary,
+  announcement,
   onOpenAnnouncement,
   announcementButtonRef,
   inactive,
@@ -37,9 +38,9 @@ function WishBoxHome({
         className="absolute"
         style={{
           left: "55.15625%",
-          top: "37.59259%",
-          width: "12.86458%",
-          height: "10%",
+          top: "35.74074%",
+          width: "15.67708%",
+          height: "13.33333%",
         }}
       >
         <img
@@ -94,35 +95,34 @@ function WishBoxHome({
         </Link>
       ) : null}
 
-      <button
-        ref={announcementButtonRef}
-        type="button"
-        onClick={onOpenAnnouncement}
-        aria-label={`查看${title}详情`}
-        className="absolute flex flex-col items-center justify-center overflow-hidden text-center text-[#352c22] focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
+      <div
+        className="absolute"
         style={{
-          // Implementation calibration value measured from the supplied background image,
-          // not a Figma node bound. Preview and hotspot intentionally share this region.
-          left: "4.6875%",
-          top: "51.85185%",
-          width: "31.25%",
-          height: "32.40741%",
-          padding: "4.2cqw 1cqw 2.2cqw",
+          left: "5.5729167%",
+          top: "54.6296296%",
+          width: "29.5833333%",
+          height: "26.9444444%",
         }}
       >
-        <span
-          className="block w-full truncate font-serif font-semibold"
-          style={{ fontSize: "1.45cqw", lineHeight: 1.15 }}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 aspect-video"
+          style={{
+            width: "113.52657%",
+            transform: "perspective(90cqw) rotateY(15deg) scaleY(0.80227748)",
+            transformOrigin: "top left",
+          }}
         >
-          {title}
-        </span>
-        <span
-          className="mt-[0.55cqw] block w-full line-clamp-2"
-          style={{ fontSize: "1.05cqw", lineHeight: 1.35 }}
-        >
-          {summary}
-        </span>
-      </button>
+          <AnnouncementBoard announcement={announcement} />
+        </div>
+        <button
+          ref={announcementButtonRef}
+          type="button"
+          onClick={onOpenAnnouncement}
+          aria-label={`查看${announcement.title}详情`}
+          className="absolute inset-0 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
+        />
+      </div>
     </div>
   );
 }

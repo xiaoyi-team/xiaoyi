@@ -47,8 +47,7 @@ function WishBoxPage() {
         }}
       >
         <WishBoxHome
-          title={currentAnnouncement.title}
-          summary={currentAnnouncement.summary}
+          announcement={currentAnnouncement}
           onOpenAnnouncement={() => setAnnouncementOpen(true)}
           announcementButtonRef={announcementButtonRef}
           inactive={announcementOpen}
