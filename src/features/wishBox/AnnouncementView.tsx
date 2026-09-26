@@ -1,0 +1,706 @@
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import boardDecoration from "../../assets/wish-box/announcement-board-decoration.png";
+import headerPetalLeft from "../../assets/wish-box/announcement-header-petal-left.png";
+import headerPetalCenter from "../../assets/wish-box/announcement-header-petal-center.png";
+import headerPetalRight from "../../assets/wish-box/announcement-header-petal-right.png";
+import summaryPetal from "../../assets/wish-box/announcement-summary-petal.png";
+import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
+
+const stars = [
+  [120, 300, 12],
+  [1480, 300, 16],
+  [352, 272, 20],
+  [1030, 332, 12],
+  [1240, 280, 12],
+  [748, 248, 16],
+  [90, 670, 12],
+  [1500, 670, 16],
+  [535, 815, 20],
+  [460, 490, 20],
+  [1055, 815, 12],
+  [1448, 436, 20],
+  [1415, 660, 20],
+  [1232, 582, 20],
+  [772, 704, 20],
+  [370, 622, 20],
+  [150, 438, 20],
+  [924, 455, 16],
+  [1402, 518, 16],
+  [1144, 714, 16],
+] as const;
+
+const giftItemSlots = [
+  { top: "0%", height: "18.54839%" },
+  { top: "18.54839%", height: "41.93548%" },
+  { top: "62.09677%", height: "18.54839%" },
+] as const;
+
+export type AnnouncementDisplayFixture = {
+  title: string;
+  subtitle: string;
+  eyebrow: string;
+  summary: string;
+  gifts: ReadonlyArray<string>;
+  giftCaption: string;
+  location: string;
+  time: string;
+  requirements: string;
+  requirementsExtra: string;
+  notes: string;
+  footerDescription: string;
+  footerTags: ReadonlyArray<string>;
+  footerEnglishCaption: string;
+};
+
+type AnnouncementViewProps = {
+  announcement: AnnouncementDisplayFixture;
+  onClose: () => void;
+};
+
+type InfoCardProps = {
+  title: string;
+  titleColor: string;
+  fill: string;
+  borderColor: string;
+  style: CSSProperties;
+  headingStyle: CSSProperties;
+  bodyStyle: CSSProperties;
+  bodyClassName?: string;
+  children: ReactNode;
+};
+
+function InfoCard({
+  title,
+  titleColor,
+  fill,
+  borderColor,
+  style,
+  headingStyle,
+  bodyStyle,
+  bodyClassName = "items-center justify-center text-center",
+  children,
+}: InfoCardProps) {
+  return (
+    <section
+      aria-label={title}
+      className="absolute overflow-hidden"
+      style={{
+        ...style,
+        boxSizing: "border-box",
+        backgroundColor: fill,
+        border: `0.05208cqw solid ${borderColor}`,
+        borderRadius: "0.9375cqw",
+      }}
+    >
+      <div
+        className="absolute grid place-items-center"
+        style={{
+          ...headingStyle,
+          height: "2.29167cqw",
+          borderRadius: "0.625cqw",
+          backgroundColor: titleColor,
+        }}
+      >
+        <h2
+          className="m-0 text-center"
+          style={{
+            color: "#FFFCF5",
+            fontWeight: 600,
+            fontSize: "1.25cqw",
+            lineHeight: "1.875cqw",
+          }}
+        >
+          {title}
+        </h2>
+      </div>
+      <div
+        className={`absolute flex min-h-0 ${bodyClassName}`}
+        style={bodyStyle}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function AnnouncementView({ announcement, onClose }: AnnouncementViewProps) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  return (
+    <section
+      aria-label="当期活动公告详情"
+      className="absolute inset-0 z-10 overflow-hidden"
+    >
+      <button
+        ref={closeButtonRef}
+        type="button"
+        onClick={onClose}
+        aria-label="返回心愿盒"
+        className="absolute z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        style={{
+          left: "0%",
+          top: "2.5%",
+          width: "8.85417%",
+          height: "6.85185%",
+          borderRadius: "1.14583cqw",
+        }}
+      >
+        <img
+          src={backDoubleChevron}
+          alt=""
+          aria-hidden="true"
+          className="absolute"
+          style={{
+            left: "4.11765%",
+            top: "6.75676%",
+            width: "43.52941%",
+            height: "86.48649%",
+          }}
+        />
+        <span
+          className="absolute text-white"
+          style={{
+            left: "52.35294%",
+            top: "20.27027%",
+            width: "35.29412%",
+            height: "58.10811%",
+            fontFamily: '"Noto Serif SC", serif',
+            fontWeight: 500,
+            fontSize: "1.5625cqw",
+            lineHeight: 1.43333,
+            letterSpacing: 0,
+            textShadow: "0 0 0.10417cqw #000",
+          }}
+        >
+          返回
+        </span>
+      </button>
+
+      <article
+        className="absolute"
+        style={{
+          left: "8.33333%",
+          top: "7.77778%",
+          width: "83.33333%",
+          height: "83.33333%",
+          boxShadow: "0 0.20833cqw 0.96875cqw 0 #000",
+        }}
+      >
+        <div className="relative isolate h-full w-full overflow-hidden bg-[#f6e9e1]">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{
+              left: "1.5%",
+              top: "2.66667%",
+              right: "1.5%",
+              bottom: "2.66667%",
+              border: "0.10417cqw solid #b8853d",
+              borderRadius: "0.9375cqw",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{
+              left: "2.375%",
+              top: "4.22222%",
+              right: "2.375%",
+              bottom: "4.22222%",
+              border: "0.05208cqw solid #dbad61",
+              borderRadius: "0.72917cqw",
+            }}
+          />
+
+          <div
+            className="absolute inset-0 z-10"
+            style={{ fontFamily: '"Noto Serif SC", serif' }}
+          >
+            <header
+              className="absolute overflow-hidden text-center"
+              style={{
+                left: "11.875%",
+                top: "7.55556%",
+                width: "76.25%",
+                height: "19.55556%",
+                boxSizing: "border-box",
+                backgroundColor: "#FEF8EE",
+                border: "0.078125cqw solid #C7944D",
+                borderRadius: "1.77083cqw",
+              }}
+            >
+              <h1
+                className="absolute m-0 flex items-center justify-center text-center"
+                style={{
+                  left: "5.7377%",
+                  top: "10.22727%",
+                  width: "88.52459%",
+                  height: "39.77273%",
+                  color: "#1F427A",
+                  fontWeight: 700,
+                  fontSize: "2.5cqw",
+                  lineHeight: "3.33333cqw",
+                }}
+              >
+                {announcement.title}
+              </h1>
+              <p
+                className="absolute m-0 flex items-center justify-center text-center"
+                style={{
+                  left: "22.95082%",
+                  top: "48.86364%",
+                  width: "54.09836%",
+                  height: "25%",
+                  color: "#8C522E",
+                  fontWeight: 600,
+                  fontSize: "1.45833cqw",
+                  lineHeight: "2.08333cqw",
+                }}
+              >
+                {announcement.subtitle}
+              </p>
+              <p
+                className="absolute m-0 flex items-center justify-center text-center"
+                style={{
+                  left: "31.14754%",
+                  top: "75%",
+                  width: "37.70492%",
+                  height: "15.90909%",
+                  color: "#946B3D",
+                  fontWeight: 500,
+                  fontSize: "0.625cqw",
+                  lineHeight: "1.04167cqw",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                {announcement.eyebrow}
+              </p>
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute bg-[#dba640]"
+                style={{
+                  left: "81.88525%",
+                  top: "63.63636%",
+                  width: "1.63934%",
+                  height: "11.36364%",
+                  clipPath:
+                    "polygon(50% 0%, 56% 44%, 100% 50%, 56% 56%, 50% 100%, 44% 56%, 0% 50%, 44% 44%)",
+                }}
+              />
+              <img
+                src={headerPetalLeft}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  left: "11.47541%",
+                  top: "43.75%",
+                  width: "2.29508%",
+                  height: "11.93182%",
+                }}
+              />
+              <img
+                src={headerPetalCenter}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  left: "71.39344%",
+                  top: "55.11364%",
+                  width: "2.29508%",
+                  height: "11.93182%",
+                }}
+              />
+              <img
+                src={headerPetalRight}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  left: "91.72131%",
+                  top: "67.04545%",
+                  width: "2.54098%",
+                  height: "13.63636%",
+                }}
+              />
+            </header>
+
+            <section
+              aria-label="活动简介"
+              className="absolute overflow-hidden"
+              style={{
+                left: "16.25%",
+                top: "28%",
+                width: "67.5%",
+                height: "11.77778%",
+                boxSizing: "border-box",
+                backgroundColor: "#FCF7EC",
+                border: "0.05208cqw solid #D6AB6B",
+                borderRadius: "1.25cqw",
+              }}
+            >
+              <p
+                className="absolute m-0 flex items-center justify-center whitespace-pre-line text-center"
+                style={{
+                  left: "3.7037%",
+                  top: "2.83019%",
+                  width: "92.59259%",
+                  height: "94.33962%",
+                  color: "#243D61",
+                  fontWeight: 400,
+                  fontSize: "0.72917cqw",
+                  lineHeight: "1.25cqw",
+                }}
+              >
+                {announcement.summary}
+              </p>
+              <img
+                src={summaryPetal}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  left: "2.40741%",
+                  top: "84.90566%",
+                  width: "2.59259%",
+                  height: "15.09434%",
+                }}
+              />
+            </section>
+
+            <InfoCard
+              title="漂亮哥哥的请客清单"
+              titleColor="#D46B75"
+              fill="#FDF6F0"
+              borderColor="#D4A161"
+              style={{
+                left: "7.5%",
+                top: "41.11111%",
+                width: "26.25%",
+                height: "40%",
+              }}
+              headingStyle={{ left: "4.28571%", top: "5%", width: "91.42857%" }}
+              bodyStyle={{
+                left: "20.95238%",
+                top: "25.55556%",
+                width: "71.42857%",
+                height: "68.88889%",
+              }}
+              bodyClassName="flex-col items-stretch justify-between text-left"
+            >
+              <div className="relative h-full w-full">
+                <ul className="m-0 list-none p-0">
+                  {giftItemSlots.map((slot, index) => {
+                    const gift = announcement.gifts[index];
+                    if (gift === undefined) return null;
+
+                    return (
+                      <li
+                        key={index}
+                        className="absolute flex w-full flex-col justify-center text-left"
+                        style={{
+                          ...slot,
+                          color: "#1F3B6B",
+                          fontWeight: 400,
+                          fontSize: "1.25cqw",
+                          lineHeight: "2.08333cqw",
+                          gap: "1.25cqw",
+                        }}
+                      >
+                        {gift.split(/\r?\n/).map((line, lineIndex) => (
+                          <span
+                            key={lineIndex}
+                            className="w-full whitespace-pre-wrap"
+                          >
+                            {line}
+                          </span>
+                        ))}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p
+                  className="absolute m-0 flex items-center justify-center text-center"
+                  style={{
+                    left: "-9.33333%",
+                    bottom: 0,
+                    width: "100%",
+                    height: "1.25cqw",
+                    color: "#A16E52",
+                    fontWeight: 400,
+                    fontSize: "0.625cqw",
+                    lineHeight: "1.04167cqw",
+                  }}
+                >
+                  {announcement.giftCaption}
+                </p>
+              </div>
+            </InfoCard>
+
+            <InfoCard
+              title="领取地点"
+              titleColor="#427AB8"
+              fill="#F6F8FB"
+              borderColor="#C7A16B"
+              style={{
+                left: "35.3125%",
+                top: "41.11111%",
+                width: "24.6875%",
+                height: "18.88889%",
+              }}
+              headingStyle={{
+                left: "4.55696%",
+                top: "8.23529%",
+                width: "90.88608%",
+              }}
+              bodyStyle={{
+                left: "7.08861%",
+                top: "36.47059%",
+                width: "85.82278%",
+                height: "56.47059%",
+              }}
+            >
+              <p
+                className="m-0 flex w-full flex-col text-center"
+                style={{
+                  color: "#1F3B66",
+                  fontWeight: 400,
+                  fontSize: "1.04167cqw",
+                  lineHeight: "1.875cqw",
+                  gap: "1.04167cqw",
+                }}
+              >
+                {announcement.location.split(/\r?\n/).map((line, index) => (
+                  <span key={index} className="w-full whitespace-pre-wrap">
+                    {line}
+                  </span>
+                ))}
+              </p>
+            </InfoCard>
+
+            <InfoCard
+              title="领取时间"
+              titleColor="#C75C61"
+              fill="#FEF3F0"
+              borderColor="#C7A16B"
+              style={{
+                left: "35.3125%",
+                top: "62.22222%",
+                width: "24.6875%",
+                height: "18.88889%",
+              }}
+              headingStyle={{
+                left: "4.55696%",
+                top: "8.23529%",
+                width: "90.88608%",
+              }}
+              bodyStyle={{
+                left: "5.06329%",
+                top: "36.47059%",
+                width: "89.87342%",
+                height: "56.47059%",
+              }}
+            >
+              <p
+                className="m-0 flex w-full flex-col text-center"
+                style={{
+                  color: "#1F3B66",
+                  fontWeight: 400,
+                  fontSize: "1.04167cqw",
+                  lineHeight: "1.875cqw",
+                  gap: "1.04167cqw",
+                }}
+              >
+                {announcement.time.split(/\r?\n/).map((line, index) => (
+                  <span key={index} className="w-full whitespace-pre-wrap">
+                    {line}
+                  </span>
+                ))}
+              </p>
+            </InfoCard>
+
+            <InfoCard
+              title="领取条件（需同时满足）"
+              titleColor="#4273B2"
+              fill="#F5F7FB"
+              borderColor="#C7A16B"
+              style={{
+                left: "61.5625%",
+                top: "41.11111%",
+                width: "30.9375%",
+                height: "22.22222%",
+              }}
+              headingStyle={{ left: "3.63636%", top: "6%", width: "92.72727%" }}
+              bodyStyle={{
+                left: "4.0404%",
+                top: "32%",
+                width: "91.91919%",
+                height: "68%",
+              }}
+              bodyClassName="items-stretch"
+            >
+              <div className="relative h-full w-full">
+                <p
+                  className="absolute m-0 w-full whitespace-pre-wrap text-left"
+                  style={{
+                    left: 0,
+                    top: 0,
+                    height: "79.41176%",
+                    color: "#1F3661",
+                    fontWeight: 400,
+                    fontSize: "0.625cqw",
+                    lineHeight: "1.04167cqw",
+                  }}
+                >
+                  {announcement.requirements}
+                </p>
+                <p
+                  className="absolute m-0 flex items-center justify-center text-center"
+                  style={{
+                    left: "0.43956%",
+                    top: "79.41176%",
+                    width: "99.12088%",
+                    height: "14.70588%",
+                    color: "#2E61A3",
+                    fontWeight: 400,
+                    fontSize: "0.625cqw",
+                    lineHeight: "1.04167cqw",
+                  }}
+                >
+                  {announcement.requirementsExtra}
+                </p>
+              </div>
+            </InfoCard>
+
+            <InfoCard
+              title="注意事项"
+              titleColor="#4070A8"
+              fill="#FBF6F0"
+              borderColor="#C7A16B"
+              style={{
+                left: "61.5625%",
+                top: "65.55556%",
+                width: "30.9375%",
+                height: "15.55556%",
+              }}
+              headingStyle={{
+                left: "3.63636%",
+                top: "7.14286%",
+                width: "92.72727%",
+              }}
+              bodyStyle={{
+                left: "4.0404%",
+                top: "40%",
+                width: "91.91919%",
+                height: "57.14286%",
+              }}
+              bodyClassName="items-start justify-start text-left"
+            >
+              <p
+                className="m-0 h-full w-full whitespace-pre-wrap"
+                style={{
+                  color: "#243857",
+                  fontWeight: 400,
+                  fontSize: "0.625cqw",
+                  lineHeight: "1.04167cqw",
+                }}
+              >
+                {announcement.notes}
+              </p>
+            </InfoCard>
+
+            <footer
+              className="absolute overflow-hidden"
+              style={{
+                left: "10%",
+                top: "84.44444%",
+                width: "80%",
+                height: "10%",
+                backgroundColor: "#F9E9D7",
+              }}
+            >
+              <p
+                className="absolute m-0 flex items-center justify-center text-center"
+                style={{
+                  left: "15.625%",
+                  top: "0%",
+                  width: "68.75%",
+                  height: "35.55556%",
+                  color: "#2E4261",
+                  fontWeight: 400,
+                  fontSize: "0.9375cqw",
+                  lineHeight: "1.66667cqw",
+                }}
+              >
+                {announcement.footerDescription}
+              </p>
+              <p
+                className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
+                style={{
+                  left: "7.8125%",
+                  top: "42.22222%",
+                  width: "84.375%",
+                  height: "31.11111%",
+                  color: "#1F4D8C",
+                  fontWeight: 400,
+                  fontSize: "0.83333cqw",
+                  lineHeight: "1.45833cqw",
+                }}
+              >
+                {announcement.footerTags.join("   ")}
+              </p>
+              <p
+                className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
+                style={{
+                  left: "16.40625%",
+                  top: "75.55556%",
+                  width: "67.1875%",
+                  height: "22.22222%",
+                  color: "#8C663D",
+                  fontWeight: 400,
+                  fontSize: "0.625cqw",
+                  lineHeight: "1.04167cqw",
+                }}
+              >
+                {announcement.footerEnglishCaption}
+              </p>
+            </footer>
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-[15]"
+          >
+            {stars.map(([x, y, size]) => (
+              <span
+                key={`${x}-${y}`}
+                className="pointer-events-none absolute bg-[#dba640]"
+                style={{
+                  left: `${(x / 1600) * 100}%`,
+                  top: `${(y / 900) * 100}%`,
+                  width: `${(size / 1600) * 100}%`,
+                  height: `${(size / 900) * 100}%`,
+                  clipPath:
+                    "polygon(50% 0%, 56% 44%, 100% 50%, 56% 56%, 50% 100%, 44% 56%, 0% 50%, 44% 44%)",
+                }}
+              />
+            ))}
+          </div>
+
+          <img
+            src={boardDecoration}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+          />
+        </div>
+      </article>
+    </section>
+  );
+}
+
+export default AnnouncementView;
