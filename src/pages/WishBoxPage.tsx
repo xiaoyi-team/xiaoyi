@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AnnouncementView, {
   type AnnouncementDisplayFixture,
 } from "../features/wishBox/AnnouncementView";
 import WishBoxHome from "../features/wishBox/WishBoxHome";
+import WishBoxTimeline from "../features/wishBox/WishBoxTimeline";
+
+type WishBoxView = "home" | "timeline";
 
 // UI-only fixture for Phase 1B layout and interaction; not a Backend contract.
 const currentAnnouncement: AnnouncementDisplayFixture = {
@@ -27,12 +30,27 @@ const currentAnnouncement: AnnouncementDisplayFixture = {
 };
 
 function WishBoxPage() {
+  const [currentView, setCurrentView] = useState<WishBoxView>("home");
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
+  const wishlandButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreWishlandFocusRef = useRef(false);
+
+  useEffect(() => {
+    if (currentView === "home" && restoreWishlandFocusRef.current) {
+      wishlandButtonRef.current?.focus();
+      restoreWishlandFocusRef.current = false;
+    }
+  }, [currentView]);
 
   function closeAnnouncement() {
     setAnnouncementOpen(false);
     requestAnimationFrame(() => announcementButtonRef.current?.focus());
+  }
+
+  function returnToHome() {
+    restoreWishlandFocusRef.current = true;
+    setCurrentView("home");
   }
 
   return (
@@ -46,18 +64,26 @@ function WishBoxPage() {
           containerType: "inline-size",
         }}
       >
-        <WishBoxHome
-          announcement={currentAnnouncement}
-          onOpenAnnouncement={() => setAnnouncementOpen(true)}
-          announcementButtonRef={announcementButtonRef}
-          inactive={announcementOpen}
-        />
-        {announcementOpen ? (
-          <AnnouncementView
-            announcement={currentAnnouncement}
-            onClose={closeAnnouncement}
-          />
-        ) : null}
+        {currentView === "home" ? (
+          <>
+            <WishBoxHome
+              announcement={currentAnnouncement}
+              onOpenAnnouncement={() => setAnnouncementOpen(true)}
+              announcementButtonRef={announcementButtonRef}
+              onOpenTimeline={() => setCurrentView("timeline")}
+              wishlandButtonRef={wishlandButtonRef}
+              inactive={announcementOpen}
+            />
+            {announcementOpen ? (
+              <AnnouncementView
+                announcement={currentAnnouncement}
+                onClose={closeAnnouncement}
+              />
+            ) : null}
+          </>
+        ) : (
+          <WishBoxTimeline onBack={returnToHome} />
+        )}
       </section>
     </main>
   );

@@ -11,6 +11,8 @@ type WishBoxHomeProps = {
   announcement: AnnouncementDisplayFixture;
   onOpenAnnouncement: () => void;
   announcementButtonRef: Ref<HTMLButtonElement>;
+  onOpenTimeline: () => void;
+  wishlandButtonRef: Ref<HTMLButtonElement>;
   inactive: boolean;
 };
 
@@ -18,6 +20,8 @@ function WishBoxHome({
   announcement,
   onOpenAnnouncement,
   announcementButtonRef,
+  onOpenTimeline,
+  wishlandButtonRef,
   inactive,
 }: WishBoxHomeProps) {
   return (
@@ -43,11 +47,19 @@ function WishBoxHome({
           height: "13.33333%",
         }}
       >
-        <img
-          src={wishlandSign}
-          alt="心愿盒 Wishland"
-          className="h-full w-full object-contain"
-        />
+        <button
+          ref={wishlandButtonRef}
+          type="button"
+          onClick={onOpenTimeline}
+          aria-label="进入时间轴"
+          className="block h-full w-full cursor-pointer border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
+        >
+          <img
+            src={wishlandSign}
+            alt="心愿盒 Wishland"
+            className="h-full w-full object-contain"
+          />
+        </button>
       </h1>
 
       {!inactive ? (
