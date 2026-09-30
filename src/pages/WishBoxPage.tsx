@@ -2,10 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import AnnouncementView, {
   type AnnouncementDisplayFixture,
 } from "../features/wishBox/AnnouncementView";
+import WishBoxActivityReview, {
+  type ActivityReviewPhotoSelectionFixture,
+  type ActivityReviewSelectionFixture,
+} from "../features/wishBox/WishBoxActivityReview";
+import WishBoxPhotoViewer from "../features/wishBox/WishBoxPhotoViewer";
 import WishBoxHome from "../features/wishBox/WishBoxHome";
 import WishBoxTimeline from "../features/wishBox/WishBoxTimeline";
 
-type WishBoxView = "home" | "timeline";
+type WishBoxView = "home" | "timeline" | "activityReviewPreview" | "photoViewerPreview";
+
+// DEV / TEMPORARY PREVIEW: open /wish-box?activityReviewPreview=1 for local visual calibration.
+const activityReviewPreviewRequested =
+  import.meta.env.DEV &&
+  new URLSearchParams(window.location.search).get("activityReviewPreview") === "1";
+const photoViewerPreviewRequested =
+  import.meta.env.DEV &&
+  new URLSearchParams(window.location.search).get("photoViewerPreview") === "1";
 
 // UI-only fixture for Phase 1B layout and interaction; not a Backend contract.
 const currentAnnouncement: AnnouncementDisplayFixture = {
@@ -30,8 +43,16 @@ const currentAnnouncement: AnnouncementDisplayFixture = {
 };
 
 function WishBoxPage() {
-  const [currentView, setCurrentView] = useState<WishBoxView>("home");
+  const [currentView, setCurrentView] = useState<WishBoxView>(() => {
+    if (photoViewerPreviewRequested) return "photoViewerPreview";
+    if (activityReviewPreviewRequested) return "activityReviewPreview";
+    return "home";
+  });
   const [announcementOpen, setAnnouncementOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityReviewSelectionFixture | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<ActivityReviewPhotoSelectionFixture | null>(null);
+  const [timelineScrollLeft, setTimelineScrollLeft] = useState<number | null>(null);
+  const sceneRef = useRef<HTMLElement>(null);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
   const wishlandButtonRef = useRef<HTMLButtonElement>(null);
   const restoreWishlandFocusRef = useRef(false);
@@ -53,9 +74,51 @@ function WishBoxPage() {
     setCurrentView("home");
   }
 
+  function openTimeline() {
+    setTimelineScrollLeft(null);
+    setCurrentView("timeline");
+  }
+
+  function openActivity(
+    activity: ActivityReviewSelectionFixture,
+    currentTimelineScrollLeft: number,
+  ) {
+    setTimelineScrollLeft(currentTimelineScrollLeft);
+    setSelectedActivity(activity);
+    setSelectedPhoto(null);
+  }
+
+  function openPhoto(photo: ActivityReviewPhotoSelectionFixture) {
+    setSelectedPhoto(photo);
+  }
+
+  function closePhotoViewer() {
+    const photoFixtureId = selectedPhoto?.fixtureId;
+    setSelectedPhoto(null);
+    if (!photoFixtureId) return;
+
+    // Review remounts on close; restore its entry by identity, not board layout.
+    requestAnimationFrame(() => {
+      const photoButtons = sceneRef.current?.querySelectorAll<HTMLButtonElement>(
+        "button[data-activity-photo-fixture]",
+      );
+      const opener = Array.from(photoButtons ?? []).find(
+        (button) => button.dataset.activityPhotoFixture === photoFixtureId && !button.disabled,
+      );
+      opener?.focus({ preventScroll: true });
+    });
+  }
+
+  function returnToTimeline() {
+    setSelectedActivity(null);
+    setSelectedPhoto(null);
+    setCurrentView("timeline");
+  }
+
   return (
     <main className="grid h-dvh w-full place-items-center overflow-hidden bg-slate-100">
       <section
+        ref={sceneRef}
         aria-label="心愿盒场景"
         className="relative w-full overflow-hidden bg-white"
         style={{
@@ -70,7 +133,7 @@ function WishBoxPage() {
               announcement={currentAnnouncement}
               onOpenAnnouncement={() => setAnnouncementOpen(true)}
               announcementButtonRef={announcementButtonRef}
-              onOpenTimeline={() => setCurrentView("timeline")}
+              onOpenTimeline={openTimeline}
               wishlandButtonRef={wishlandButtonRef}
               inactive={announcementOpen}
             />
@@ -81,8 +144,43 @@ function WishBoxPage() {
               />
             ) : null}
           </>
+        ) : currentView === "timeline" ? (
+          selectedActivity ? (
+            selectedPhoto ? (
+              <WishBoxPhotoViewer
+                activity={selectedActivity}
+                photo={selectedPhoto}
+                onClose={closePhotoViewer}
+              />
+            ) : (
+              <WishBoxActivityReview
+                activity={selectedActivity}
+                onOpenPhoto={openPhoto}
+                onBack={returnToTimeline}
+              />
+            )
+          ) : (
+            <WishBoxTimeline
+              initialScrollLeft={timelineScrollLeft}
+              onBack={returnToHome}
+              onOpenActivity={openActivity}
+            />
+          )
+        ) : currentView === "activityReviewPreview" ? (
+          selectedPhoto ? (
+            <WishBoxPhotoViewer
+              photo={selectedPhoto}
+              onClose={closePhotoViewer}
+            />
+          ) : (
+            <WishBoxActivityReview
+              onOpenPhoto={openPhoto}
+              onBack={returnToTimeline}
+            />
+          )
         ) : (
-          <WishBoxTimeline onBack={returnToHome} />
+          // DEV / TEMPORARY PREVIEW: this callback returns to the Review preview only.
+          <WishBoxPhotoViewer onClose={() => setCurrentView("activityReviewPreview")} />
         )}
       </section>
     </main>

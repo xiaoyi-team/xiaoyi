@@ -1,32 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
-import irisCardFrame from "../../assets/wish-box/timeline-card-frame-iris.png";
-import roseCardFrame from "../../assets/wish-box/timeline-card-frame-rose.png";
 import edgeDecoration from "../../assets/wish-box/timeline-edge-decoration.png";
 import gardenBackground from "../../assets/wish-box/timeline-garden-background.png";
+import titleOrnamentLeft from "../../assets/wish-box/timeline-title-ornament-left.png";
+import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-right.png";
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
-
-type TimelineCardVariant = "rose" | "iris";
-
-type TimelineActivityFixture = {
-  variant: TimelineCardVariant;
-  cardY: number;
-  title: string;
-  date: string;
-};
-
-type TimelineCardLayout = {
-  photo: { x: number; y: number; width: number; height: number };
-  frame: {
-    src: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  title: { x: number; y: number; width: number; height: number };
-  date: { x: number; y: number; width: number; height: number };
-};
+import type { ActivityReviewSelectionFixture } from "./WishBoxActivityReview";
+import TimelineCard, { CARD_WIDTH } from "./TimelineCard";
+import type { TimelineActivityFixture } from "./TimelineCard";
 
 type TimelineMarkerFixture = {
   slotIndex: number;
@@ -37,108 +19,109 @@ type TimelineMarkerFixture = {
   textWidth: number;
 };
 
+type TimelineGlowMarkerFixture = {
+  slotIndex: number;
+  lineDirection: "up" | "down";
+};
+
 const SLOT_SPACING = 215;
-const CARD_WIDTH = 350;
-const CARD_HEIGHT = 238;
+const DRAG_THRESHOLD_PX = 5;
 const PATH_HEIGHT = 670;
 const VINE_Y = 198;
 const VINE_HEIGHT = 288;
 
-const TIMELINE_CARD_LAYOUTS: Record<TimelineCardVariant, TimelineCardLayout> = {
-  rose: {
-    photo: { x: 14, y: 14, width: 322, height: 151 },
-    frame: {
-      src: roseCardFrame,
-      x: 0,
-      y: 0,
-      width: 350,
-      height: 225,
-    },
-    title: { x: 48, y: 162, width: 272, height: 32 },
-    date: { x: 48, y: 191, width: 272, height: 24 },
-  },
-  iris: {
-    photo: { x: 12, y: 17, width: 326, height: 143 },
-    frame: {
-      src: irisCardFrame,
-      x: -18,
-      y: -12,
-      width: 386,
-      height: 248,
-    },
-    title: { x: 48, y: 155, width: 272, height: 32 },
-    date: { x: 48, y: 188, width: 272, height: 24 },
-  },
+type TimelinePointerDrag = {
+  pointerId: number;
+  startClientX: number;
+  startScrollLeft: number;
+  isDragging: boolean;
 };
 
+type SuppressedTimelineClick = {
+  pointerId: number;
+};
+
+// Stable UI-only fixture IDs, not backend IDs or a business item limit.
 const TIMELINE_ACTIVITY_FIXTURE: TimelineActivityFixture[] = [
   {
+    fixtureId: "timeline-snow-letter",
     title: "雪落时的来信",
     date: "2024.12.20 – 2025.01.05",
     variant: "rose",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-birthday-promise",
     title: "生日里的约定",
     date: "2025.11.23 – 2025.12.07",
     variant: "rose",
     cardY: 378,
   },
   {
+    fixtureId: "timeline-winter-together",
     title: "冬日共赴",
     date: "2025.12.12 – 2026.01.02",
     variant: "rose",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-new-year",
     title: "新岁与你",
     date: "2026.01.01 – 2026.01.18",
     variant: "iris",
     cardY: 378,
   },
   {
+    fixtureId: "timeline-heart-letter",
     title: "心动来信",
     date: "2026.02.14 – 2026.03.01",
     variant: "rose",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-spring-walk",
     title: "春日漫游",
     date: "2026.03.18 – 2026.04.08",
     variant: "rose",
     cardY: 378,
   },
   {
+    fixtureId: "timeline-floral-prelude",
     title: "花间序曲",
     date: "2026.04.20 – 2026.05.10",
     variant: "rose",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-fifth-season",
     title: "与你的第五季",
     date: "2026.05.20 – 2026.06.15",
     variant: "rose",
     cardY: 414,
   },
   {
+    fixtureId: "timeline-summer-breeze",
     title: "夏日的风",
     date: "2026.06.21 – 2026.07.12",
     variant: "rose",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-starlight-photo",
     title: "星光留影",
     date: "2026.07.18 – 2026.08.08",
     variant: "rose",
     cardY: 378,
   },
   {
+    fixtureId: "timeline-qixi-letter",
     title: "七夕花笺",
     date: "2026.08.19 – 2026.09.02",
     variant: "iris",
     cardY: 28,
   },
   {
+    fixtureId: "timeline-iris-bloom",
     title: "鸢尾盛放之时",
     date: "2026.09.01 – 2026.09.28",
     variant: "iris",
@@ -182,98 +165,26 @@ const TIMELINE_MARKERS: TimelineMarkerFixture[] = [
   },
 ];
 
+const TIMELINE_GLOW_MARKERS: TimelineGlowMarkerFixture[] = [
+  { slotIndex: 0, lineDirection: "up" },
+  { slotIndex: 1, lineDirection: "down" },
+  { slotIndex: 2, lineDirection: "up" },
+  { slotIndex: 3, lineDirection: "down" },
+  { slotIndex: 4, lineDirection: "up" },
+  { slotIndex: 5, lineDirection: "down" },
+  { slotIndex: 6, lineDirection: "up" },
+  { slotIndex: 7, lineDirection: "down" },
+  { slotIndex: 8, lineDirection: "up" },
+  { slotIndex: 9, lineDirection: "down" },
+  { slotIndex: 10, lineDirection: "up" },
+  { slotIndex: 11, lineDirection: "down" },
+];
+
 const toSceneCqw = (designPixels: number) =>
   `${(designPixels / 19.2).toFixed(7)}cqw`;
 
 const getPathWidth = (itemCount: number) =>
   itemCount > 0 ? (itemCount - 1) * SLOT_SPACING + CARD_WIDTH : 0;
-
-function TimelineCard({
-  activity,
-  slotIndex,
-}: {
-  activity: TimelineActivityFixture;
-  slotIndex: number;
-}) {
-  const layout = TIMELINE_CARD_LAYOUTS[activity.variant];
-
-  return (
-    <div
-      data-timeline-card={activity.variant}
-      data-timeline-slot-index={slotIndex}
-      className="pointer-events-none absolute"
-      style={{
-        left: toSceneCqw(slotIndex * SLOT_SPACING),
-        top: toSceneCqw(activity.cardY),
-        width: toSceneCqw(CARD_WIDTH),
-        height: toSceneCqw(CARD_HEIGHT),
-        borderRadius: toSceneCqw(8),
-        overflow: "visible",
-        boxShadow: `0 ${toSceneCqw(5)} ${toSceneCqw(22)} ${toSceneCqw(2)} rgba(194, 176, 138, 0.2)`,
-      }}
-    >
-      <div
-        aria-hidden="true"
-        className="absolute"
-        style={{
-          left: toSceneCqw(layout.photo.x),
-          top: toSceneCqw(layout.photo.y),
-          width: toSceneCqw(layout.photo.width),
-          height: toSceneCqw(layout.photo.height),
-          backgroundColor: "#E6E1D7",
-        }}
-      />
-      <img
-        src={layout.frame.src}
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        className="pointer-events-none absolute select-none"
-        style={{
-          left: toSceneCqw(layout.frame.x),
-          top: toSceneCqw(layout.frame.y),
-          width: toSceneCqw(layout.frame.width),
-          height: toSceneCqw(layout.frame.height),
-          maxWidth: "none",
-        }}
-      />
-      <div
-        className="absolute flex items-center justify-center text-center"
-        style={{
-          left: toSceneCqw(layout.title.x),
-          top: toSceneCqw(layout.title.y),
-          width: toSceneCqw(layout.title.width),
-          height: toSceneCqw(layout.title.height),
-          fontFamily: '"Noto Serif SC", serif',
-          fontSize: toSceneCqw(20),
-          fontWeight: 600,
-          lineHeight: toSceneCqw(32),
-          letterSpacing: 0,
-          color: "#614B35",
-        }}
-      >
-        {activity.title}
-      </div>
-      <div
-        className="absolute flex items-center justify-center text-center"
-        style={{
-          left: toSceneCqw(layout.date.x),
-          top: toSceneCqw(layout.date.y),
-          width: toSceneCqw(layout.date.width),
-          height: toSceneCqw(layout.date.height),
-          fontFamily: '"Noto Serif SC", serif',
-          fontSize: toSceneCqw(14),
-          fontWeight: 400,
-          lineHeight: toSceneCqw(24),
-          letterSpacing: 0,
-          color: "#614B35",
-        }}
-      >
-        {activity.date}
-      </div>
-    </div>
-  );
-}
 
 function TimelineMarker({ marker }: { marker: TimelineMarkerFixture }) {
   return (
@@ -315,16 +226,356 @@ function TimelineMarker({ marker }: { marker: TimelineMarkerFixture }) {
   );
 }
 
+function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerFixture }) {
+  const filterId = `timeline-gold-glow-filter-${marker.slotIndex}`;
+  const clipId = `timeline-gold-glow-clip-${marker.slotIndex}`;
+  const lineStartY = marker.lineDirection === "up" ? 39 : 104;
+  const lineEndY = marker.lineDirection === "up" ? 3 : 68;
+
+  return (
+    <div
+      aria-hidden="true"
+      data-timeline-gold-glow={marker.slotIndex}
+      className="pointer-events-none absolute"
+      style={{
+        left: toSceneCqw(marker.slotIndex * SLOT_SPACING + 159),
+        top: toSceneCqw(276),
+        width: toSceneCqw(32),
+        height: toSceneCqw(96),
+        overflow: "visible",
+      }}
+    >
+      <svg
+        aria-hidden="true"
+        width="100%"
+        height="100%"
+        viewBox="0 0 32 96"
+        style={{ overflow: "visible" }}
+      >
+        <defs>
+          <filter
+            id={filterId}
+            x="-13"
+            y="-13"
+            width="58"
+            height="122"
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB"
+          >
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feMorphology
+              radius="1"
+              operator="dilate"
+              in="SourceAlpha"
+              result="effect1_dropShadow"
+            />
+            <feOffset />
+            <feGaussianBlur stdDeviation="6" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 1 0 0 0 0 0.88 0 0 0 0 0.55 0 0 0 0.8 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow"
+              result="shape"
+            />
+          </filter>
+          <clipPath id={clipId}>
+            <rect width="32" height="96" />
+          </clipPath>
+        </defs>
+        <g filter={`url(#${filterId})`}>
+          <g clipPath={`url(#${clipId})`}>
+            <line
+              x1="15.5"
+              y1={lineStartY}
+              x2="15.5"
+              y2={lineEndY}
+              stroke="#FEF3C4"
+              strokeWidth="3"
+            />
+            <path
+              d="M16 68C23.732 68 30 61.732 30 54C30 46.268 23.732 40 16 40C8.268 40 2 46.268 2 54C2 61.732 8.268 68 16 68Z"
+              fill="#F3D590"
+              fillOpacity="0.18"
+              stroke="#F7D994"
+            />
+            <path
+              d="M16 65C22.0751 65 27 60.0751 27 54C27 47.9249 22.0751 43 16 43C9.9249 43 5 47.9249 5 54C5 60.0751 9.9249 65 16 65Z"
+              fill="none"
+              stroke="#FFF8D8"
+              strokeWidth="2"
+            />
+            <path
+              d="M16 57C17.6569 57 19 55.6569 19 54C19 52.3431 17.6569 51 16 51C14.3431 51 13 52.3431 13 54C13 55.6569 14.3431 57 16 57Z"
+              fill="#FFF8D8"
+            />
+          </g>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function StaticTimelineFilterPill({
+  label,
+  left,
+  selected = false,
+}: {
+  label: string;
+  left: number;
+  selected?: boolean;
+}) {
+  return (
+    <div
+      className="absolute flex items-center justify-center whitespace-nowrap"
+      style={{
+        left: toSceneCqw(left),
+        top: toSceneCqw(15),
+        width: toSceneCqw(102),
+        height: toSceneCqw(44),
+        boxSizing: "border-box",
+        border: `${toSceneCqw(1)} solid rgba(181, 165, 139, 0.65)`,
+        borderRadius: toSceneCqw(24),
+        backgroundColor: selected ? "#927A54" : "#F3EDE1",
+        color: selected ? "#FFF9E9" : "#614B35",
+        fontFamily: '"Noto Serif SC", serif',
+        fontSize: toSceneCqw(16),
+        fontWeight: 500,
+        lineHeight: toSceneCqw(24),
+        letterSpacing: 0,
+        textAlign: "left",
+      }}
+    >
+      {label}
+    </div>
+  );
+}
+
 type WishBoxTimelineProps = {
   onBack: () => void;
+  initialScrollLeft: number | null;
+  onOpenActivity: (
+    activity: ActivityReviewSelectionFixture,
+    timelineScrollLeft: number,
+  ) => void;
 };
 
-function WishBoxTimeline({ onBack }: WishBoxTimelineProps) {
+function WishBoxTimeline({
+  onBack,
+  initialScrollLeft,
+  onOpenActivity,
+}: WishBoxTimelineProps) {
   const backButtonRef = useRef<HTMLButtonElement>(null);
+  const timelineViewportRef = useRef<HTMLDivElement>(null);
+  const timelinePointerDragRef = useRef<TimelinePointerDrag | null>(null);
+  const suppressedTimelineClickRef = useRef<SuppressedTimelineClick | null>(null);
+
+  const clearSuppressedTimelineClick = () => {
+    suppressedTimelineClickRef.current = null;
+  };
+
+  const setTimelineDraggingCursor = (viewport: HTMLDivElement, isDragging: boolean) => {
+    viewport.style.cursor = isDragging ? "grabbing" : "";
+    viewport
+      .querySelectorAll<HTMLButtonElement>("button[data-timeline-activity-fixture]")
+      .forEach((button) => {
+        button.style.cursor = isDragging ? "grabbing" : "";
+      });
+  };
+
+  const finishTimelinePointer = (
+    viewport: HTMLDivElement,
+    pointerId: number,
+    suppressClick: boolean,
+  ) => {
+    const drag = timelinePointerDragRef.current;
+    if (!drag || drag.pointerId !== pointerId) return;
+
+    timelinePointerDragRef.current = null;
+    setTimelineDraggingCursor(viewport, false);
+
+    if (suppressClick && drag.isDragging) {
+      suppressedTimelineClickRef.current = { pointerId };
+    }
+
+    try {
+      if (viewport.hasPointerCapture(pointerId)) {
+        viewport.releasePointerCapture(pointerId);
+      }
+    } catch {
+      // The browser may already have released capture during cancellation.
+    }
+  };
+
+  const updateTimelinePointerDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+
+    const drag = timelinePointerDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - drag.startClientX;
+    if (!drag.isDragging) {
+      if (Math.abs(deltaX) < DRAG_THRESHOLD_PX) return;
+
+      drag.isDragging = true;
+      setTimelineDraggingCursor(event.currentTarget, true);
+
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        // Continue tracking while events still reach the viewport.
+      }
+    }
+
+    if (event.cancelable) event.preventDefault();
+    event.currentTarget.scrollLeft = drag.startScrollLeft - deltaX;
+  };
+
+  const handleTimelinePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    // A new pointer sequence means any previous drag-generated click is stale.
+    clearSuppressedTimelineClick();
+
+    if (
+      event.pointerType !== "mouse" ||
+      event.button !== 0 ||
+      !event.isPrimary ||
+      timelinePointerDragRef.current
+    ) {
+      return;
+    }
+
+    timelinePointerDragRef.current = {
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startScrollLeft: event.currentTarget.scrollLeft,
+      isDragging: false,
+    };
+  };
+
+  const handleTimelinePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    updateTimelinePointerDrag(event);
+  };
+
+  const handleTimelinePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = timelinePointerDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || event.pointerType !== "mouse") return;
+
+    if (!drag.isDragging) updateTimelinePointerDrag(event);
+
+    const currentDrag = timelinePointerDragRef.current;
+    if (!currentDrag || currentDrag.pointerId !== event.pointerId) return;
+
+    if (!currentDrag.isDragging) {
+      finishTimelinePointer(event.currentTarget, event.pointerId, false);
+      return;
+    }
+
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+      finishTimelinePointer(event.currentTarget, event.pointerId, true);
+    }
+  };
+
+  const handleTimelinePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    finishTimelinePointer(event.currentTarget, event.pointerId, true);
+  };
+
+  const handleTimelinePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
+    finishTimelinePointer(event.currentTarget, event.pointerId, true);
+  };
+
+  const handleTimelineLostPointerCapture = (event: ReactPointerEvent<HTMLDivElement>) => {
+    finishTimelinePointer(event.currentTarget, event.pointerId, true);
+  };
+
+  const handleTimelineClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const suppressedClick = suppressedTimelineClickRef.current;
+    if (!suppressedClick) return;
+
+    if (event.detail === 0) {
+      clearSuppressedTimelineClick();
+      return;
+    }
+
+    const nativePointerEvent = event.nativeEvent as MouseEvent & { pointerId?: number };
+    if (
+      typeof nativePointerEvent.pointerId === "number" &&
+      nativePointerEvent.pointerId >= 0 &&
+      nativePointerEvent.pointerId !== suppressedClick.pointerId
+    ) {
+      return;
+    }
+
+    clearSuppressedTimelineClick();
+    if (event.cancelable) event.preventDefault();
+    event.stopPropagation();
+  };
+
+  useLayoutEffect(() => {
+    const viewport = timelineViewportRef.current;
+    if (viewport) {
+      const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+      viewport.scrollLeft = initialScrollLeft === null
+        ? maxScrollLeft
+        : Math.min(Math.max(0, initialScrollLeft), maxScrollLeft);
+    }
+  }, [initialScrollLeft]);
 
   useEffect(() => {
+    const viewport = timelineViewportRef.current;
     backButtonRef.current?.focus();
+
+    return () => {
+      const drag = timelinePointerDragRef.current;
+
+      timelinePointerDragRef.current = null;
+      suppressedTimelineClickRef.current = null;
+
+      if (viewport) {
+        viewport.style.cursor = "";
+        viewport
+          .querySelectorAll<HTMLButtonElement>("button[data-timeline-activity-fixture]")
+          .forEach((button) => {
+            button.style.cursor = "";
+          });
+
+        try {
+          if (drag && viewport.hasPointerCapture(drag.pointerId)) {
+            viewport.releasePointerCapture(drag.pointerId);
+          }
+        } catch {
+          // The viewport may already be detached or have lost capture.
+        }
+      }
+    };
   }, []);
+
+  const scrollToEnd = (end: "left" | "right") => {
+    const viewport = timelineViewportRef.current;
+    if (!viewport) return;
+
+    viewport.scrollTo({
+      left: end === "left" ? 0 : Math.max(0, viewport.scrollWidth - viewport.clientWidth),
+      behavior: "smooth",
+    });
+  };
+
+  const openActivity = (activity: ActivityReviewSelectionFixture) => {
+    onOpenActivity(activity, timelineViewportRef.current?.scrollLeft ?? 0);
+  };
 
   return (
     <div className="absolute inset-0 isolate overflow-hidden bg-white">
@@ -343,18 +594,31 @@ function WishBoxTimeline({ onBack }: WishBoxTimelineProps) {
       />
 
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute overflow-hidden"
+        ref={timelineViewportRef}
+        role="region"
+        aria-label="活动时间轴"
+        tabIndex={0}
+        onPointerDown={handleTimelinePointerDown}
+        onPointerMove={handleTimelinePointerMove}
+        onPointerLeave={handleTimelinePointerLeave}
+        onPointerUp={handleTimelinePointerUp}
+        onPointerCancel={handleTimelinePointerCancel}
+        onLostPointerCapture={handleTimelineLostPointerCapture}
+        onClickCapture={handleTimelineClickCapture}
+        className="absolute cursor-grab [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-[#4c392b]"
         style={{
           left: "5.2604167%",
           top: "23.7962963%",
           width: "91.6666667%",
           height: "65.7407407%",
+          overflowX: "auto",
+          overflowY: "hidden",
+          scrollbarWidth: "none",
         }}
       >
         <div
           data-timeline-path
-          className="absolute left-0 top-0"
+          className="pointer-events-none absolute left-0 top-0"
           style={{
             width: toSceneCqw(getPathWidth(TIMELINE_ACTIVITY_FIXTURE.length)),
             height: toSceneCqw(PATH_HEIGHT),
@@ -374,15 +638,302 @@ function WishBoxTimeline({ onBack }: WishBoxTimelineProps) {
           />
           {TIMELINE_ACTIVITY_FIXTURE.map((activity, slotIndex) => (
             <TimelineCard
-              key={`${slotIndex}-${activity.title}`}
+              key={activity.fixtureId}
               activity={activity}
               slotIndex={slotIndex}
+              slotLeft={toSceneCqw(slotIndex * SLOT_SPACING)}
+              onOpenActivity={openActivity}
             />
           ))}
           {TIMELINE_MARKERS.map((marker) => (
             <TimelineMarker key={marker.slotIndex} marker={marker} />
           ))}
+          {TIMELINE_GLOW_MARKERS.map((marker) => (
+            <TimelineGlowMarker key={marker.slotIndex} marker={marker} />
+          ))}
         </div>
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute"
+        style={{
+          left: "34.4270833%",
+          top: "0.3703704%",
+          width: "31.1458333%",
+          height: "14.4444444%",
+          boxSizing: "border-box",
+          border: `${toSceneCqw(1)} solid #000000`,
+          borderRadius: "50%",
+          backgroundColor: "rgba(255, 255, 255, 0.54)",
+          filter: `blur(${toSceneCqw(25.1)})`,
+        }}
+      />
+
+      <h1
+        data-timeline-header-title
+        className="absolute m-0 text-left"
+        style={{
+          left: "43.3333333%",
+          top: "0.7407407%",
+          width: "13.3333333%",
+          height: "7.7777778%",
+          fontFamily: '"Noto Serif SC", serif',
+          fontSize: toSceneCqw(64),
+          fontWeight: 700,
+          lineHeight: toSceneCqw(84),
+          letterSpacing: 0,
+          color: "#5B4129",
+          textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(5)} rgba(255, 250, 232, 0.9)`,
+        }}
+      >
+        时光花径
+      </h1>
+
+      <p
+        data-timeline-header-subtitle
+        className="absolute m-0 text-left"
+        style={{
+          left: "41.875%",
+          top: "9.537037%",
+          width: "15%",
+          height: "3.7037037%",
+          fontFamily: '"Noto Serif SC", serif',
+          fontSize: toSceneCqw(24),
+          fontWeight: 400,
+          lineHeight: toSceneCqw(40),
+          letterSpacing: 0,
+          color: "#604C35",
+        }}
+      >
+        沿着花径，重温每一次相遇
+      </p>
+
+      <img
+        src={titleOrnamentLeft}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="pointer-events-none absolute select-none"
+        style={{
+          left: "33.8541667%",
+          top: "2.5%",
+          width: "9.3229167%",
+          height: "7.037037%",
+          objectFit: "contain",
+          maxWidth: "none",
+        }}
+      />
+
+      <img
+        src={titleOrnamentRight}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="pointer-events-none absolute select-none"
+        style={{
+          left: "56.8229167%",
+          top: "2.5%",
+          width: "9.2708333%",
+          height: "7.037037%",
+          objectFit: "contain",
+          maxWidth: "none",
+        }}
+      />
+
+      <div
+        className="absolute"
+        style={{
+          left: "9.8958333%",
+          top: "14.8148148%",
+          width: "80.7291667%",
+          height: "6.8518519%",
+          boxSizing: "border-box",
+          border: `${toSceneCqw(1)} solid rgba(255, 247, 222, 0.7)`,
+          borderRadius: toSceneCqw(25),
+          backgroundColor: "rgba(247, 242, 230, 0.86)",
+        }}
+      >
+        <div
+          className="absolute whitespace-nowrap"
+          style={{
+            left: toSceneCqw(35),
+            top: toSceneCqw(20),
+            width: toSceneCqw(48),
+            height: toSceneCqw(28),
+            color: "#614B35",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(28),
+            letterSpacing: 0,
+          }}
+        >
+          年份：
+        </div>
+        <StaticTimelineFilterPill label="全部" left={98} selected />
+        <StaticTimelineFilterPill label="2026" left={208} />
+        <StaticTimelineFilterPill label="2025" left={318} />
+        <StaticTimelineFilterPill label="2024" left={428} />
+
+        <div
+          aria-hidden="true"
+          className="absolute"
+          style={{
+            left: toSceneCqw(565),
+            top: toSceneCqw(20),
+            width: toSceneCqw(1),
+            height: toSceneCqw(35),
+            backgroundColor: "#A89272",
+          }}
+        />
+
+        <div
+          className="absolute whitespace-nowrap"
+          style={{
+            left: toSceneCqw(592),
+            top: toSceneCqw(20),
+            width: toSceneCqw(80),
+            height: toSceneCqw(28),
+            color: "#614B35",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(28),
+            letterSpacing: 0,
+          }}
+        >
+          活动类型：
+        </div>
+        <div
+          className="absolute flex items-center justify-center whitespace-nowrap"
+          style={{
+            left: toSceneCqw(703),
+            top: toSceneCqw(15),
+            width: toSceneCqw(196),
+            height: toSceneCqw(44),
+            boxSizing: "border-box",
+            border: `${toSceneCqw(1)} solid #C5B79E`,
+            borderRadius: toSceneCqw(22),
+            backgroundColor: "rgba(255, 249, 237, 0.7)",
+            color: "#614C37",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(24),
+            letterSpacing: 0,
+          }}
+        >
+          全部种类
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="absolute"
+          style={{
+            left: toSceneCqw(941),
+            top: toSceneCqw(20),
+            width: toSceneCqw(1),
+            height: toSceneCqw(35),
+            backgroundColor: "#A89272",
+          }}
+        />
+
+        <div
+          className="absolute whitespace-nowrap"
+          style={{
+            left: toSceneCqw(969),
+            top: toSceneCqw(20),
+            width: toSceneCqw(80),
+            height: toSceneCqw(28),
+            color: "#614B35",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(28),
+            letterSpacing: 0,
+          }}
+        >
+          活动分类：
+        </div>
+        <StaticTimelineFilterPill label="全部" left={1086} selected />
+        <StaticTimelineFilterPill label="线上" left={1194} />
+        <StaticTimelineFilterPill label="线下" left={1302} />
+        <StaticTimelineFilterPill label="周边制品" left={1410} />
+      </div>
+
+      <div
+        className="absolute overflow-hidden"
+        style={{
+          left: "4.1666667%",
+          top: "91.6666667%",
+          width: "91.6666667%",
+          height: "4.8148148%",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => scrollToEnd("left")}
+          className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
+          style={{
+            left: 0,
+            top: 0,
+            width: toSceneCqw(190),
+            height: toSceneCqw(44),
+            borderRadius: toSceneCqw(22),
+            color: "#FFF5DD",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(24),
+            letterSpacing: 0,
+            textShadow: `0 0 ${toSceneCqw(2)} #000000`,
+            whiteSpace: "pre",
+          }}
+        >
+          {"←  更早的回忆"}
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollToEnd("right")}
+          className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
+          style={{
+            left: toSceneCqw(1570),
+            top: 0,
+            width: toSceneCqw(190),
+            height: toSceneCqw(44),
+            borderRadius: toSceneCqw(22),
+            color: "#FFF5DD",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(24),
+            letterSpacing: 0,
+            textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(2)} #594229`,
+            whiteSpace: "pre",
+          }}
+        >
+          {"最近的盛放  →"}
+        </button>
+        <p
+          className="pointer-events-none absolute m-0"
+          style={{
+            left: toSceneCqw(717),
+            top: toSceneCqw(7),
+            width: toSceneCqw(249),
+            height: toSceneCqw(24),
+            color: "#FFF5DD",
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: toSceneCqw(16),
+            fontWeight: 500,
+            lineHeight: toSceneCqw(24),
+            letterSpacing: 0,
+            textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(2)} #594229`,
+            whiteSpace: "pre",
+          }}
+        >
+          {"←     左右滑动，探索更多活动     →"}
+        </p>
       </div>
 
       <button
@@ -392,12 +943,11 @@ function WishBoxTimeline({ onBack }: WishBoxTimelineProps) {
         aria-label="返回心愿盒主页"
         className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
         style={{
-          left: "2.1354167%",
+          left: "3.8541667%",
           top: "2.1296296%",
           width: "8.8541667%",
           height: "6.8518519%",
           borderRadius: "1.1458333cqw",
-          boxShadow: "0 0.2083333cqw 0.390625cqw #000",
         }}
       >
         <img
@@ -415,14 +965,14 @@ function WishBoxTimeline({ onBack }: WishBoxTimelineProps) {
         <span
           className="absolute text-left text-white"
           style={{
-            left: "52.3529412%",
-            top: "20.2702703%",
-            width: "18.8235294%",
-            height: "32.4324324%",
+            left: "47.6470588%",
+            top: "22.972973%",
+            width: "32.9411765%",
+            height: "54.0540541%",
             fontFamily: '"Noto Serif SC", serif',
-            fontWeight: 500,
-            fontSize: "0.8333333cqw",
-            lineHeight: "1.25cqw",
+            fontWeight: 600,
+            fontSize: toSceneCqw(28),
+            lineHeight: toSceneCqw(40),
             letterSpacing: 0,
             textShadow: "0 0 0.1041667cqw #000",
           }}
