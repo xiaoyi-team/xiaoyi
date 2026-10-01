@@ -610,8 +610,8 @@ function WishBoxActivityReview({
           aria-label="返回时间轴"
           className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
           style={{
-            left: sceneX(40),
-            top: sceneY(26),
+            left: sceneX(74),
+            top: sceneY(23),
             width: toSceneCqw(170),
             height: toSceneCqw(74),
             borderRadius: toSceneCqw(22),
@@ -628,14 +628,14 @@ function WishBoxActivityReview({
           <span
             className="absolute text-left text-white"
             style={{
-              left: "52.3529412%",
-              top: "20.2702703%",
-              width: toSceneCqw(32),
-              height: toSceneCqw(24),
+              left: "50%",
+              top: "22.9729730%",
+              width: toSceneCqw(56),
+              height: toSceneCqw(40),
               fontFamily: '"Noto Serif SC", serif',
-              fontWeight: 500,
-              fontSize: toSceneCqw(16),
-              lineHeight: toSceneCqw(24),
+              fontWeight: 600,
+              fontSize: toSceneCqw(28),
+              lineHeight: toSceneCqw(40),
               textShadow: `0 0 ${toSceneCqw(2)} #000000`,
             }}
           >
