@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import edgeDecoration from "../../assets/wish-box/timeline-edge-decoration.png";
@@ -29,6 +29,20 @@ const DRAG_THRESHOLD_PX = 5;
 const PATH_HEIGHT = 670;
 const VINE_Y = 198;
 const VINE_HEIGHT = 288;
+
+const TIMELINE_KIND_OPTIONS = [
+  "全部种类",
+  "节日",
+  "联动",
+  "纪念",
+  "特别企划",
+  "生日",
+  "其他",
+] as const;
+
+type TimelineYearOption = "全部" | "2026" | "2025" | "2024";
+type TimelineKindOption = (typeof TIMELINE_KIND_OPTIONS)[number];
+type TimelineFormOption = "全部" | "线上" | "线下" | "周边制品";
 
 type TimelinePointerDrag = {
   pointerId: number;
@@ -330,18 +344,26 @@ function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerFixture }) {
   );
 }
 
-function StaticTimelineFilterPill({
+function TimelineFilterPill({
   label,
+  ariaLabel,
   left,
-  selected = false,
+  selected,
+  onClick,
 }: {
   label: string;
+  ariaLabel?: string;
   left: number;
-  selected?: boolean;
+  selected: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div
-      className="absolute flex items-center justify-center whitespace-nowrap"
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      aria-pressed={selected}
+      className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
       style={{
         left: toSceneCqw(left),
         top: toSceneCqw(15),
@@ -361,7 +383,7 @@ function StaticTimelineFilterPill({
       }}
     >
       {label}
-    </div>
+    </button>
   );
 }
 
@@ -380,9 +402,19 @@ function WishBoxTimeline({
   onOpenActivity,
 }: WishBoxTimelineProps) {
   const backButtonRef = useRef<HTMLButtonElement>(null);
+  const kindButtonRef = useRef<HTMLButtonElement>(null);
   const timelineViewportRef = useRef<HTMLDivElement>(null);
   const timelinePointerDragRef = useRef<TimelinePointerDrag | null>(null);
   const suppressedTimelineClickRef = useRef<SuppressedTimelineClick | null>(null);
+  const [selectedYear, setSelectedYear] = useState<TimelineYearOption>("全部");
+  const [selectedKind, setSelectedKind] = useState<TimelineKindOption>("全部种类");
+  const [selectedForm, setSelectedForm] = useState<TimelineFormOption>("全部");
+  const [kindMenuOpen, setKindMenuOpen] = useState(false);
+
+  const closeKindMenu = () => {
+    setKindMenuOpen(false);
+    kindButtonRef.current?.focus({ preventScroll: true });
+  };
 
   const clearSuppressedTimelineClick = () => {
     suppressedTimelineClickRef.current = null;
@@ -741,6 +773,15 @@ function WishBoxTimeline({
         }}
       />
 
+      {kindMenuOpen ? (
+        <button
+          type="button"
+          aria-label="关闭活动种类选单"
+          onClick={closeKindMenu}
+          className="absolute inset-0 z-10 cursor-default border-0 bg-transparent p-0"
+        />
+      ) : null}
+
       <div
         className="absolute"
         style={{
@@ -771,10 +812,31 @@ function WishBoxTimeline({
         >
           年份：
         </div>
-        <StaticTimelineFilterPill label="全部" left={98} selected />
-        <StaticTimelineFilterPill label="2026" left={208} />
-        <StaticTimelineFilterPill label="2025" left={318} />
-        <StaticTimelineFilterPill label="2024" left={428} />
+        <TimelineFilterPill
+          label="全部"
+          ariaLabel="年份：全部"
+          left={98}
+          selected={selectedYear === "全部"}
+          onClick={() => setSelectedYear("全部")}
+        />
+        <TimelineFilterPill
+          label="2026"
+          left={208}
+          selected={selectedYear === "2026"}
+          onClick={() => setSelectedYear("2026")}
+        />
+        <TimelineFilterPill
+          label="2025"
+          left={318}
+          selected={selectedYear === "2025"}
+          onClick={() => setSelectedYear("2025")}
+        />
+        <TimelineFilterPill
+          label="2024"
+          left={428}
+          selected={selectedYear === "2024"}
+          onClick={() => setSelectedYear("2024")}
+        />
 
         <div
           aria-hidden="true"
@@ -805,13 +867,19 @@ function WishBoxTimeline({
         >
           活动类型：
         </div>
-        <div
-          className="absolute flex items-center justify-center whitespace-nowrap"
+        <button
+          ref={kindButtonRef}
+          type="button"
+          onClick={() => setKindMenuOpen((open) => !open)}
+          aria-expanded={kindMenuOpen}
+          aria-controls="timeline-kind-options"
+          className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
           style={{
             left: toSceneCqw(703),
             top: toSceneCqw(15),
             width: toSceneCqw(196),
             height: toSceneCqw(44),
+            zIndex: kindMenuOpen ? 20 : undefined,
             boxSizing: "border-box",
             border: `${toSceneCqw(1)} solid #C5B79E`,
             borderRadius: toSceneCqw(22),
@@ -824,8 +892,58 @@ function WishBoxTimeline({
             letterSpacing: 0,
           }}
         >
-          全部种类
-        </div>
+          {selectedKind}
+        </button>
+
+        {kindMenuOpen ? (
+          <div
+            id="timeline-kind-options"
+            role="group"
+            aria-label="活动种类选项"
+            className="absolute"
+            style={{
+              left: toSceneCqw(703),
+              top: toSceneCqw(68),
+              width: toSceneCqw(200),
+              height: toSceneCqw(400),
+              zIndex: 20,
+              boxSizing: "border-box",
+              border: `${toSceneCqw(1)} solid #D9C299`,
+              borderRadius: toSceneCqw(12),
+              backgroundColor: "rgba(255, 249, 236, 0.97)",
+            }}
+          >
+            {TIMELINE_KIND_OPTIONS.map((option, index) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  setSelectedKind(option);
+                  closeKindMenu();
+                }}
+                aria-pressed={selectedKind === option}
+                className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#465B49]"
+                style={{
+                  left: toSceneCqw(12),
+                  top: toSceneCqw(12 + index * 54),
+                  width: toSceneCqw(176),
+                  height: toSceneCqw(44),
+                  boxSizing: "border-box",
+                  border: `${toSceneCqw(1)} solid #B7B49A`,
+                  borderRadius: toSceneCqw(22),
+                  backgroundColor: "#FAF8F0",
+                  color: "#465B49",
+                  fontFamily: '"Noto Sans SC", sans-serif',
+                  fontSize: toSceneCqw(17),
+                  fontWeight: 400,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         <div
           aria-hidden="true"
@@ -856,10 +974,31 @@ function WishBoxTimeline({
         >
           活动分类：
         </div>
-        <StaticTimelineFilterPill label="全部" left={1086} selected />
-        <StaticTimelineFilterPill label="线上" left={1194} />
-        <StaticTimelineFilterPill label="线下" left={1302} />
-        <StaticTimelineFilterPill label="周边制品" left={1410} />
+        <TimelineFilterPill
+          label="全部"
+          ariaLabel="活动分类：全部"
+          left={1086}
+          selected={selectedForm === "全部"}
+          onClick={() => setSelectedForm("全部")}
+        />
+        <TimelineFilterPill
+          label="线上"
+          left={1194}
+          selected={selectedForm === "线上"}
+          onClick={() => setSelectedForm("线上")}
+        />
+        <TimelineFilterPill
+          label="线下"
+          left={1302}
+          selected={selectedForm === "线下"}
+          onClick={() => setSelectedForm("线下")}
+        />
+        <TimelineFilterPill
+          label="周边制品"
+          left={1410}
+          selected={selectedForm === "周边制品"}
+          onClick={() => setSelectedForm("周边制品")}
+        />
       </div>
 
       <div
