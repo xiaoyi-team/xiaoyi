@@ -26,7 +26,7 @@ export type ActivityReviewSelectionFixture = {
 };
 
 export type ActivityReviewPhotoSelectionFixture = {
-  // UI slot identity only; this is not a backend photo ID.
+  // UI photo identity only; this is not a backend photo ID or a layout slot.
   fixtureId: string;
   placeholderColor: string;
 };
@@ -71,14 +71,121 @@ const sceneX = (designPixels: number) =>
 const sceneY = (designPixels: number) =>
   `${((designPixels / 1080) * 100).toFixed(7)}%`;
 
-// Current Figma slot fixture only; its count and geometry are not a business photo-layout rule.
-const photoPlaceholders = [
-  { fixtureId: "activity-review-photo-slot-1", x: 45.724, y: 62.222, width: 393.943, height: 247.309, rotation: -0.736 },
-  { fixtureId: "activity-review-photo-slot-2", x: 773.704, y: 69.815, width: 269, height: 149, rotation: 0.069 },
-  { fixtureId: "activity-review-photo-slot-3", x: 638, y: 301, width: 376, height: 246, rotation: 0 },
-  { fixtureId: "activity-review-photo-slot-4", x: 158, y: 340, width: 442, height: 221, rotation: 0 },
-  { fixtureId: "activity-review-photo-slot-5", x: 473, y: 139.237, width: 268.066, height: 138.128, rotation: -0.906 },
-] as const;
+// Six entries exercise the largest supported layout; this is not a business default count.
+const ACTIVITY_REVIEW_PHOTO_FIXTURE: readonly ActivityReviewPhotoSelectionFixture[] = [
+  { fixtureId: "activity-review-photo-slot-1", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+  { fixtureId: "activity-review-photo-slot-2", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+  { fixtureId: "activity-review-photo-slot-3", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+  { fixtureId: "activity-review-photo-slot-4", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+  { fixtureId: "activity-review-photo-slot-5", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+  { fixtureId: "activity-review-photo-slot-6", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
+];
+
+const PHOTO_BOARD_DECORATION_ASSETS = {
+  pin: photoPinGold,
+  tape: photoTapeVGold,
+  colorSticker: photoStickerColorGold,
+  pinkSticker: photoStickerPink,
+} as const;
+
+type PhotoBoardSlot = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+};
+
+type PhotoBoardDecoration = Omit<PhotoBoardSlot, "rotation"> & {
+  type: keyof typeof PHOTO_BOARD_DECORATION_ASSETS;
+};
+
+type PhotoBoardLayout = {
+  slots: readonly PhotoBoardSlot[];
+  decorations: readonly PhotoBoardDecoration[];
+};
+
+// Local UI layout coordinates within the 1070 × 584 board, not transport data.
+const PHOTO_BOARD_LAYOUTS: Partial<Record<number, PhotoBoardLayout>> = {
+  1: {
+    slots: [
+      { x: 190, y: 75, width: 690, height: 430, rotation: 1 },
+    ],
+    decorations: [
+      { type: "pin", x: 495.5, y: 53, width: 79, height: 79 },
+    ],
+  },
+  2: {
+    slots: [
+      { x: 60, y: 135, width: 440, height: 300, rotation: -2 },
+      { x: 575, y: 105, width: 440, height: 300, rotation: 2 },
+    ],
+    decorations: [
+      { type: "pin", x: 240.5, y: 113, width: 79, height: 79 },
+      { type: "pin", x: 755.5, y: 83, width: 79, height: 79 },
+    ],
+  },
+  3: {
+    slots: [
+      { x: 45, y: 110, width: 480, height: 340, rotation: -2 },
+      { x: 605, y: 50, width: 390, height: 210, rotation: 2 },
+      { x: 590, y: 325, width: 400, height: 215, rotation: -1 },
+    ],
+    decorations: [
+      { type: "pin", x: 245.5, y: 88, width: 79, height: 79 },
+      { type: "pin", x: 760.5, y: 28, width: 79, height: 79 },
+      { type: "pin", x: 750.5, y: 303, width: 79, height: 79 },
+    ],
+  },
+  4: {
+    slots: [
+      { x: 65, y: 55, width: 430, height: 220, rotation: -2 },
+      { x: 575, y: 65, width: 425, height: 225, rotation: 2 },
+      { x: 70, y: 325, width: 430, height: 220, rotation: 1.5 },
+      { x: 575, y: 330, width: 425, height: 220, rotation: -1.5 },
+    ],
+    decorations: [
+      { type: "pin", x: 240.5, y: 33, width: 79, height: 79 },
+      { type: "pin", x: 748, y: 43, width: 79, height: 79 },
+      { type: "pin", x: 245.5, y: 303, width: 79, height: 79 },
+      { type: "colorSticker", x: 763, y: 308, width: 49, height: 49 },
+    ],
+  },
+  5: {
+    slots: [
+      { x: 45, y: 65, width: 425, height: 250, rotation: -1.5 },
+      { x: 565, y: 50, width: 430, height: 220, rotation: 1.5 },
+      { x: 45, y: 370, width: 300, height: 170, rotation: 2 },
+      { x: 385, y: 340, width: 300, height: 200, rotation: -1 },
+      { x: 735, y: 345, width: 285, height: 190, rotation: 1 },
+    ],
+    decorations: [
+      { type: "pin", x: 218, y: 43, width: 79, height: 79 },
+      { type: "pin", x: 740.5, y: 28, width: 79, height: 79 },
+      { type: "pin", x: 155.5, y: 348, width: 79, height: 79 },
+      { type: "colorSticker", x: 510.5, y: 318, width: 49, height: 49 },
+      { type: "tape", x: 838, y: 323, width: 79, height: 79 },
+    ],
+  },
+  6: {
+    slots: [
+      { x: 45, y: 65, width: 290, height: 205, rotation: -2 },
+      { x: 395, y: 50, width: 290, height: 205, rotation: 1.5 },
+      { x: 740, y: 70, width: 285, height: 200, rotation: -1.5 },
+      { x: 55, y: 350, width: 290, height: 200, rotation: 1.5 },
+      { x: 395, y: 340, width: 290, height: 205, rotation: -2 },
+      { x: 735, y: 355, width: 290, height: 195, rotation: 1.5 },
+    ],
+    decorations: [
+      { type: "pin", x: 150.5, y: 43, width: 79, height: 79 },
+      { type: "pin", x: 500.5, y: 28, width: 79, height: 79 },
+      { type: "pin", x: 843, y: 48, width: 79, height: 79 },
+      { type: "colorSticker", x: 175.5, y: 328, width: 49, height: 49 },
+      { type: "tape", x: 500.5, y: 318, width: 79, height: 79 },
+      { type: "pinkSticker", x: 848, y: 333, width: 64, height: 64 },
+    ],
+  },
+};
 
 const activityReviewStars = [
   { node: "1098", x: 262, y: 293, size: 12.286 },
@@ -172,6 +279,8 @@ function WishBoxActivityReview({
   const reviewContent = activity
     ? { ...ACTIVITY_REVIEW_UNMAPPED_UI_PLACEHOLDER, title: activity.title, time: activity.date }
     : ACTIVITY_REVIEW_UI_FIXTURE;
+  const photos = ACTIVITY_REVIEW_PHOTO_FIXTURE;
+  const photoBoardLayout = PHOTO_BOARD_LAYOUTS[photos.length];
 
   return (
     <section
@@ -424,84 +533,59 @@ function WishBoxActivityReview({
             boxShadow: `inset 0 0 ${toSceneCqw(10.4)} rgba(0, 0, 0, 0.36)`,
           }}
         >
-          {photoPlaceholders.map((photo, index) => (
-            <button
-              key={photo.fixtureId}
-              type="button"
-              data-activity-photo-placeholder={index + 1}
-              data-activity-photo-fixture={photo.fixtureId}
-              aria-label={onOpenPhoto ? `放大示例照片 ${index + 1}` : undefined}
-              aria-hidden={onOpenPhoto ? undefined : true}
-              disabled={!onOpenPhoto}
-              tabIndex={onOpenPhoto ? 0 : -1}
-              onClick={() => onOpenPhoto?.({
-                fixtureId: photo.fixtureId,
-                placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR,
+          {photoBoardLayout ? (
+            <>
+              {photos.map((photo, index) => {
+                const slot = photoBoardLayout.slots[index];
+                return (
+                  <button
+                    key={photo.fixtureId}
+                    type="button"
+                    data-activity-photo-placeholder={index + 1}
+                    data-activity-photo-fixture={photo.fixtureId}
+                    aria-label={onOpenPhoto ? `放大示例照片 ${index + 1}` : undefined}
+                    aria-hidden={onOpenPhoto ? undefined : true}
+                    disabled={!onOpenPhoto}
+                    tabIndex={onOpenPhoto ? 0 : -1}
+                    onClick={() => onOpenPhoto?.(photo)}
+                    className="pointer-events-auto absolute cursor-zoom-in border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#4c392b]"
+                    style={{
+                      left: toSceneCqw(slot.x),
+                      top: toSceneCqw(slot.y),
+                      width: toSceneCqw(slot.width),
+                      height: toSceneCqw(slot.height),
+                      appearance: "none",
+                      backgroundColor: photo.placeholderColor,
+                      borderRadius: 0,
+                      margin: 0,
+                      boxShadow: `${toSceneCqw(7)} ${toSceneCqw(6)} ${toSceneCqw(9.9)} rgba(0, 0, 0, 0.32)`,
+                      transform: `rotate(${slot.rotation}deg)`,
+                      transformOrigin: "top left",
+                    }}
+                  />
+                );
               })}
-              className="pointer-events-auto absolute cursor-zoom-in border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#4c392b]"
-              style={{
-                left: toSceneCqw(photo.x),
-                top: toSceneCqw(photo.y),
-                width: toSceneCqw(photo.width),
-                height: toSceneCqw(photo.height),
-                appearance: "none",
-                backgroundColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR,
-                margin: 0,
-                boxShadow: `${toSceneCqw(7)} ${toSceneCqw(6)} ${toSceneCqw(9.9)} rgba(0, 0, 0, 0.32)`,
-                transform: `rotate(${photo.rotation}deg)`,
-                // These two rotated Figma slots use their top-left as the x/y anchor.
-                transformOrigin: index === 0 || index === 4 ? "top left" : "center center",
-              }}
-            />
-          ))}
-          <img
-            src={photoPinGold}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(795), top: toSceneCqw(261), width: toSceneCqw(79), height: toSceneCqw(79), maxWidth: "none", zIndex: 1 }}
-          />
-          <img
-            src={photoPinGold}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(158), top: toSceneCqw(310), width: toSceneCqw(79), height: toSceneCqw(79), maxWidth: "none", zIndex: 1 }}
-          />
-          <img
-            src={photoPinGold}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(521), top: toSceneCqw(310), width: toSceneCqw(79), height: toSceneCqw(79), maxWidth: "none", zIndex: 1 }}
-          />
-          <img
-            src={photoStickerColorGold}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(897), top: toSceneCqw(37), width: toSceneCqw(49), height: toSceneCqw(49), maxWidth: "none", zIndex: 1 }}
-          />
-          <img
-            src={photoTapeVGold}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(568), top: toSceneCqw(97), width: toSceneCqw(79), height: toSceneCqw(79), maxWidth: "none", zIndex: 1 }}
-          />
-          <img
-            src={photoStickerPink}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="pointer-events-none absolute select-none"
-            style={{ left: toSceneCqw(229), top: toSceneCqw(22), width: toSceneCqw(64), height: toSceneCqw(64), maxWidth: "none", zIndex: 1 }}
-          />
+              {photoBoardLayout.decorations.map((decoration, index) => (
+                <img
+                  key={`${decoration.type}-${index}`}
+                  src={PHOTO_BOARD_DECORATION_ASSETS[decoration.type]}
+                  data-activity-photo-decoration={decoration.type}
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  className="pointer-events-none absolute select-none"
+                  style={{
+                    left: toSceneCqw(decoration.x),
+                    top: toSceneCqw(decoration.y),
+                    width: toSceneCqw(decoration.width),
+                    height: toSceneCqw(decoration.height),
+                    maxWidth: "none",
+                    zIndex: 1,
+                  }}
+                />
+              ))}
+            </>
+          ) : null}
         </div>
 
         {/* These PNGs already contain the final Figma rotation/crop; scene placement remains a local calibration estimate. */}
