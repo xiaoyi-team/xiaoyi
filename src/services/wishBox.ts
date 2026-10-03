@@ -1,5 +1,18 @@
 import { request } from './request'
 
+export type SupportRecordListItem = {
+  id: number
+  title: string
+  // Offset-free Beijing time (UTC+8); preserve the transport string.
+  activity_time: string
+  act_category: string
+  act_kind: string
+  location: string | null
+  content: string | null
+  link: string | null
+  img_url_list?: string[] | null
+}
+
 export type SupportRecordListParams = {
   year?: string
   act_kind?: string
@@ -14,10 +27,10 @@ export function normalizeSupportRecordListParams(params: SupportRecordListParams
   }
 }
 
-export function getSupportRecords(
+export async function getSupportRecords(
   params: SupportRecordListParams = {},
   signal?: AbortSignal,
-): Promise<unknown> {
+): Promise<SupportRecordListItem[]> {
   const normalized = normalizeSupportRecordListParams(params)
   const search = new URLSearchParams()
 
@@ -26,5 +39,11 @@ export function getSupportRecords(
   if (normalized.act_category !== undefined) search.set('act_category', normalized.act_category)
 
   const query = search.toString()
-  return request(`/support_record/list${query ? `?${query}` : ''}`, { signal })
+  const response = await request(`/support_record/list${query ? `?${query}` : ''}`, { signal })
+  if (!Array.isArray(response)) {
+    throw new Error('Invalid support record list response: expected an array')
+  }
+
+  // Only the top-level array is checked; item fields rely on the API contract.
+  return response as SupportRecordListItem[]
 }
