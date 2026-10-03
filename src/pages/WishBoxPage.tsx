@@ -8,9 +8,15 @@ import WishBoxActivityReview, {
 } from "../features/wishBox/WishBoxActivityReview";
 import WishBoxPhotoViewer from "../features/wishBox/WishBoxPhotoViewer";
 import WishBoxHome from "../features/wishBox/WishBoxHome";
-import WishBoxTimeline from "../features/wishBox/WishBoxTimeline";
+import WishBoxTimeline, { type TimelineFilters } from "../features/wishBox/WishBoxTimeline";
 
 type WishBoxView = "home" | "timeline" | "activityReviewPreview" | "photoViewerPreview";
+
+const DEFAULT_TIMELINE_FILTERS: TimelineFilters = {
+  year: "全部",
+  kind: "全部种类",
+  form: "全部",
+};
 
 // DEV / TEMPORARY PREVIEW: open /wish-box?activityReviewPreview=1 for local visual calibration.
 const activityReviewPreviewRequested =
@@ -52,6 +58,7 @@ function WishBoxPage() {
   const [selectedActivity, setSelectedActivity] = useState<ActivityReviewSelectionFixture | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<ActivityReviewPhotoSelectionFixture | null>(null);
   const [timelineScrollLeft, setTimelineScrollLeft] = useState<number | null>(null);
+  const [timelineFilters, setTimelineFilters] = useState<TimelineFilters>(DEFAULT_TIMELINE_FILTERS);
   const sceneRef = useRef<HTMLElement>(null);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
   const wishlandButtonRef = useRef<HTMLButtonElement>(null);
@@ -76,7 +83,12 @@ function WishBoxPage() {
 
   function openTimeline() {
     setTimelineScrollLeft(null);
+    setTimelineFilters(DEFAULT_TIMELINE_FILTERS);
     setCurrentView("timeline");
+  }
+
+  function updateTimelineFilters(updates: Partial<TimelineFilters>) {
+    setTimelineFilters((current) => ({ ...current, ...updates }));
   }
 
   function openActivity(
@@ -162,6 +174,8 @@ function WishBoxPage() {
           ) : (
             <WishBoxTimeline
               initialScrollLeft={timelineScrollLeft}
+              filters={timelineFilters}
+              onFiltersChange={updateTimelineFilters}
               onBack={returnToHome}
               onOpenActivity={openActivity}
             />

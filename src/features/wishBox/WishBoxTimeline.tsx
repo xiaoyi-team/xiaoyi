@@ -44,6 +44,12 @@ type TimelineYearOption = "全部" | "2026" | "2025" | "2024";
 type TimelineKindOption = (typeof TIMELINE_KIND_OPTIONS)[number];
 type TimelineFormOption = "全部" | "线上" | "线下" | "周边制品";
 
+export type TimelineFilters = {
+  year: TimelineYearOption;
+  kind: TimelineKindOption;
+  form: TimelineFormOption;
+};
+
 type TimelinePointerDrag = {
   pointerId: number;
   startClientX: number;
@@ -390,6 +396,8 @@ function TimelineFilterPill({
 type WishBoxTimelineProps = {
   onBack: () => void;
   initialScrollLeft: number | null;
+  filters: TimelineFilters;
+  onFiltersChange: (updates: Partial<TimelineFilters>) => void;
   onOpenActivity: (
     activity: ActivityReviewSelectionFixture,
     timelineScrollLeft: number,
@@ -399,6 +407,8 @@ type WishBoxTimelineProps = {
 function WishBoxTimeline({
   onBack,
   initialScrollLeft,
+  filters,
+  onFiltersChange,
   onOpenActivity,
 }: WishBoxTimelineProps) {
   const backButtonRef = useRef<HTMLButtonElement>(null);
@@ -406,9 +416,7 @@ function WishBoxTimeline({
   const timelineViewportRef = useRef<HTMLDivElement>(null);
   const timelinePointerDragRef = useRef<TimelinePointerDrag | null>(null);
   const suppressedTimelineClickRef = useRef<SuppressedTimelineClick | null>(null);
-  const [selectedYear, setSelectedYear] = useState<TimelineYearOption>("全部");
-  const [selectedKind, setSelectedKind] = useState<TimelineKindOption>("全部种类");
-  const [selectedForm, setSelectedForm] = useState<TimelineFormOption>("全部");
+  const { year: selectedYear, kind: selectedKind, form: selectedForm } = filters;
   const [kindMenuOpen, setKindMenuOpen] = useState(false);
 
   const closeKindMenu = () => {
@@ -817,25 +825,25 @@ function WishBoxTimeline({
           ariaLabel="年份：全部"
           left={98}
           selected={selectedYear === "全部"}
-          onClick={() => setSelectedYear("全部")}
+          onClick={() => onFiltersChange({ year: "全部" })}
         />
         <TimelineFilterPill
           label="2026"
           left={208}
           selected={selectedYear === "2026"}
-          onClick={() => setSelectedYear("2026")}
+          onClick={() => onFiltersChange({ year: "2026" })}
         />
         <TimelineFilterPill
           label="2025"
           left={318}
           selected={selectedYear === "2025"}
-          onClick={() => setSelectedYear("2025")}
+          onClick={() => onFiltersChange({ year: "2025" })}
         />
         <TimelineFilterPill
           label="2024"
           left={428}
           selected={selectedYear === "2024"}
-          onClick={() => setSelectedYear("2024")}
+          onClick={() => onFiltersChange({ year: "2024" })}
         />
 
         <div
@@ -918,7 +926,7 @@ function WishBoxTimeline({
                 key={option}
                 type="button"
                 onClick={() => {
-                  setSelectedKind(option);
+                  onFiltersChange({ kind: option });
                   closeKindMenu();
                 }}
                 aria-pressed={selectedKind === option}
@@ -979,25 +987,25 @@ function WishBoxTimeline({
           ariaLabel="活动分类：全部"
           left={1086}
           selected={selectedForm === "全部"}
-          onClick={() => setSelectedForm("全部")}
+          onClick={() => onFiltersChange({ form: "全部" })}
         />
         <TimelineFilterPill
           label="线上"
           left={1194}
           selected={selectedForm === "线上"}
-          onClick={() => setSelectedForm("线上")}
+          onClick={() => onFiltersChange({ form: "线上" })}
         />
         <TimelineFilterPill
           label="线下"
           left={1302}
           selected={selectedForm === "线下"}
-          onClick={() => setSelectedForm("线下")}
+          onClick={() => onFiltersChange({ form: "线下" })}
         />
         <TimelineFilterPill
           label="周边制品"
           left={1410}
           selected={selectedForm === "周边制品"}
-          onClick={() => setSelectedForm("周边制品")}
+          onClick={() => onFiltersChange({ form: "周边制品" })}
         />
       </div>
 
