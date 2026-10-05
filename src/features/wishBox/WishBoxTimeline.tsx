@@ -7,24 +7,16 @@ import titleOrnamentLeft from "../../assets/wish-box/timeline-title-ornament-lef
 import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-right.png";
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
 import type { ActivityReviewSelectionFixture } from "./WishBoxActivityReview";
-import TimelineCard, { CARD_WIDTH } from "./TimelineCard";
-import type { TimelineActivityFixture } from "./TimelineCard";
+import TimelineCard from "./TimelineCard";
+import {
+  deriveTimelinePresentation,
+  getTimelineSlotX,
+  MONTH_LABEL_HEIGHT,
+  type TimelineActivityFixture,
+  type TimelineGlowMarkerPresentation,
+  type TimelineMonthLabelPresentation,
+} from "./timelinePresentation";
 
-type TimelineMarkerFixture = {
-  slotIndex: number;
-  text: string;
-  y: number;
-  width: number;
-  height: number;
-  textWidth: number;
-};
-
-type TimelineGlowMarkerFixture = {
-  slotIndex: number;
-  lineDirection: "up" | "down";
-};
-
-const SLOT_SPACING = 215;
 const DRAG_THRESHOLD_PX = 5;
 const PATH_HEIGHT = 670;
 const VINE_Y = 198;
@@ -62,161 +54,97 @@ type SuppressedTimelineClick = {
 };
 
 // Stable UI-only fixture IDs, not backend IDs or a business item limit.
-const TIMELINE_ACTIVITY_FIXTURE: TimelineActivityFixture[] = [
+const TIMELINE_ACTIVITY_FIXTURE: readonly TimelineActivityFixture[] = [
   {
     fixtureId: "timeline-snow-letter",
     title: "雪落时的来信",
-    date: "2024.12.20 – 2025.01.05",
-    variant: "rose",
-    cardY: 28,
+    startDate: { year: 2024, month: 12, day: 20 },
+    endDate: { year: 2025, month: 1, day: 5 },
   },
   {
     fixtureId: "timeline-birthday-promise",
     title: "生日里的约定",
-    date: "2025.11.23 – 2025.12.07",
-    variant: "rose",
-    cardY: 378,
+    startDate: { year: 2025, month: 11, day: 23 },
+    endDate: { year: 2025, month: 12, day: 7 },
   },
   {
     fixtureId: "timeline-winter-together",
     title: "冬日共赴",
-    date: "2025.12.12 – 2026.01.02",
-    variant: "rose",
-    cardY: 28,
+    startDate: { year: 2025, month: 12, day: 12 },
+    endDate: { year: 2026, month: 1, day: 2 },
   },
   {
     fixtureId: "timeline-new-year",
     title: "新岁与你",
-    date: "2026.01.01 – 2026.01.18",
-    variant: "iris",
-    cardY: 378,
+    startDate: { year: 2026, month: 1, day: 1 },
+    endDate: { year: 2026, month: 1, day: 18 },
   },
   {
     fixtureId: "timeline-heart-letter",
     title: "心动来信",
-    date: "2026.02.14 – 2026.03.01",
-    variant: "rose",
-    cardY: 28,
+    startDate: { year: 2026, month: 2, day: 14 },
+    endDate: { year: 2026, month: 3, day: 1 },
   },
   {
     fixtureId: "timeline-spring-walk",
     title: "春日漫游",
-    date: "2026.03.18 – 2026.04.08",
-    variant: "rose",
-    cardY: 378,
+    startDate: { year: 2026, month: 3, day: 18 },
+    endDate: { year: 2026, month: 4, day: 8 },
   },
   {
     fixtureId: "timeline-floral-prelude",
     title: "花间序曲",
-    date: "2026.04.20 – 2026.05.10",
-    variant: "rose",
-    cardY: 28,
+    startDate: { year: 2026, month: 4, day: 20 },
+    endDate: { year: 2026, month: 5, day: 10 },
   },
   {
     fixtureId: "timeline-fifth-season",
     title: "与你的第五季",
-    date: "2026.05.20 – 2026.06.15",
-    variant: "rose",
-    cardY: 414,
+    startDate: { year: 2026, month: 5, day: 20 },
+    endDate: { year: 2026, month: 6, day: 15 },
   },
   {
     fixtureId: "timeline-summer-breeze",
     title: "夏日的风",
-    date: "2026.06.21 – 2026.07.12",
-    variant: "rose",
-    cardY: 28,
+    startDate: { year: 2026, month: 6, day: 21 },
+    endDate: { year: 2026, month: 7, day: 12 },
   },
   {
     fixtureId: "timeline-starlight-photo",
     title: "星光留影",
-    date: "2026.07.18 – 2026.08.08",
-    variant: "rose",
-    cardY: 378,
+    startDate: { year: 2026, month: 7, day: 18 },
+    endDate: { year: 2026, month: 8, day: 8 },
   },
   {
     fixtureId: "timeline-qixi-letter",
     title: "七夕花笺",
-    date: "2026.08.19 – 2026.09.02",
-    variant: "iris",
-    cardY: 28,
+    startDate: { year: 2026, month: 8, day: 19 },
+    endDate: { year: 2026, month: 9, day: 2 },
   },
   {
     fixtureId: "timeline-iris-bloom",
     title: "鸢尾盛放之时",
-    date: "2026.09.01 – 2026.09.28",
-    variant: "iris",
-    cardY: 414,
+    startDate: { year: 2026, month: 9, day: 1 },
+    endDate: { year: 2026, month: 9, day: 28 },
   },
 ];
 
-const TIMELINE_MARKERS: TimelineMarkerFixture[] = [
-  { slotIndex: 0, text: "2025", y: 266, width: 99, height: 38, textWidth: 37 },
-  {
-    slotIndex: 4,
-    text: "2026·02",
-    y: 266,
-    width: 122,
-    height: 36,
-    textWidth: 60,
-  },
-  {
-    slotIndex: 7,
-    text: "2026·04",
-    y: 378,
-    width: 122,
-    height: 36,
-    textWidth: 60,
-  },
-  {
-    slotIndex: 8,
-    text: "2026·06",
-    y: 266,
-    width: 122,
-    height: 36,
-    textWidth: 60,
-  },
-  {
-    slotIndex: 11,
-    text: "2026·09",
-    y: 378,
-    width: 122,
-    height: 36,
-    textWidth: 60,
-  },
-];
-
-const TIMELINE_GLOW_MARKERS: TimelineGlowMarkerFixture[] = [
-  { slotIndex: 0, lineDirection: "up" },
-  { slotIndex: 1, lineDirection: "down" },
-  { slotIndex: 2, lineDirection: "up" },
-  { slotIndex: 3, lineDirection: "down" },
-  { slotIndex: 4, lineDirection: "up" },
-  { slotIndex: 5, lineDirection: "down" },
-  { slotIndex: 6, lineDirection: "up" },
-  { slotIndex: 7, lineDirection: "down" },
-  { slotIndex: 8, lineDirection: "up" },
-  { slotIndex: 9, lineDirection: "down" },
-  { slotIndex: 10, lineDirection: "up" },
-  { slotIndex: 11, lineDirection: "down" },
-];
+const TIMELINE_PRESENTATION = deriveTimelinePresentation(TIMELINE_ACTIVITY_FIXTURE);
 
 const toSceneCqw = (designPixels: number) =>
   `${(designPixels / 19.2).toFixed(7)}cqw`;
 
-const getPathWidth = (itemCount: number) =>
-  itemCount > 0 ? (itemCount - 1) * SLOT_SPACING + CARD_WIDTH : 0;
-
-function TimelineMarker({ marker }: { marker: TimelineMarkerFixture }) {
+function TimelineMarker({ marker }: { marker: TimelineMonthLabelPresentation }) {
   return (
     <div
       aria-hidden="true"
       data-timeline-marker={marker.text}
       className="pointer-events-none absolute flex items-center justify-center"
       style={{
-        left: toSceneCqw(marker.slotIndex * SLOT_SPACING),
+        left: toSceneCqw(getTimelineSlotX(marker.slotIndex)),
         top: toSceneCqw(marker.y),
-        width: toSceneCqw(marker.width),
-        height: toSceneCqw(marker.height),
+        width: toSceneCqw(122),
+        height: toSceneCqw(MONTH_LABEL_HEIGHT),
         boxSizing: "border-box",
         padding: `${toSceneCqw(6)} ${toSceneCqw(30)}`,
         border: `${toSceneCqw(1)} solid #F3DDB0`,
@@ -235,7 +163,7 @@ function TimelineMarker({ marker }: { marker: TimelineMarkerFixture }) {
       <span
         style={{
           display: "block",
-          width: toSceneCqw(marker.textWidth),
+          width: toSceneCqw(60),
           height: toSceneCqw(24),
           lineHeight: toSceneCqw(24),
         }}
@@ -246,7 +174,7 @@ function TimelineMarker({ marker }: { marker: TimelineMarkerFixture }) {
   );
 }
 
-function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerFixture }) {
+function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerPresentation }) {
   const filterId = `timeline-gold-glow-filter-${marker.slotIndex}`;
   const clipId = `timeline-gold-glow-clip-${marker.slotIndex}`;
   const lineStartY = marker.lineDirection === "up" ? 39 : 104;
@@ -258,7 +186,7 @@ function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerFixture }) {
       data-timeline-gold-glow={marker.slotIndex}
       className="pointer-events-none absolute"
       style={{
-        left: toSceneCqw(marker.slotIndex * SLOT_SPACING + 159),
+        left: toSceneCqw(getTimelineSlotX(marker.slotIndex) + 159),
         top: toSceneCqw(276),
         width: toSceneCqw(32),
         height: toSceneCqw(96),
@@ -660,7 +588,7 @@ function WishBoxTimeline({
           data-timeline-path
           className="pointer-events-none absolute left-0 top-0"
           style={{
-            width: toSceneCqw(getPathWidth(TIMELINE_ACTIVITY_FIXTURE.length)),
+            width: toSceneCqw(TIMELINE_PRESENTATION.pathWidth),
             height: toSceneCqw(PATH_HEIGHT),
           }}
         >
@@ -676,20 +604,22 @@ function WishBoxTimeline({
               backgroundSize: "45cqw 15cqw",
             }}
           />
-          {TIMELINE_ACTIVITY_FIXTURE.map((activity, slotIndex) => (
+          {TIMELINE_PRESENTATION.cards.map((card) => (
             <TimelineCard
-              key={activity.fixtureId}
-              activity={activity}
-              slotIndex={slotIndex}
-              slotLeft={toSceneCqw(slotIndex * SLOT_SPACING)}
+              key={card.activity.fixtureId}
+              activity={card.activity}
+              variant={card.variant}
+              cardY={card.cardY}
+              slotIndex={card.slotIndex}
+              slotLeft={toSceneCqw(getTimelineSlotX(card.slotIndex))}
               onOpenActivity={openActivity}
             />
           ))}
-          {TIMELINE_MARKERS.map((marker) => (
-            <TimelineMarker key={marker.slotIndex} marker={marker} />
+          {TIMELINE_PRESENTATION.monthLabels.map((marker) => (
+            <TimelineMarker key={marker.monthKey} marker={marker} />
           ))}
-          {TIMELINE_GLOW_MARKERS.map((marker) => (
-            <TimelineGlowMarker key={marker.slotIndex} marker={marker} />
+          {TIMELINE_PRESENTATION.glowMarkers.map((marker) => (
+            <TimelineGlowMarker key={marker.fixtureId} marker={marker} />
           ))}
         </div>
       </div>

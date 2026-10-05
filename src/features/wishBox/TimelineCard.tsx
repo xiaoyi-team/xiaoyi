@@ -2,13 +2,7 @@ import { useState } from "react";
 import irisCardFrame from "../../assets/wish-box/timeline-card-frame-iris.png";
 import roseCardFrame from "../../assets/wish-box/timeline-card-frame-rose.png";
 import type { ActivityReviewSelectionFixture } from "./WishBoxActivityReview";
-
-type TimelineCardVariant = "rose" | "iris";
-
-export type TimelineActivityFixture = ActivityReviewSelectionFixture & {
-  variant: TimelineCardVariant;
-  cardY: number;
-};
+import { CARD_WIDTH, type TimelineCardVariant } from "./timelinePresentation";
 
 type TimelineCardLayout = {
   photo: { x: number; y: number; width: number; height: number };
@@ -23,7 +17,6 @@ type TimelineCardLayout = {
   date: { x: number; y: number; width: number; height: number };
 };
 
-export const CARD_WIDTH = 350;
 const CARD_HOVER_WIDTH = 358;
 const CARD_VISUAL_HEIGHT = 225;
 const CARD_HEIGHT = 238;
@@ -60,25 +53,29 @@ const toSceneCqw = (designPixels: number) =>
 
 function TimelineCard({
   activity,
+  variant,
+  cardY,
   slotIndex,
   slotLeft,
   onOpenActivity,
 }: {
-  activity: TimelineActivityFixture;
+  activity: ActivityReviewSelectionFixture;
+  variant: TimelineCardVariant;
+  cardY: number;
   slotIndex: number;
   slotLeft: string;
   onOpenActivity: (activity: ActivityReviewSelectionFixture) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const layout = TIMELINE_CARD_LAYOUTS[activity.variant];
+  const layout = TIMELINE_CARD_LAYOUTS[variant];
   return (
     <div
-      data-timeline-card={activity.variant}
+      data-timeline-card={variant}
       data-timeline-slot-index={slotIndex}
       className="pointer-events-none absolute"
       style={{
         left: slotLeft,
-        top: toSceneCqw(activity.cardY),
+        top: toSceneCqw(cardY),
         width: toSceneCqw(isHovered ? CARD_HOVER_WIDTH : CARD_WIDTH),
         height: toSceneCqw(CARD_HEIGHT),
         borderRadius: toSceneCqw(8),
