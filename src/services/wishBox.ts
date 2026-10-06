@@ -5,11 +5,14 @@ export type SupportRecordListItem = {
   title: string
   // Offset-free Beijing time (UTC+8); preserve the transport string.
   activity_time: string
+  start_time: string | null
+  end_time: string | null
   act_category: string
   act_kind: string
   location: string | null
   content: string | null
   link: string | null
+  cover_thumbnail_url: string | null
   img_url_list?: string[] | null
 }
 
