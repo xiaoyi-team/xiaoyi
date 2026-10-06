@@ -45,6 +45,7 @@ export type TimelinePresentation = {
 export const CARD_WIDTH = 350;
 export const MONTH_LABEL_HEIGHT = 36;
 const SLOT_SPACING = 215;
+const CARD_VARIANT_PATTERN = ["rose", "iris", "iris", "rose"] as const;
 
 export const getTimelineSlotX = (slotIndex: number) => slotIndex * SLOT_SPACING;
 
@@ -104,7 +105,7 @@ export function deriveTimelinePresentation(
         { cause: error },
       );
     }
-    const variant: TimelineCardVariant = slotIndex % 2 === 0 ? "rose" : "iris";
+    const variant: TimelineCardVariant = CARD_VARIANT_PATTERN[slotIndex % CARD_VARIANT_PATTERN.length];
     const direction: TimelineDirection = slotIndex % 2 === 0 ? "up" : "down";
     const month = String(fixture.startDate.month).padStart(2, "0");
     const monthKey = `${fixture.startDate.year}-${month}`;
