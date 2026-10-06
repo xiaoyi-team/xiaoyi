@@ -16,6 +16,35 @@ export type SupportRecordListItem = {
   img_url_list?: string[] | null
 }
 
+export type PhotoItem = {
+  img_key: string
+  img_url: string
+  thumbnail_url: string
+  pos_x: number
+  pos_y: number
+  width: number
+  height: number
+  rotate: number
+  z_index: number
+}
+
+export type SupportRecordDetail = {
+  id: number
+  title: string
+  activity_time: string
+  start_time: string | null
+  end_time: string | null
+  act_category: string
+  act_kind: string
+  location: string | null
+  content: string | null
+  link: string | null
+  cover_img: PhotoItem | null
+  photo_board: PhotoItem[] | null
+  created_at: string
+  updated_at: string | null
+}
+
 export type SupportRecordListParams = {
   year?: string
   act_kind?: string
@@ -49,4 +78,17 @@ export async function getSupportRecords(
 
   // Only the top-level array is checked; item fields rely on the API contract.
   return response as SupportRecordListItem[]
+}
+
+export async function getSupportRecordDetail(
+  recordId: number,
+  signal?: AbortSignal,
+): Promise<SupportRecordDetail> {
+  const response = await request(`/support_record/${recordId}`, { signal })
+  if (typeof response !== 'object' || response === null || Array.isArray(response)) {
+    throw new Error('Invalid support record detail response: expected an object')
+  }
+
+  // Only the top-level object is checked; fields rely on the API contract.
+  return response as SupportRecordDetail
 }
