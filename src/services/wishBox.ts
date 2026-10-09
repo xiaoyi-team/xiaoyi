@@ -3,46 +3,37 @@ import { request } from './request'
 export type SupportRecordListItem = {
   id: number
   title: string
-  // Offset-free Beijing time (UTC+8); preserve the transport string.
-  activity_time: string
-  start_time: string | null
-  end_time: string | null
+  start_time: string
+  end_time: string
   act_category: string
   act_kind: string
   location: string | null
   content: string | null
   link: string | null
   cover_thumbnail_url: string | null
-  img_url_list?: string[] | null
+  content_photo_list: Record<string, unknown>[]
+  template_type: string
 }
 
 export type PhotoItem = {
   img_key: string
   img_url: string
   thumbnail_url: string
-  pos_x: number
-  pos_y: number
-  width: number
-  height: number
-  rotate: number
-  z_index: number
 }
 
 export type SupportRecordDetail = {
   id: number
   title: string
-  activity_time: string
-  start_time: string | null
-  end_time: string | null
+  start_time: string
+  end_time: string
   act_category: string
   act_kind: string
   location: string | null
   content: string | null
   link: string | null
   cover_img: PhotoItem | null
-  photo_board: PhotoItem[] | null
-  created_at: string
-  updated_at: string | null
+  content_photo_list: Record<string, unknown>[]
+  template_type: string
 }
 
 export type SupportRecordListParams = {
