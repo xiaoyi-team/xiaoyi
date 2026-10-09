@@ -1,7 +1,7 @@
 import { useState } from "react";
 import irisCardFrame from "../../assets/wish-box/timeline-card-frame-iris.png";
 import roseCardFrame from "../../assets/wish-box/timeline-card-frame-rose.png";
-import type { ActivityReviewSelectionFixture } from "./WishBoxActivityReview";
+import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import { CARD_WIDTH, type TimelineCardVariant } from "./timelinePresentation";
 
 type TimelineCardLayout = {
@@ -53,18 +53,20 @@ const toSceneCqw = (designPixels: number) =>
 
 function TimelineCard({
   activity,
+  coverThumbnailUrl,
   variant,
   cardY,
   slotIndex,
   slotLeft,
   onOpenActivity,
 }: {
-  activity: ActivityReviewSelectionFixture;
+  activity: ActivityReviewSelection;
+  coverThumbnailUrl: string | null;
   variant: TimelineCardVariant;
   cardY: number;
   slotIndex: number;
   slotLeft: string;
-  onOpenActivity: (activity: ActivityReviewSelectionFixture) => void;
+  onOpenActivity: (activity: ActivityReviewSelection) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const layout = TIMELINE_CARD_LAYOUTS[variant];
@@ -120,7 +122,19 @@ function TimelineCard({
             height: toSceneCqw(layout.photo.height),
             backgroundColor: "#E6E1D7",
           }}
-        />
+        >
+          {coverThumbnailUrl ? (
+            <img
+              key={coverThumbnailUrl}
+              src={coverThumbnailUrl}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              className="pointer-events-none h-full w-full select-none object-cover"
+              onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
+            />
+          ) : null}
+        </div>
         <img
           src={layout.frame.src}
           alt=""
@@ -172,12 +186,12 @@ function TimelineCard({
       </div>
       <button
         type="button"
-        data-timeline-activity-fixture={activity.fixtureId}
+        data-timeline-record-id={activity.recordId}
         aria-label={`查看活动回顾：${activity.title}（${activity.date}）`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => onOpenActivity({
-          fixtureId: activity.fixtureId,
+          recordId: activity.recordId,
           title: activity.title,
           date: activity.date,
         })}

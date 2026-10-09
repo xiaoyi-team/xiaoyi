@@ -1,22 +1,18 @@
-// UI fixture dates only; these names do not define backend wire fields.
+import type { TimelineRecord } from "./timelineData";
+
+// UI calendar dates; these names do not define backend wire fields.
 export type TimelineDateParts = {
   year: number;
   month: number;
   day: number;
 };
 
-export type TimelineActivityFixture = {
-  fixtureId: string;
-  title: string;
-  startDate: TimelineDateParts;
-  endDate: TimelineDateParts;
-};
-
 export type TimelineCardVariant = "rose" | "iris";
 type TimelineDirection = "up" | "down";
 
 export type TimelineCardPresentation = {
-  activity: { fixtureId: string; title: string; date: string };
+  activity: { recordId: number; title: string; date: string };
+  coverThumbnailUrl: string | null;
   slotIndex: number;
   variant: TimelineCardVariant;
   cardY: number;
@@ -30,7 +26,7 @@ export type TimelineMonthLabelPresentation = {
 };
 
 export type TimelineGlowMarkerPresentation = {
-  fixtureId: string;
+  recordId: number;
   slotIndex: number;
   lineDirection: TimelineDirection;
 };
@@ -87,28 +83,28 @@ export function formatTimelineDateRange(start: TimelineDateParts, end: TimelineD
 }
 
 export function deriveTimelinePresentation(
-  fixtures: readonly TimelineActivityFixture[],
+  records: readonly TimelineRecord[],
 ): TimelinePresentation {
   const cards: TimelineCardPresentation[] = [];
   const monthLabels: TimelineMonthLabelPresentation[] = [];
   const glowMarkers: TimelineGlowMarkerPresentation[] = [];
   const seenMonths = new Set<string>();
 
-  fixtures.forEach((fixture, slotIndex) => {
+  records.forEach((record, slotIndex) => {
     let date: string;
     try {
-      date = formatTimelineDateRange(fixture.startDate, fixture.endDate);
+      date = formatTimelineDateRange(record.startDate, record.endDate);
     } catch (error) {
       if (!(error instanceof Error)) throw error;
       throw new Error(
-        `Timeline fixture "${fixture.fixtureId}" at slot ${slotIndex}: ${error.message}`,
+        `Timeline recordId ${record.recordId} at slot ${slotIndex}: ${error.message}`,
         { cause: error },
       );
     }
     const variant: TimelineCardVariant = CARD_VARIANT_PATTERN[slotIndex % CARD_VARIANT_PATTERN.length];
     const direction: TimelineDirection = slotIndex % 2 === 0 ? "up" : "down";
-    const month = String(fixture.startDate.month).padStart(2, "0");
-    const monthKey = `${fixture.startDate.year}-${month}`;
+    const month = String(record.startDate.month).padStart(2, "0");
+    const monthKey = `${record.startDate.year}-${month}`;
     const isMonthFirst = !seenMonths.has(monthKey);
 
     if (isMonthFirst) {
@@ -116,24 +112,25 @@ export function deriveTimelinePresentation(
       monthLabels.push({
         monthKey,
         slotIndex,
-        text: `${fixture.startDate.year}·${month}`,
+        text: `${record.startDate.year}·${month}`,
         y: direction === "up" ? 266 : 378,
       });
     }
 
     cards.push({
-      activity: { fixtureId: fixture.fixtureId, title: fixture.title, date },
+      activity: { recordId: record.recordId, title: record.title, date },
+      coverThumbnailUrl: record.coverThumbnailUrl,
       slotIndex,
       variant,
       cardY: direction === "up" ? 28 : 378 + (isMonthFirst ? MONTH_LABEL_HEIGHT : 0),
     });
-    glowMarkers.push({ fixtureId: fixture.fixtureId, slotIndex, lineDirection: direction });
+    glowMarkers.push({ recordId: record.recordId, slotIndex, lineDirection: direction });
   });
 
   return {
     cards,
     monthLabels,
     glowMarkers,
-    pathWidth: fixtures.length > 0 ? getTimelineSlotX(fixtures.length - 1) + CARD_WIDTH : 0,
+    pathWidth: records.length > 0 ? getTimelineSlotX(records.length - 1) + CARD_WIDTH : 0,
   };
 }

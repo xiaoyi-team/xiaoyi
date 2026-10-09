@@ -1,14 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AnnouncementView, {
   type AnnouncementDisplayFixture,
 } from "../features/wishBox/AnnouncementView";
 import WishBoxActivityReview, {
   type ActivityReviewPhotoSelectionFixture,
-  type ActivityReviewSelectionFixture,
+  type ActivityReviewSelection,
 } from "../features/wishBox/WishBoxActivityReview";
 import WishBoxPhotoViewer from "../features/wishBox/WishBoxPhotoViewer";
 import WishBoxHome from "../features/wishBox/WishBoxHome";
-import WishBoxTimeline, { type TimelineFilters } from "../features/wishBox/WishBoxTimeline";
+import WishBoxTimeline, {
+  type TimelineFilters,
+  type TimelineScrollIntent,
+  type TimelineScrollSnapshot,
+} from "../features/wishBox/WishBoxTimeline";
 
 type WishBoxView = "home" | "timeline" | "activityReviewPreview" | "photoViewerPreview";
 
@@ -17,6 +21,9 @@ const DEFAULT_TIMELINE_FILTERS: TimelineFilters = {
   kind: "全部种类",
   form: "全部",
 };
+
+const getTimelineFilterKey = ({ year, kind, form }: TimelineFilters) =>
+  JSON.stringify([year, kind, form]);
 
 // DEV / TEMPORARY PREVIEW: open /wish-box?activityReviewPreview=1 for local visual calibration.
 const activityReviewPreviewRequested =
@@ -55,14 +62,26 @@ function WishBoxPage() {
     return "home";
   });
   const [announcementOpen, setAnnouncementOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<ActivityReviewSelectionFixture | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityReviewSelection | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<ActivityReviewPhotoSelectionFixture | null>(null);
-  const [timelineScrollLeft, setTimelineScrollLeft] = useState<number | null>(null);
   const [timelineFilters, setTimelineFilters] = useState<TimelineFilters>(DEFAULT_TIMELINE_FILTERS);
+  const [timelineScrollIntent, setTimelineScrollIntent] = useState<TimelineScrollIntent | null>(null);
+  const timelineScrollSnapshotRef = useRef<TimelineScrollSnapshot | null>(null);
+  const timelineScrollIntentIdRef = useRef(0);
+  const timelineFilterKey = getTimelineFilterKey(timelineFilters);
   const sceneRef = useRef<HTMLElement>(null);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
   const wishlandButtonRef = useRef<HTMLButtonElement>(null);
   const restoreWishlandFocusRef = useRef(false);
+
+  const saveTimelineScrollSnapshot = useCallback((snapshot: TimelineScrollSnapshot) => {
+    if (snapshot.filterKey !== timelineFilterKey || !Number.isFinite(snapshot.scrollLeft)) return;
+    timelineScrollSnapshotRef.current = { ...snapshot, scrollLeft: Math.max(0, snapshot.scrollLeft) };
+  }, [timelineFilterKey]);
+
+  const settleTimelineScrollIntent = useCallback((id: number) => {
+    setTimelineScrollIntent((current) => current?.id === id ? null : current);
+  }, []);
 
   useEffect(() => {
     if (currentView === "home" && restoreWishlandFocusRef.current) {
@@ -77,30 +96,50 @@ function WishBoxPage() {
   }
 
   function returnToHome() {
+    setTimelineScrollIntent(null);
+    timelineScrollSnapshotRef.current = null;
     restoreWishlandFocusRef.current = true;
     setCurrentView("home");
   }
 
   function openTimeline() {
-    setTimelineScrollLeft(null);
+    timelineScrollSnapshotRef.current = null;
     setTimelineFilters(DEFAULT_TIMELINE_FILTERS);
+    createLatestTimelineIntent(getTimelineFilterKey(DEFAULT_TIMELINE_FILTERS));
     setCurrentView("timeline");
   }
 
   function updateTimelineFilters(updates: Partial<TimelineFilters>) {
-    setTimelineFilters((current) => ({ ...current, ...updates }));
+    const nextFilters = { ...timelineFilters, ...updates };
+    const nextFilterKey = getTimelineFilterKey(nextFilters);
+    if (nextFilterKey === timelineFilterKey) return;
+
+    timelineScrollSnapshotRef.current = null;
+    setTimelineFilters(nextFilters);
+    createLatestTimelineIntent(nextFilterKey);
+  }
+
+  function createLatestTimelineIntent(filterKey: string) {
+    setTimelineScrollIntent({
+      id: ++timelineScrollIntentIdRef.current,
+      kind: "latest",
+      filterKey,
+    });
   }
 
   function openActivity(
-    activity: ActivityReviewSelectionFixture,
-    currentTimelineScrollLeft: number,
+    activity: ActivityReviewSelection,
+    snapshot: TimelineScrollSnapshot,
   ) {
-    setTimelineScrollLeft(currentTimelineScrollLeft);
+    if (snapshot.filterKey !== timelineFilterKey || !Number.isFinite(snapshot.scrollLeft)) return;
+    saveTimelineScrollSnapshot(snapshot);
+    setTimelineScrollIntent(null);
     setSelectedActivity(activity);
     setSelectedPhoto(null);
   }
 
   function openPhoto(photo: ActivityReviewPhotoSelectionFixture) {
+    if (!import.meta.env.DEV || currentView !== "activityReviewPreview") return;
     setSelectedPhoto(photo);
   }
 
@@ -122,6 +161,11 @@ function WishBoxPage() {
   }
 
   function returnToTimeline() {
+    const snapshot = timelineScrollSnapshotRef.current;
+    const id = ++timelineScrollIntentIdRef.current;
+    setTimelineScrollIntent(snapshot?.filterKey === timelineFilterKey
+      ? { id, kind: "restore", filterKey: timelineFilterKey, scrollLeft: snapshot.scrollLeft }
+      : { id, kind: "latest", filterKey: timelineFilterKey });
     setSelectedActivity(null);
     setSelectedPhoto(null);
     setCurrentView("timeline");
@@ -167,13 +211,14 @@ function WishBoxPage() {
             ) : (
               <WishBoxActivityReview
                 activity={selectedActivity}
-                onOpenPhoto={openPhoto}
                 onBack={returnToTimeline}
               />
             )
           ) : (
             <WishBoxTimeline
-              initialScrollLeft={timelineScrollLeft}
+              scrollIntent={timelineScrollIntent}
+              onScrollIntentSettled={settleTimelineScrollIntent}
+              onScrollSnapshot={saveTimelineScrollSnapshot}
               filters={timelineFilters}
               onFiltersChange={updateTimelineFilters}
               onBack={returnToHome}

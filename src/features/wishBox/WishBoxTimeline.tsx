@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import edgeDecoration from "../../assets/wish-box/timeline-edge-decoration.png";
@@ -6,13 +6,15 @@ import gardenBackground from "../../assets/wish-box/timeline-garden-background.p
 import titleOrnamentLeft from "../../assets/wish-box/timeline-title-ornament-left.png";
 import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-right.png";
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
-import type { ActivityReviewSelectionFixture } from "./WishBoxActivityReview";
+import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import TimelineCard from "./TimelineCard";
+import { useSupportRecords } from "./hooks/useSupportRecords";
+import { mapSupportRecordsToTimeline } from "./timelineData";
 import {
   deriveTimelinePresentation,
   getTimelineSlotX,
   MONTH_LABEL_HEIGHT,
-  type TimelineActivityFixture,
+  type TimelinePresentation,
   type TimelineGlowMarkerPresentation,
   type TimelineMonthLabelPresentation,
 } from "./timelinePresentation";
@@ -42,6 +44,21 @@ export type TimelineFilters = {
   form: TimelineFormOption;
 };
 
+// Browsing intent identity is separate from the server-state Query key.
+export type TimelineScrollIntent =
+  | { id: number; kind: "latest"; filterKey: string }
+  | { id: number; kind: "restore"; filterKey: string; scrollLeft: number };
+
+export type TimelineScrollSnapshot = {
+  filterKey: string;
+  scrollLeft: number;
+};
+
+type TimelineMappingResult =
+  | { status: "pending" }
+  | { status: "success"; presentation: TimelinePresentation }
+  | { status: "error"; error: unknown };
+
 type TimelinePointerDrag = {
   pointerId: number;
   startClientX: number;
@@ -53,83 +70,6 @@ type SuppressedTimelineClick = {
   pointerId: number;
 };
 
-// Stable UI-only fixture IDs, not backend IDs or a business item limit.
-const TIMELINE_ACTIVITY_FIXTURE: readonly TimelineActivityFixture[] = [
-  {
-    fixtureId: "timeline-snow-letter",
-    title: "雪落时的来信",
-    startDate: { year: 2024, month: 12, day: 20 },
-    endDate: { year: 2025, month: 1, day: 5 },
-  },
-  {
-    fixtureId: "timeline-birthday-promise",
-    title: "生日里的约定",
-    startDate: { year: 2025, month: 11, day: 23 },
-    endDate: { year: 2025, month: 12, day: 7 },
-  },
-  {
-    fixtureId: "timeline-winter-together",
-    title: "冬日共赴",
-    startDate: { year: 2025, month: 12, day: 12 },
-    endDate: { year: 2026, month: 1, day: 2 },
-  },
-  {
-    fixtureId: "timeline-new-year",
-    title: "新岁与你",
-    startDate: { year: 2026, month: 1, day: 1 },
-    endDate: { year: 2026, month: 1, day: 18 },
-  },
-  {
-    fixtureId: "timeline-heart-letter",
-    title: "心动来信",
-    startDate: { year: 2026, month: 2, day: 14 },
-    endDate: { year: 2026, month: 3, day: 1 },
-  },
-  {
-    fixtureId: "timeline-spring-walk",
-    title: "春日漫游",
-    startDate: { year: 2026, month: 3, day: 18 },
-    endDate: { year: 2026, month: 4, day: 8 },
-  },
-  {
-    fixtureId: "timeline-floral-prelude",
-    title: "花间序曲",
-    startDate: { year: 2026, month: 4, day: 20 },
-    endDate: { year: 2026, month: 5, day: 10 },
-  },
-  {
-    fixtureId: "timeline-fifth-season",
-    title: "与你的第五季",
-    startDate: { year: 2026, month: 5, day: 20 },
-    endDate: { year: 2026, month: 6, day: 15 },
-  },
-  {
-    fixtureId: "timeline-summer-breeze",
-    title: "夏日的风",
-    startDate: { year: 2026, month: 6, day: 21 },
-    endDate: { year: 2026, month: 7, day: 12 },
-  },
-  {
-    fixtureId: "timeline-starlight-photo",
-    title: "星光留影",
-    startDate: { year: 2026, month: 7, day: 18 },
-    endDate: { year: 2026, month: 8, day: 8 },
-  },
-  {
-    fixtureId: "timeline-qixi-letter",
-    title: "七夕花笺",
-    startDate: { year: 2026, month: 8, day: 19 },
-    endDate: { year: 2026, month: 9, day: 2 },
-  },
-  {
-    fixtureId: "timeline-iris-bloom",
-    title: "鸢尾盛放之时",
-    startDate: { year: 2026, month: 9, day: 1 },
-    endDate: { year: 2026, month: 9, day: 28 },
-  },
-];
-
-const TIMELINE_PRESENTATION = deriveTimelinePresentation(TIMELINE_ACTIVITY_FIXTURE);
 
 const toSceneCqw = (designPixels: number) =>
   `${(designPixels / 19.2).toFixed(7)}cqw`;
@@ -323,18 +263,22 @@ function TimelineFilterPill({
 
 type WishBoxTimelineProps = {
   onBack: () => void;
-  initialScrollLeft: number | null;
+  scrollIntent: TimelineScrollIntent | null;
+  onScrollIntentSettled: (id: number) => void;
+  onScrollSnapshot: (snapshot: TimelineScrollSnapshot) => void;
   filters: TimelineFilters;
   onFiltersChange: (updates: Partial<TimelineFilters>) => void;
   onOpenActivity: (
-    activity: ActivityReviewSelectionFixture,
-    timelineScrollLeft: number,
+    activity: ActivityReviewSelection,
+    snapshot: TimelineScrollSnapshot,
   ) => void;
 };
 
 function WishBoxTimeline({
   onBack,
-  initialScrollLeft,
+  scrollIntent,
+  onScrollIntentSettled,
+  onScrollSnapshot,
   filters,
   onFiltersChange,
   onOpenActivity,
@@ -344,8 +288,41 @@ function WishBoxTimeline({
   const timelineViewportRef = useRef<HTMLDivElement>(null);
   const timelinePointerDragRef = useRef<TimelinePointerDrag | null>(null);
   const suppressedTimelineClickRef = useRef<SuppressedTimelineClick | null>(null);
+  const settledScrollIntentIdRef = useRef(0);
   const { year: selectedYear, kind: selectedKind, form: selectedForm } = filters;
   const [kindMenuOpen, setKindMenuOpen] = useState(false);
+  const filterKey = JSON.stringify([selectedYear, selectedKind, selectedForm]);
+  const query = useSupportRecords({
+    year: selectedYear === "全部" ? undefined : selectedYear,
+    act_kind: selectedKind === "全部种类" ? undefined : selectedKind,
+    act_category: selectedForm === "全部" ? undefined : selectedForm,
+  });
+  const mappingResult = useMemo<TimelineMappingResult>(() => {
+    if (query.data === undefined) return { status: "pending" };
+    try {
+      return {
+        status: "success",
+        presentation: deriveTimelinePresentation(mapSupportRecordsToTimeline(query.data)),
+      };
+    } catch (error) {
+      return { status: "error", error };
+    }
+  }, [query.data]);
+  const presentation = mappingResult.status === "success" ? mappingResult.presentation : null;
+  const hasMappingError = mappingResult.status === "error";
+  const hasError = hasMappingError || query.isError;
+  const error = mappingResult.status === "error" ? mappingResult.error : query.error;
+  const errorMessage = error instanceof Error ? error.message : "无法识别的活动数据错误";
+
+  const cancelPendingScrollIntent = () => {
+    if (
+      !scrollIntent || scrollIntent.filterKey !== filterKey ||
+      scrollIntent.id <= settledScrollIntentIdRef.current
+    ) return;
+
+    settledScrollIntentIdRef.current = scrollIntent.id;
+    onScrollIntentSettled(scrollIntent.id);
+  };
 
   const closeKindMenu = () => {
     setKindMenuOpen(false);
@@ -359,7 +336,7 @@ function WishBoxTimeline({
   const setTimelineDraggingCursor = (viewport: HTMLDivElement, isDragging: boolean) => {
     viewport.style.cursor = isDragging ? "grabbing" : "";
     viewport
-      .querySelectorAll<HTMLButtonElement>("button[data-timeline-activity-fixture]")
+      .querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")
       .forEach((button) => {
         button.style.cursor = isDragging ? "grabbing" : "";
       });
@@ -395,6 +372,8 @@ function WishBoxTimeline({
     const drag = timelinePointerDragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
 
+    cancelPendingScrollIntent();
+
     const deltaX = event.clientX - drag.startClientX;
     if (!drag.isDragging) {
       if (Math.abs(deltaX) < DRAG_THRESHOLD_PX) return;
@@ -416,6 +395,11 @@ function WishBoxTimeline({
   const handleTimelinePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     // A new pointer sequence means any previous drag-generated click is stale.
     clearSuppressedTimelineClick();
+
+    if (event.isPrimary && (event.pointerType === "touch" ||
+      (event.pointerType === "mouse" && event.button === 0))) {
+      cancelPendingScrollIntent();
+    }
 
     if (
       event.pointerType !== "mouse" ||
@@ -493,14 +477,26 @@ function WishBoxTimeline({
   };
 
   useLayoutEffect(() => {
+    if (
+      !scrollIntent || scrollIntent.filterKey !== filterKey ||
+      scrollIntent.id <= settledScrollIntentIdRef.current ||
+      !query.isSuccess || mappingResult.status !== "success"
+    ) return;
+
     const viewport = timelineViewportRef.current;
-    if (viewport) {
+    if (!viewport?.isConnected || viewport.clientWidth <= 0 || viewport.clientHeight <= 0) return;
+
+    // Register before acknowledging; Strict Mode or stale props cannot replay this intent.
+    settledScrollIntentIdRef.current = scrollIntent.id;
+    if (mappingResult.presentation.cards.length > 0) {
       const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-      viewport.scrollLeft = initialScrollLeft === null
+      viewport.scrollLeft = scrollIntent.kind === "latest"
         ? maxScrollLeft
-        : Math.min(Math.max(0, initialScrollLeft), maxScrollLeft);
+        : Math.min(Math.max(0, scrollIntent.scrollLeft), maxScrollLeft);
     }
-  }, [initialScrollLeft]);
+    onScrollSnapshot({ filterKey, scrollLeft: Math.max(0, viewport.scrollLeft) });
+    onScrollIntentSettled(scrollIntent.id);
+  }, [scrollIntent, filterKey, query.isSuccess, mappingResult, onScrollSnapshot, onScrollIntentSettled]);
 
   useEffect(() => {
     const viewport = timelineViewportRef.current;
@@ -515,7 +511,7 @@ function WishBoxTimeline({
       if (viewport) {
         viewport.style.cursor = "";
         viewport
-          .querySelectorAll<HTMLButtonElement>("button[data-timeline-activity-fixture]")
+          .querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")
           .forEach((button) => {
             button.style.cursor = "";
           });
@@ -532,6 +528,7 @@ function WishBoxTimeline({
   }, []);
 
   const scrollToEnd = (end: "left" | "right") => {
+    cancelPendingScrollIntent();
     const viewport = timelineViewportRef.current;
     if (!viewport) return;
 
@@ -541,8 +538,11 @@ function WishBoxTimeline({
     });
   };
 
-  const openActivity = (activity: ActivityReviewSelectionFixture) => {
-    onOpenActivity(activity, timelineViewportRef.current?.scrollLeft ?? 0);
+  const openActivity = (activity: ActivityReviewSelection) => {
+    onOpenActivity(activity, {
+      filterKey,
+      scrollLeft: Math.max(0, timelineViewportRef.current?.scrollLeft ?? 0),
+    });
   };
 
   return (
@@ -573,6 +573,18 @@ function WishBoxTimeline({
         onPointerCancel={handleTimelinePointerCancel}
         onLostPointerCapture={handleTimelineLostPointerCapture}
         onClickCapture={handleTimelineClickCapture}
+        onWheel={cancelPendingScrollIntent}
+        onKeyDown={(event) => {
+          if (event.target === event.currentTarget &&
+            ["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown", " "].includes(event.key)) {
+            cancelPendingScrollIntent();
+          }
+        }}
+        onScroll={(event) => {
+          if (presentation) {
+            onScrollSnapshot({ filterKey, scrollLeft: Math.max(0, event.currentTarget.scrollLeft) });
+          }
+        }}
         className="absolute cursor-grab [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-[#4c392b]"
         style={{
           left: "5.2604167%",
@@ -584,11 +596,11 @@ function WishBoxTimeline({
           scrollbarWidth: "none",
         }}
       >
-        <div
+        {presentation ? <div
           data-timeline-path
           className="pointer-events-none absolute left-0 top-0"
           style={{
-            width: toSceneCqw(TIMELINE_PRESENTATION.pathWidth),
+            width: toSceneCqw(presentation.pathWidth),
             height: toSceneCqw(PATH_HEIGHT),
           }}
         >
@@ -604,10 +616,11 @@ function WishBoxTimeline({
               backgroundSize: "45cqw 15cqw",
             }}
           />
-          {TIMELINE_PRESENTATION.cards.map((card) => (
+          {presentation.cards.map((card) => (
             <TimelineCard
-              key={card.activity.fixtureId}
+              key={card.activity.recordId}
               activity={card.activity}
+              coverThumbnailUrl={card.coverThumbnailUrl}
               variant={card.variant}
               cardY={card.cardY}
               slotIndex={card.slotIndex}
@@ -615,14 +628,48 @@ function WishBoxTimeline({
               onOpenActivity={openActivity}
             />
           ))}
-          {TIMELINE_PRESENTATION.monthLabels.map((marker) => (
+          {presentation.monthLabels.map((marker) => (
             <TimelineMarker key={marker.monthKey} marker={marker} />
           ))}
-          {TIMELINE_PRESENTATION.glowMarkers.map((marker) => (
-            <TimelineGlowMarker key={marker.fixtureId} marker={marker} />
+          {presentation.glowMarkers.map((marker) => (
+            <TimelineGlowMarker key={marker.recordId} marker={marker} />
           ))}
-        </div>
+        </div> : null}
       </div>
+
+      {query.isPending || hasError ? (
+        <div
+          role={hasError ? "alert" : "status"}
+          className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
+          style={{
+            left: "5.2604167%",
+            top: presentation ? "21.6666667%" : "41.6666667%",
+            maxWidth: "91.6666667%",
+            fontSize: toSceneCqw(presentation ? 12 : 16),
+            lineHeight: toSceneCqw(presentation ? 18 : 24),
+          }}
+        >
+          <span>
+            {hasError
+              ? hasMappingError
+                ? `活动数据转换失败：${errorMessage}`
+                : presentation
+                  ? "活动列表更新失败，已保留当前内容。"
+                  : `活动列表请求失败：${errorMessage}`
+              : "正在加载活动…"}
+          </span>
+          {hasError ? (
+            <button
+              type="button"
+              disabled={query.isFetching}
+              onClick={() => { void query.refetch(); }}
+              className="shrink-0 cursor-pointer rounded border border-[#C5B79E] bg-transparent px-2 focus-visible:outline-2 focus-visible:outline-[#614B35] disabled:cursor-wait"
+            >
+              {query.isFetching ? "重试中…" : "重试"}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <div
         aria-hidden="true"

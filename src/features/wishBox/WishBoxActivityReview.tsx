@@ -18,9 +18,9 @@ import photoTapeVGold from "../../assets/wish-box/activity-review-photo-tape-v-g
 import rose from "../../assets/wish-box/activity-review-rose.png";
 import whiteFlowers from "../../assets/wish-box/activity-review-white-flowers.png";
 
-// Selected Timeline display data only; fixtureId is not a backend activity ID.
-export type ActivityReviewSelectionFixture = {
-  fixtureId: string;
+// Selected list display data only; detail data is not connected yet.
+export type ActivityReviewSelection = {
+  recordId: number;
   title: string;
   date: string;
 };
@@ -45,16 +45,15 @@ const ACTIVITY_REVIEW_UI_FIXTURE = {
   ],
 } as const;
 
-// No corresponding detail data is established for the Timeline fixtures yet.
-// Keep these fields visibly neutral rather than attributing the preview event to every card.
+// Real list selections must not inherit the independent DEV preview's detail or photos.
 const ACTIVITY_REVIEW_UNMAPPED_UI_PLACEHOLDER = {
-  subtitle: "UI Fixture Preview",
-  eyebrow: "✦  UI-ONLY PLACEHOLDER  ✦",
-  location: ["地点信息待提供", "（受控展示占位）"],
+  subtitle: "详情尚未接入",
+  eyebrow: "✦  DETAIL NOT CONNECTED  ✦",
+  location: ["地点详情尚未接入", ""],
   introduction: [
-    "该活动的介绍尚未提供。",
-    "当前内容仅用于验证卡片与回顾页的对应关系。",
-    "正式资料以后续确认的数据契约为准。",
+    "详情尚未接入。",
+    "当前仅展示活动列表提供的标题与日期。",
+    "活动正文和照片将在详情接入后展示。",
   ],
 } as const;
 
@@ -264,7 +263,7 @@ function SceneStar({ x, y, size }: { x: number; y: number; size: number }) {
 }
 
 type WishBoxActivityReviewProps = {
-  activity?: ActivityReviewSelectionFixture;
+  activity?: ActivityReviewSelection;
   onOpenPhoto?: (photo: ActivityReviewPhotoSelectionFixture) => void;
   onBack?: () => void;
   showReturnControl?: boolean;
@@ -279,13 +278,14 @@ function WishBoxActivityReview({
   const reviewContent = activity
     ? { ...ACTIVITY_REVIEW_UNMAPPED_UI_PLACEHOLDER, title: activity.title, time: activity.date }
     : ACTIVITY_REVIEW_UI_FIXTURE;
-  const photos = ACTIVITY_REVIEW_PHOTO_FIXTURE;
-  const photoBoardLayout = PHOTO_BOARD_LAYOUTS[photos.length];
+  const photos = activity ? [] : ACTIVITY_REVIEW_PHOTO_FIXTURE;
+  const photoBoardLayout = activity ? undefined : PHOTO_BOARD_LAYOUTS[photos.length];
 
   return (
     <section
       aria-label="活动回顾"
-      data-activity-review-fixture={activity?.fixtureId ?? "activity-review-preview"}
+      data-activity-review-record-id={activity?.recordId}
+      data-activity-review-fixture={activity ? undefined : "activity-review-preview"}
       className="absolute inset-0 isolate overflow-hidden"
       style={{ backgroundColor: "#F6E9E1" }}
     >

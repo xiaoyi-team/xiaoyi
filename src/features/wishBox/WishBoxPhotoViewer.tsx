@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import WishBoxActivityReview, {
   type ActivityReviewPhotoSelectionFixture,
-  type ActivityReviewSelectionFixture,
+  type ActivityReviewSelection,
 } from "./WishBoxActivityReview";
 
 const toSceneCqw = (designPixels: number) =>
@@ -15,7 +15,7 @@ const sceneY = (designPixels: number) =>
 
 type WishBoxPhotoViewerProps = {
   photo?: ActivityReviewPhotoSelectionFixture;
-  activity?: ActivityReviewSelectionFixture;
+  activity?: ActivityReviewSelection;
   onClose: () => void;
 };
 
