@@ -12,7 +12,7 @@ export type TimelineRecord = {
 const BEIJING_DATETIME_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/;
 
-function extractBeijingDate(
+export function extractBeijingDate(
   value: string,
   recordId: number,
   field: "start_time" | "end_time",
