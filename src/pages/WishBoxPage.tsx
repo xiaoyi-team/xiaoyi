@@ -3,10 +3,9 @@ import AnnouncementView, {
   type AnnouncementDisplayFixture,
 } from "../features/wishBox/AnnouncementView";
 import WishBoxActivityReview, {
-  type ActivityReviewPhotoSelectionFixture,
+  type ActivityReviewPhotoSelection,
   type ActivityReviewSelection,
 } from "../features/wishBox/WishBoxActivityReview";
-import WishBoxPhotoViewer from "../features/wishBox/WishBoxPhotoViewer";
 import WishBoxHome from "../features/wishBox/WishBoxHome";
 import WishBoxTimeline, {
   type TimelineFilters,
@@ -24,6 +23,17 @@ const DEFAULT_TIMELINE_FILTERS: TimelineFilters = {
 
 const getTimelineFilterKey = ({ year, kind, form }: TimelineFilters) =>
   JSON.stringify([year, kind, form]);
+
+function isSamePhotoSelection(
+  current: ActivityReviewPhotoSelection | null,
+  expected: ActivityReviewPhotoSelection,
+) {
+  if (current?.source === "record" && expected.source === "record") {
+    return current.recordId === expected.recordId && current.imgKey === expected.imgKey;
+  }
+  return current?.source === "preview" && expected.source === "preview" &&
+    current.fixtureId === expected.fixtureId;
+}
 
 // DEV / TEMPORARY PREVIEW: open /wish-box?activityReviewPreview=1 for local visual calibration.
 const activityReviewPreviewRequested =
@@ -63,13 +73,16 @@ function WishBoxPage() {
   });
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityReviewSelection | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<ActivityReviewPhotoSelectionFixture | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<ActivityReviewPhotoSelection | null>(() =>
+    photoViewerPreviewRequested
+      ? { source: "preview", fixtureId: "photo-viewer-dev-preview" }
+      : null,
+  );
   const [timelineFilters, setTimelineFilters] = useState<TimelineFilters>(DEFAULT_TIMELINE_FILTERS);
   const [timelineScrollIntent, setTimelineScrollIntent] = useState<TimelineScrollIntent | null>(null);
   const timelineScrollSnapshotRef = useRef<TimelineScrollSnapshot | null>(null);
   const timelineScrollIntentIdRef = useRef(0);
   const timelineFilterKey = getTimelineFilterKey(timelineFilters);
-  const sceneRef = useRef<HTMLElement>(null);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
   const wishlandButtonRef = useRef<HTMLButtonElement>(null);
   const restoreWishlandFocusRef = useRef(false);
@@ -138,27 +151,21 @@ function WishBoxPage() {
     setSelectedPhoto(null);
   }
 
-  function openPhoto(photo: ActivityReviewPhotoSelectionFixture) {
-    if (!import.meta.env.DEV || currentView !== "activityReviewPreview") return;
+  function openPhoto(photo: ActivityReviewPhotoSelection) {
+    if (photo.source === "record") {
+      if (currentView !== "timeline" || selectedActivity?.recordId !== photo.recordId) return;
+    } else if (!import.meta.env.DEV || (
+      currentView !== "activityReviewPreview" && currentView !== "photoViewerPreview"
+    )) return;
     setSelectedPhoto(photo);
   }
 
-  function closePhotoViewer() {
-    const photoFixtureId = selectedPhoto?.fixtureId;
-    setSelectedPhoto(null);
-    if (!photoFixtureId) return;
-
-    // Review remounts on close; restore its entry by identity, not board layout.
-    requestAnimationFrame(() => {
-      const photoButtons = sceneRef.current?.querySelectorAll<HTMLButtonElement>(
-        "button[data-activity-photo-fixture]",
-      );
-      const opener = Array.from(photoButtons ?? []).find(
-        (button) => button.dataset.activityPhotoFixture === photoFixtureId && !button.disabled,
-      );
-      opener?.focus({ preventScroll: true });
-    });
-  }
+  const closePhotoViewer = useCallback((expected: ActivityReviewPhotoSelection) => {
+    setSelectedPhoto((current) => isSamePhotoSelection(current, expected) ? null : current);
+    if (expected.source === "preview") {
+      setCurrentView((current) => current === "photoViewerPreview" ? "activityReviewPreview" : current);
+    }
+  }, []);
 
   function returnToTimeline() {
     const snapshot = timelineScrollSnapshotRef.current;
@@ -174,7 +181,6 @@ function WishBoxPage() {
   return (
     <main className="grid h-dvh w-full place-items-center overflow-hidden bg-slate-100">
       <section
-        ref={sceneRef}
         aria-label="心愿盒场景"
         className="relative w-full overflow-hidden bg-white"
         style={{
@@ -202,18 +208,15 @@ function WishBoxPage() {
           </>
         ) : currentView === "timeline" ? (
           selectedActivity ? (
-            selectedPhoto ? (
-              <WishBoxPhotoViewer
-                activity={selectedActivity}
-                photo={selectedPhoto}
-                onClose={closePhotoViewer}
-              />
-            ) : (
-              <WishBoxActivityReview
-                activity={selectedActivity}
-                onBack={returnToTimeline}
-              />
-            )
+            <WishBoxActivityReview
+              key={`record:${selectedActivity.recordId}`}
+              source="record"
+              recordId={selectedActivity.recordId}
+              selectedPhoto={selectedPhoto}
+              onOpenPhoto={openPhoto}
+              onClosePhoto={closePhotoViewer}
+              onBack={returnToTimeline}
+            />
           ) : (
             <WishBoxTimeline
               scrollIntent={timelineScrollIntent}
@@ -225,21 +228,15 @@ function WishBoxPage() {
               onOpenActivity={openActivity}
             />
           )
-        ) : currentView === "activityReviewPreview" ? (
-          selectedPhoto ? (
-            <WishBoxPhotoViewer
-              photo={selectedPhoto}
-              onClose={closePhotoViewer}
-            />
-          ) : (
-            <WishBoxActivityReview
-              onOpenPhoto={openPhoto}
-              onBack={returnToTimeline}
-            />
-          )
         ) : (
-          // DEV / TEMPORARY PREVIEW: this callback returns to the Review preview only.
-          <WishBoxPhotoViewer onClose={() => setCurrentView("activityReviewPreview")} />
+          <WishBoxActivityReview
+            key="preview"
+            source="preview"
+            selectedPhoto={selectedPhoto}
+            onOpenPhoto={openPhoto}
+            onClosePhoto={closePhotoViewer}
+            onBack={returnToTimeline}
+          />
         )}
       </section>
     </main>

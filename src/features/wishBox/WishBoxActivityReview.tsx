@@ -1,3 +1,4 @@
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import bow from "../../assets/wish-box/activity-review-bow.png";
 import bouquetRibbon from "../../assets/wish-box/activity-review-bouquet-ribbon.png";
@@ -17,16 +18,23 @@ import photoStickerPink from "../../assets/wish-box/activity-review-photo-sticke
 import photoTapeVGold from "../../assets/wish-box/activity-review-photo-tape-v-gold.png";
 import rose from "../../assets/wish-box/activity-review-rose.png";
 import whiteFlowers from "../../assets/wish-box/activity-review-white-flowers.png";
+import { mapSupportRecordDetailToReview, type ActivityReviewViewModel } from "./activityReviewData";
+import { useSupportRecordDetail } from "./hooks/useSupportRecordDetail";
+import { formatTimelineDateRange } from "./timelinePresentation";
+import WishBoxPhotoViewer, { type PhotoViewerMedia } from "./WishBoxPhotoViewer";
 
-// Selected list display data only; detail data is not connected yet.
+// List selection context; the formal Review consumes only recordId and requests its own detail.
 export type ActivityReviewSelection = {
   recordId: number;
   title: string;
   date: string;
 };
 
-export type ActivityReviewPhotoSelectionFixture = {
-  // UI photo identity only; this is not a backend photo ID or a layout slot.
+export type ActivityReviewPhotoSelection =
+  | { source: "record"; recordId: number; imgKey: string }
+  | { source: "preview"; fixtureId: string };
+
+type ActivityReviewPhotoSelectionFixture = {
   fixtureId: string;
   placeholderColor: string;
 };
@@ -42,18 +50,6 @@ const ACTIVITY_REVIEW_UI_FIXTURE = {
     "传说有个漂亮哥哥站在花的后面，英俊得要命，需要一支鸢尾才能一睹真容。",
     "7月4日和7月5日，静安区协信星光广场将出现漂亮哥哥送的花和饮品，",
     "在鸢尾花香中开启无限幸福的第六年吧。",
-  ],
-} as const;
-
-// Real list selections must not inherit the independent DEV preview's detail or photos.
-const ACTIVITY_REVIEW_UNMAPPED_UI_PLACEHOLDER = {
-  subtitle: "详情尚未接入",
-  eyebrow: "✦  DETAIL NOT CONNECTED  ✦",
-  location: ["地点详情尚未接入", ""],
-  introduction: [
-    "详情尚未接入。",
-    "当前仅展示活动列表提供的标题与日期。",
-    "活动正文和照片将在详情接入后展示。",
   ],
 } as const;
 
@@ -262,30 +258,160 @@ function SceneStar({ x, y, size }: { x: number; y: number; size: number }) {
   );
 }
 
-type WishBoxActivityReviewProps = {
-  activity?: ActivityReviewSelection;
-  onOpenPhoto?: (photo: ActivityReviewPhotoSelectionFixture) => void;
-  onBack?: () => void;
-  showReturnControl?: boolean;
+type ReviewControls = {
+  selectedPhoto: ActivityReviewPhotoSelection | null;
+  onOpenPhoto: (photo: ActivityReviewPhotoSelection) => void;
+  onClosePhoto: (expected: ActivityReviewPhotoSelection) => void;
+  onBack: () => void;
 };
 
-function WishBoxActivityReview({
-  activity,
-  onOpenPhoto,
-  onBack,
-  showReturnControl = true,
-}: WishBoxActivityReviewProps) {
-  const reviewContent = activity
-    ? { ...ACTIVITY_REVIEW_UNMAPPED_UI_PLACEHOLDER, title: activity.title, time: activity.date }
-    : ACTIVITY_REVIEW_UI_FIXTURE;
-  const photos = activity ? [] : ACTIVITY_REVIEW_PHOTO_FIXTURE;
-  const photoBoardLayout = activity ? undefined : PHOTO_BOARD_LAYOUTS[photos.length];
+type WishBoxActivityReviewProps = ReviewControls & (
+  | { source: "record"; recordId: number }
+  | { source: "preview" }
+);
+
+type DetailMappingResult =
+  | { status: "pending" }
+  | { status: "success"; viewModel: ActivityReviewViewModel }
+  | { status: "error"; message: string };
+
+type ReviewData =
+  | { source: "preview" }
+  | {
+      source: "record";
+      recordId: number;
+      viewModel: ActivityReviewViewModel | null;
+      message: string | null;
+      errorMessage: string | null;
+      retry?: () => void;
+      isFetching: boolean;
+    };
+
+type BoardPhoto = {
+  selection: ActivityReviewPhotoSelection;
+  thumbnailUrl?: string;
+  placeholderColor: string;
+};
+
+function RecordActivityReview(props: ReviewControls & { recordId: number }) {
+  const { recordId } = props;
+  const { query, isValidRecordId } = useSupportRecordDetail(recordId);
+  const mapped = useMemo<DetailMappingResult>(() => {
+    if (query.data === undefined) return { status: "pending" };
+    try {
+      return { status: "success", viewModel: mapSupportRecordDetailToReview(query.data, recordId) };
+    } catch (error) {
+      return { status: "error", message: error instanceof Error ? error.message : "无法识别的活动数据错误" };
+    }
+  }, [query.data, recordId]);
+  const viewModel = isValidRecordId && mapped.status === "success" ? mapped.viewModel : null;
+  const errorMessage = !isValidRecordId ? "无效的活动 ID"
+    : mapped.status === "error" ? mapped.message
+    : query.isError ? query.error.message : null;
+  const message = errorMessage
+    ? viewModel ? "更新失败，已保留当前详情" : "活动回顾加载失败"
+    : viewModel ? null : "正在加载活动回顾…";
 
   return (
+    <ReviewScene
+      {...props}
+      data={{
+        source: "record", recordId, viewModel, message, errorMessage,
+        retry: isValidRecordId && errorMessage ? () => { void query.refetch(); } : undefined,
+        isFetching: query.isFetching,
+      }}
+    />
+  );
+}
+
+function BoardThumbnail({ url }: { url: string }) {
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  return (
+    <>
+      <img
+        src={url}
+        alt=""
+        draggable={false}
+        className="block h-full w-full object-cover"
+        style={{ visibility: status === "ready" ? "visible" : "hidden" }}
+        onLoad={() => setStatus("ready")}
+        onError={() => setStatus("error")}
+      />
+      {status !== "ready" ? (
+        <span className="pointer-events-none absolute inset-0 grid place-items-center text-[#243D61]" style={{ fontSize: toSceneCqw(14) }}>
+          {status === "error" ? "缩略图加载失败" : "正在加载照片…"}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
+function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }: ReviewControls & { data: ReviewData }) {
+  const visualRef = useRef<HTMLDivElement>(null);
+  const previousViewerSelectionRef = useRef<ActivityReviewPhotoSelection | null>(null);
+  const isPreview = data.source === "preview";
+  const viewModel = data.source === "record" ? data.viewModel : null;
+  const reviewContent = isPreview ? ACTIVITY_REVIEW_UI_FIXTURE : {
+    title: viewModel?.title ?? "活动回顾",
+    location: viewModel?.location ?? "暂无地点信息",
+    time: viewModel ? formatTimelineDateRange(viewModel.startDate, viewModel.endDate) : "—",
+    introduction: viewModel ? viewModel.content ?? "暂无活动介绍"
+      : (data.source === "record" ? data.errorMessage : null) ?? "暂无活动介绍",
+  };
+  const photos: BoardPhoto[] = isPreview
+    ? ACTIVITY_REVIEW_PHOTO_FIXTURE.map((photo) => ({
+        selection: { source: "preview", fixtureId: photo.fixtureId },
+        placeholderColor: photo.placeholderColor,
+      }))
+    : viewModel?.photos.status === "ready" ? viewModel.photos.items.map((photo) => ({
+        selection: { source: "record", recordId: viewModel.recordId, imgKey: photo.imgKey },
+        thumbnailUrl: photo.thumbnailUrl,
+        placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR,
+      })) : [];
+  const photoBoardLayout = PHOTO_BOARD_LAYOUTS[photos.length];
+  let viewerMedia: PhotoViewerMedia | null = null;
+  if (selectedPhoto?.source === "record" && viewModel?.recordId === selectedPhoto.recordId && viewModel.photos.status === "ready") {
+    const photo = viewModel.photos.items.find((item) => item.imgKey === selectedPhoto.imgKey);
+    if (photo) viewerMedia = { source: "record", recordId: viewModel.recordId, imgKey: photo.imgKey, imgUrl: photo.imgUrl };
+  } else if (selectedPhoto?.source === "preview" && isPreview) {
+    const photo = ACTIVITY_REVIEW_PHOTO_FIXTURE.find((item) => item.fixtureId === selectedPhoto.fixtureId);
+    if (photo || selectedPhoto.fixtureId === "photo-viewer-dev-preview") {
+      viewerMedia = { source: "preview", fixtureId: selectedPhoto.fixtureId, placeholderColor: photo?.placeholderColor ?? ACTIVITY_PHOTO_PLACEHOLDER_COLOR };
+    }
+  }
+  const viewerOpen = viewerMedia !== null;
+
+  // Render already excludes invalid media; this only synchronizes Page's identity state.
+  useEffect(() => {
+    if (selectedPhoto && !viewerOpen) onClosePhoto(selectedPhoto);
+  }, [selectedPhoto, viewerOpen, onClosePhoto]);
+
+  useLayoutEffect(() => {
+    const previous = previousViewerSelectionRef.current;
+    if (previous && !viewerOpen) {
+      const opener = Array.from(visualRef.current?.querySelectorAll<HTMLButtonElement>("button[data-activity-photo-key]") ?? []).find((button) =>
+        previous.source === "record"
+          ? button.dataset.activityPhotoRecordId === String(previous.recordId) && button.dataset.activityPhotoKey === previous.imgKey
+          : button.dataset.activityPhotoFixture === previous.fixtureId,
+      );
+      (opener ?? visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]"))?.focus({ preventScroll: true });
+    }
+    previousViewerSelectionRef.current = viewerOpen ? selectedPhoto : null;
+  }, [viewerOpen, selectedPhoto]);
+
+  return (
+    <>
+    <div
+      ref={visualRef}
+      className="absolute inset-0"
+      inert={viewerOpen}
+      aria-hidden={viewerOpen ? true : undefined}
+      style={{ opacity: viewerOpen ? 0.32 : 1, pointerEvents: viewerOpen ? "none" : undefined }}
+    >
     <section
       aria-label="活动回顾"
-      data-activity-review-record-id={activity?.recordId}
-      data-activity-review-fixture={activity ? undefined : "activity-review-preview"}
+      data-activity-review-record-id={data.source === "record" ? data.recordId : undefined}
+      data-activity-review-fixture={isPreview ? "activity-review-preview" : undefined}
       className="absolute inset-0 isolate overflow-hidden"
       style={{ backgroundColor: "#F6E9E1" }}
     >
@@ -367,8 +493,9 @@ function WishBoxActivityReview({
             whiteSpace: "nowrap",
           }}
         >
-          {reviewContent.title}
+          <span className="block min-w-0 max-w-full truncate" title={reviewContent.title}>{reviewContent.title}</span>
         </h1>
+        {isPreview ? <>
         <p
           className="absolute m-0 flex items-center justify-center text-center"
           style={{
@@ -384,7 +511,7 @@ function WishBoxActivityReview({
             whiteSpace: "nowrap",
           }}
         >
-          {reviewContent.subtitle}
+          {ACTIVITY_REVIEW_UI_FIXTURE.subtitle}
         </p>
         <p
           className="absolute m-0 flex items-center justify-center text-center"
@@ -402,8 +529,21 @@ function WishBoxActivityReview({
             whiteSpace: "nowrap",
           }}
         >
-          {reviewContent.eyebrow}
+          {ACTIVITY_REVIEW_UI_FIXTURE.eyebrow}
         </p>
+        </> : data.source === "record" && data.message ? (
+          <div role="status" className="absolute flex flex-col items-center justify-center text-[#243D61]" style={{ left: toSceneCqw(147), top: toSceneCqw(85), width: toSceneCqw(614), height: toSceneCqw(75), fontSize: toSceneCqw(14), gap: toSceneCqw(6) }}>
+            <span title={data.errorMessage ?? undefined}>{data.message}</span>
+            {data.retry ? (
+              <button type="button" disabled={data.isFetching} onClick={() => {
+                visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
+                data.retry?.();
+              }} className="cursor-pointer underline focus-visible:outline-2 disabled:cursor-wait">
+                {data.isFetching ? "正在重试…" : "重试"}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         <img
           src={headerPetalCenter}
           alt=""
@@ -455,10 +595,13 @@ function WishBoxActivityReview({
           <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动地点</span>
         </div>
         <div
-          className="absolute flex flex-col"
-          style={{ left: toSceneCqw(161), top: toSceneCqw(26), width: toSceneCqw(199), height: toSceneCqw(67), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), gap: toSceneCqw(14), whiteSpace: "nowrap" }}
+          role={isPreview ? undefined : "region"}
+          aria-label={isPreview ? undefined : "活动地点详情"}
+          tabIndex={isPreview ? undefined : 0}
+          className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
+          style={{ left: toSceneCqw(161), top: toSceneCqw(26), width: toSceneCqw(199), height: toSceneCqw(67), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
         >
-          {reviewContent.location.map((line) => <span key={line}>{line}</span>)}
+          {typeof reviewContent.location === "string" ? reviewContent.location : reviewContent.location.map((line) => <span key={line}>{line}</span>)}
         </div>
 
         <div
@@ -472,7 +615,7 @@ function WishBoxActivityReview({
           className="absolute flex items-center whitespace-nowrap"
           style={{ left: toSceneCqw(161), top: toSceneCqw(101.5), width: toSceneCqw(199), height: toSceneCqw(25), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24) }}
         >
-          {reviewContent.time}
+          <span className="block min-w-0 truncate" title={reviewContent.time}>{reviewContent.time}</span>
         </div>
 
         <div
@@ -483,10 +626,13 @@ function WishBoxActivityReview({
           <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动介绍</span>
         </div>
         <div
-          className="absolute flex flex-col"
-          style={{ left: toSceneCqw(22), top: toSceneCqw(178), width: toSceneCqw(325), height: toSceneCqw(148), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24) }}
+          role={isPreview ? undefined : "region"}
+          aria-label={isPreview ? undefined : "活动介绍正文"}
+          tabIndex={isPreview ? undefined : 0}
+          className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
+          style={{ left: toSceneCqw(22), top: toSceneCqw(178), width: toSceneCqw(325), height: toSceneCqw(148), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), whiteSpace: isPreview ? undefined : "pre-wrap", overflowWrap: "anywhere" }}
         >
-          {reviewContent.introduction.map((paragraph) => (
+          {typeof reviewContent.introduction === "string" ? reviewContent.introduction : reviewContent.introduction.map((paragraph) => (
             <p key={paragraph} className="m-0">{paragraph}</p>
           ))}
         </div>
@@ -518,7 +664,6 @@ function WishBoxActivityReview({
         }}
       >
         <div
-          aria-hidden={onOpenPhoto ? undefined : true}
           className="absolute"
           style={{
             left: toSceneCqw(25),
@@ -539,16 +684,15 @@ function WishBoxActivityReview({
                 const slot = photoBoardLayout.slots[index];
                 return (
                   <button
-                    key={photo.fixtureId}
+                    key={photo.selection.source === "record" ? photo.selection.imgKey : photo.selection.fixtureId}
                     type="button"
-                    data-activity-photo-placeholder={index + 1}
-                    data-activity-photo-fixture={photo.fixtureId}
-                    aria-label={onOpenPhoto ? `放大示例照片 ${index + 1}` : undefined}
-                    aria-hidden={onOpenPhoto ? undefined : true}
-                    disabled={!onOpenPhoto}
-                    tabIndex={onOpenPhoto ? 0 : -1}
-                    onClick={() => onOpenPhoto?.(photo)}
-                    className="pointer-events-auto absolute cursor-zoom-in border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#4c392b]"
+                    data-activity-photo-placeholder={isPreview ? index + 1 : undefined}
+                    data-activity-photo-key={photo.selection.source === "record" ? photo.selection.imgKey : photo.selection.fixtureId}
+                    data-activity-photo-record-id={photo.selection.source === "record" ? photo.selection.recordId : undefined}
+                    data-activity-photo-fixture={photo.selection.source === "preview" ? photo.selection.fixtureId : undefined}
+                    aria-label={`放大${isPreview ? "示例" : "活动"}照片 ${index + 1}`}
+                    onClick={() => onOpenPhoto(photo.selection)}
+                    className="pointer-events-auto absolute overflow-hidden cursor-zoom-in border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#4c392b]"
                     style={{
                       left: toSceneCqw(slot.x),
                       top: toSceneCqw(slot.y),
@@ -562,7 +706,11 @@ function WishBoxActivityReview({
                       transform: `rotate(${slot.rotation}deg)`,
                       transformOrigin: "top left",
                     }}
-                  />
+                  >
+                    {photo.thumbnailUrl !== undefined ? (
+                      <BoardThumbnail key={JSON.stringify([photo.selection, photo.thumbnailUrl])} url={photo.thumbnailUrl} />
+                    ) : null}
+                  </button>
                 );
               })}
               {photoBoardLayout.decorations.map((decoration, index) => (
@@ -585,7 +733,13 @@ function WishBoxActivityReview({
                 />
               ))}
             </>
-          ) : null}
+          ) : (
+            <p role="status" className="absolute inset-0 m-0 grid place-items-center text-[#243D61]" style={{ fontSize: toSceneCqw(18) }}>
+              {viewModel?.photos.status === "empty" ? "暂无活动照片"
+                : viewModel?.photos.status === "invalid" ? "活动照片数据错误"
+                : data.source === "record" && data.errorMessage ? "照片暂不可用" : "正在加载活动照片…"}
+            </p>
+          )}
         </div>
 
         {/* These PNGs already contain the final Figma rotation/crop; scene placement remains a local calibration estimate. */}
@@ -686,10 +840,10 @@ function WishBoxActivityReview({
         }}
       />
 
-      {showReturnControl ? (
         <button
           type="button"
-          autoFocus={activity !== undefined}
+          autoFocus={!isPreview}
+          data-activity-review-return
           onClick={onBack}
           aria-label="返回时间轴"
           className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
@@ -700,6 +854,7 @@ function WishBoxActivityReview({
             height: toSceneCqw(74),
             borderRadius: toSceneCqw(22),
             zIndex: 40,
+            visibility: viewerOpen ? "hidden" : undefined,
           }}
         >
           <img
@@ -726,9 +881,19 @@ function WishBoxActivityReview({
             返回
           </span>
         </button>
-      ) : null}
     </section>
+    </div>
+    {viewerMedia && selectedPhoto ? (
+      <WishBoxPhotoViewer media={viewerMedia} onClose={() => onClosePhoto(selectedPhoto)} />
+    ) : null}
+    </>
   );
+}
+
+function WishBoxActivityReview(props: WishBoxActivityReviewProps) {
+  return props.source === "record"
+    ? <RecordActivityReview key={props.recordId} {...props} />
+    : <ReviewScene {...props} data={{ source: "preview" }} />;
 }
 
 export default WishBoxActivityReview;
