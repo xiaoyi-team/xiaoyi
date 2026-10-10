@@ -601,6 +601,7 @@ function WishBoxTimeline({
           className="pointer-events-none absolute left-0 top-0"
           style={{
             width: toSceneCqw(presentation.pathWidth),
+            minWidth: presentation.cards.length > 0 ? "100%" : undefined,
             height: toSceneCqw(PATH_HEIGHT),
           }}
         >
