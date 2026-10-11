@@ -150,7 +150,7 @@ function TimelineCard({
           }}
         />
         <div
-          className="absolute flex items-center justify-center text-center"
+          className="absolute truncate text-center"
           style={{
             left: toSceneCqw(layout.title.x),
             top: toSceneCqw(layout.title.y),

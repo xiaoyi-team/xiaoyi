@@ -21,6 +21,8 @@ import {
 
 const DRAG_THRESHOLD_PX = 5;
 const PATH_HEIGHT = 670;
+// Web safety allowance for the final card's hover; not a frozen Figma dimension.
+const PATH_END_PADDING = 32;
 const VINE_Y = 198;
 const VINE_HEIGHT = 288;
 
@@ -309,6 +311,7 @@ function WishBoxTimeline({
     }
   }, [query.data]);
   const presentation = mappingResult.status === "success" ? mappingResult.presentation : null;
+  const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
   const error = mappingResult.status === "error" ? mappingResult.error : query.error;
@@ -600,7 +603,7 @@ function WishBoxTimeline({
           data-timeline-path
           className="pointer-events-none absolute left-0 top-0"
           style={{
-            width: toSceneCqw(presentation.pathWidth),
+            width: toSceneCqw(presentation.pathWidth + pathEndPadding),
             minWidth: presentation.cards.length > 0 ? "100%" : undefined,
             height: toSceneCqw(PATH_HEIGHT),
           }}
@@ -617,24 +620,33 @@ function WishBoxTimeline({
               backgroundSize: "45cqw 15cqw",
             }}
           />
-          {presentation.cards.map((card) => (
-            <TimelineCard
-              key={card.activity.recordId}
-              activity={card.activity}
-              coverThumbnailUrl={card.coverThumbnailUrl}
-              variant={card.variant}
-              cardY={card.cardY}
-              slotIndex={card.slotIndex}
-              slotLeft={toSceneCqw(getTimelineSlotX(card.slotIndex))}
-              onOpenActivity={openActivity}
-            />
-          ))}
-          {presentation.monthLabels.map((marker) => (
-            <TimelineMarker key={marker.monthKey} marker={marker} />
-          ))}
-          {presentation.glowMarkers.map((marker) => (
-            <TimelineGlowMarker key={marker.recordId} marker={marker} />
-          ))}
+          <div
+            data-timeline-activity-group
+            className="absolute top-0 h-full"
+            style={{
+              right: toSceneCqw(pathEndPadding),
+              width: toSceneCqw(presentation.pathWidth),
+            }}
+          >
+            {presentation.cards.map((card) => (
+              <TimelineCard
+                key={card.activity.recordId}
+                activity={card.activity}
+                coverThumbnailUrl={card.coverThumbnailUrl}
+                variant={card.variant}
+                cardY={card.cardY}
+                slotIndex={card.slotIndex}
+                slotLeft={toSceneCqw(getTimelineSlotX(card.slotIndex))}
+                onOpenActivity={openActivity}
+              />
+            ))}
+            {presentation.monthLabels.map((marker) => (
+              <TimelineMarker key={marker.monthKey} marker={marker} />
+            ))}
+            {presentation.glowMarkers.map((marker) => (
+              <TimelineGlowMarker key={marker.recordId} marker={marker} />
+            ))}
+          </div>
         </div> : null}
       </div>
 
