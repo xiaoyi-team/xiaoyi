@@ -183,6 +183,7 @@ const PHOTO_BOARD_LAYOUTS: Partial<Record<number, PhotoBoardLayout>> = {
 };
 
 const activityReviewStars = [
+  { node: "1058", x: 1498, y: 207, size: 20 },
   { node: "1098", x: 262, y: 293, size: 12.286 },
   { node: "1100", x: 1653.152, y: 346.240, size: 16.382 },
   { node: "1101", x: 498.249, y: 317.572, size: 20.477 },
@@ -351,6 +352,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
   const previousViewerSelectionRef = useRef<ActivityReviewPhotoSelection | null>(null);
   const isPreview = data.source === "preview";
   const viewModel = data.source === "record" ? data.viewModel : null;
+  const centerTitle = data.source === "record" && data.viewModel !== null && data.message === null;
   const reviewContent = isPreview ? ACTIVITY_REVIEW_UI_FIXTURE : {
     title: viewModel?.title ?? "活动回顾",
     location: viewModel?.location ?? "暂无地点信息",
@@ -481,10 +483,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         <h1
           className="absolute m-0 flex items-center justify-center text-center"
           style={{
-            left: toSceneCqw(147),
-            top: toSceneCqw(17),
-            width: toSceneCqw(614),
-            height: toSceneCqw(70),
+            left: centerTitle ? 0 : toSceneCqw(147),
+            top: centerTitle ? 0 : toSceneCqw(17),
+            width: centerTitle ? "100%" : toSceneCqw(614),
+            height: centerTitle ? "100%" : toSceneCqw(70),
             color: "#1F427A",
             fontFamily: '"Noto Serif SC", serif',
             fontSize: toSceneCqw(36),
@@ -493,7 +495,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             whiteSpace: "nowrap",
           }}
         >
-          <span className="block min-w-0 max-w-full truncate" title={reviewContent.title}>{reviewContent.title}</span>
+          <span className="block min-w-0 max-w-full truncate" style={{ maxWidth: centerTitle ? toSceneCqw(614) : undefined }} title={reviewContent.title}>{reviewContent.title}</span>
         </h1>
         {isPreview ? <>
         <p
@@ -553,14 +555,6 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           style={{ left: toSceneCqw(871), top: toSceneCqw(97), width: toSceneCqw(28), height: toSceneCqw(21), zIndex: 21 }}
         />
         <img
-          src={headerPetalRight}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="pointer-events-none absolute select-none"
-          style={{ left: toSceneCqw(1119), top: toSceneCqw(118), width: toSceneCqw(31), height: toSceneCqw(24), zIndex: 21 }}
-        />
-        <img
           src={headerPetalLeft}
           alt=""
           aria-hidden="true"
@@ -569,6 +563,15 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           style={{ left: toSceneCqw(140), top: toSceneCqw(77), width: toSceneCqw(28), height: toSceneCqw(21), zIndex: 21 }}
         />
       </div>
+
+      <img
+        src={headerPetalRight}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="pointer-events-none absolute select-none"
+        style={{ left: sceneX(1618), top: sceneY(213), width: toSceneCqw(31), height: toSceneCqw(24), zIndex: 10 }}
+      />
 
       <article
         aria-label="活动信息"
