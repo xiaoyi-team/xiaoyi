@@ -680,7 +680,10 @@ function WishBoxTimeline({
             <button
               type="button"
               disabled={query.isFetching}
-              onClick={() => { void query.refetch(); }}
+              onClick={() => {
+                backButtonRef.current?.focus({ preventScroll: true });
+                void query.refetch();
+              }}
               className="shrink-0 cursor-pointer rounded border border-[#C5B79E] bg-transparent px-2 focus-visible:outline-2 focus-visible:outline-[#614B35] disabled:cursor-wait"
             >
               {query.isFetching ? "重试中…" : "重试"}
