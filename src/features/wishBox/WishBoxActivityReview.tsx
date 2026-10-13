@@ -21,6 +21,7 @@ import whiteFlowers from "../../assets/wish-box/activity-review-white-flowers.pn
 import { mapSupportRecordDetailToReview, type ActivityReviewViewModel } from "./activityReviewData";
 import { useSupportRecordDetail } from "./hooks/useSupportRecordDetail";
 import { formatTimelineDateRange } from "./timelinePresentation";
+import WishBoxLoading from "./WishBoxLoading";
 import WishBoxPhotoViewer, { type PhotoViewerMedia } from "./WishBoxPhotoViewer";
 
 // List selection context; the formal Review consumes only recordId and requests its own detail.
@@ -286,6 +287,7 @@ type ReviewData =
       errorMessage: string | null;
       retry?: () => void;
       isFetching: boolean;
+      showCenterLoading: boolean;
     };
 
 type BoardPhoto = {
@@ -309,6 +311,8 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
   const errorMessage = !isValidRecordId ? "无效的活动 ID"
     : mapped.status === "error" ? mapped.message
     : query.isError ? query.error.message : null;
+  const showCenterLoading =
+    isValidRecordId && query.isLoading && viewModel === null && errorMessage === null;
   const message = errorMessage
     ? viewModel ? "更新失败，已保留当前详情" : "活动回顾加载失败"
     : viewModel ? null : "正在加载活动回顾…";
@@ -320,6 +324,7 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
         source: "record", recordId, viewModel, message, errorMessage,
         retry: isValidRecordId && errorMessage ? () => { void query.refetch(); } : undefined,
         isFetching: query.isFetching,
+        showCenterLoading,
       }}
     />
   );
@@ -382,6 +387,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     }
   }
   const viewerOpen = viewerMedia !== null;
+  const showCenterLoading =
+    data.source === "record" && data.showCenterLoading && !viewerOpen;
+  const showCornerLoading =
+    data.source === "record" && viewModel !== null && data.isFetching && !viewerOpen;
 
   // Render already excludes invalid media; this only synchronizes Page's identity state.
   useEffect(() => {
@@ -533,7 +542,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         >
           {ACTIVITY_REVIEW_UI_FIXTURE.eyebrow}
         </p>
-        </> : data.source === "record" && data.message ? (
+        </> : data.source === "record" && data.message && !showCenterLoading ? (
           <div role="status" className="absolute flex flex-col items-center justify-center text-[#243D61]" style={{ left: toSceneCqw(147), top: toSceneCqw(85), width: toSceneCqw(614), height: toSceneCqw(75), fontSize: toSceneCqw(14), gap: toSceneCqw(6) }}>
             <span title={data.errorMessage ?? undefined}>{data.message}</span>
             {data.retry ? (
@@ -842,6 +851,12 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           zIndex: 30,
         }}
       />
+
+      {showCenterLoading ? (
+        <WishBoxLoading variant="center" className="z-40" />
+      ) : showCornerLoading ? (
+        <WishBoxLoading variant="corner" className="z-40" />
+      ) : null}
 
         <button
           type="button"

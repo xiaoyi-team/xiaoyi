@@ -8,6 +8,7 @@ import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-ri
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
 import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import TimelineCard from "./TimelineCard";
+import WishBoxLoading from "./WishBoxLoading";
 import { useSupportRecords } from "./hooks/useSupportRecords";
 import { mapSupportRecordsToTimeline } from "./timelineData";
 import {
@@ -314,6 +315,8 @@ function WishBoxTimeline({
   const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
+  const showCenterLoading =
+    query.isLoading && presentation === null && !hasError;
   const error = mappingResult.status === "error" ? mappingResult.error : query.error;
   const errorMessage = error instanceof Error ? error.message : "无法识别的活动数据错误";
 
@@ -650,7 +653,9 @@ function WishBoxTimeline({
         </div> : null}
       </div>
 
-      {query.isPending || hasError ? (
+      {showCenterLoading ? (
+        <WishBoxLoading variant="center" />
+      ) : query.isPending || hasError ? (
         <div
           role={hasError ? "alert" : "status"}
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
