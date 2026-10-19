@@ -6,6 +6,8 @@ export type ReviewPhoto = {
   imgKey: string;
   imgUrl: string;
   thumbnailUrl: string;
+  posX: number;
+  posY: number;
 };
 
 export type ReviewPhotos =
@@ -56,6 +58,13 @@ function invalidPhotos(recordId: number, field: string, reason: string): ReviewP
   return { status: "invalid", error: reviewMappingError(recordId, field, reason) };
 }
 
+function normalizePhotoPosition(value: unknown): number {
+  // Frontend compatibility for missing or invalid positions, not a backend default.
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 100
+    ? value
+    : 50;
+}
+
 function mapReviewPhotos(value: unknown, recordId: number): ReviewPhotos {
   if (!Array.isArray(value)) {
     return invalidPhotos(recordId, "content_photo_list", "expected an array.");
@@ -87,7 +96,11 @@ function mapReviewPhotos(value: unknown, recordId: number): ReviewPhotos {
       return invalidPhotos(recordId, `${path}.img_key`, "duplicate photo identity.");
     }
     seenKeys.add(imgKey);
-    items.push({ imgKey, imgUrl, thumbnailUrl });
+    items.push({
+      imgKey, imgUrl, thumbnailUrl,
+      posX: normalizePhotoPosition(photo.pos_x),
+      posY: normalizePhotoPosition(photo.pos_y),
+    });
   }
 
   // Preserve response order; its business display-order guarantee is still unconfirmed.

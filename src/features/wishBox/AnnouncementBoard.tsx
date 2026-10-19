@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import boardDecoration from "../../assets/wish-box/announcement-board-decoration.png";
 import headerPetalLeft from "../../assets/wish-box/announcement-header-petal-left.png";
 import headerPetalCenter from "../../assets/wish-box/announcement-header-petal-center.png";
@@ -60,6 +60,7 @@ type InfoCardProps = {
   headingStyle: CSSProperties;
   bodyStyle: CSSProperties;
   bodyClassName?: string;
+  className?: string;
   children: ReactNode;
 };
 
@@ -72,26 +73,34 @@ function InfoCard({
   headingStyle,
   bodyStyle,
   bodyClassName = "items-center justify-center text-center",
+  className = "",
   children,
 }: InfoCardProps) {
   return (
     <section
       aria-label={title}
-      className="absolute overflow-hidden"
+      className={`announcement-info-card absolute overflow-hidden ${className}`}
       style={{
         ...style,
+        left: `var(--announcement-flow-left, ${style.left})`,
+        top: `var(--announcement-flow-top, ${style.top})`,
+        width: `var(--announcement-flow-width, ${style.width})`,
+        height: `var(--announcement-flow-height, ${style.height})`,
         boxSizing: "border-box",
         backgroundColor: fill,
-        border: `0.062496cqw solid ${borderColor}`,
-        borderRadius: "1.125cqw",
+        border: `var(--announcement-card-border-width, 0.062496cqw) solid ${borderColor}`,
+        borderRadius: "var(--announcement-card-radius, 1.125cqw)",
       }}
     >
       <div
-        className="absolute grid place-items-center"
+        className="announcement-info-heading absolute grid place-items-center"
         style={{
           ...headingStyle,
-          height: "2.750004cqw",
-          borderRadius: "0.75cqw",
+          left: `var(--announcement-flow-left, ${headingStyle.left})`,
+          top: `var(--announcement-flow-top, ${headingStyle.top})`,
+          width: `var(--announcement-flow-width, ${headingStyle.width})`,
+          height: "var(--announcement-heading-height, 2.750004cqw)",
+          borderRadius: "var(--announcement-heading-radius, 0.75cqw)",
           backgroundColor: titleColor,
         }}
       >
@@ -100,16 +109,22 @@ function InfoCard({
           style={{
             color: "#FFFCF5",
             fontWeight: 600,
-            fontSize: "1.5cqw",
-            lineHeight: "2.25cqw",
+            fontSize: "var(--announcement-heading-font-size, 1.5cqw)",
+            lineHeight: "var(--announcement-heading-line-height, 2.25cqw)",
           }}
         >
           {title}
         </h2>
       </div>
       <div
-        className={`absolute flex min-h-0 ${bodyClassName}`}
-        style={bodyStyle}
+        className={`announcement-info-body absolute flex min-h-0 ${bodyClassName}`}
+        style={{
+          ...bodyStyle,
+          left: `var(--announcement-flow-left, ${bodyStyle.left})`,
+          top: `var(--announcement-flow-top, ${bodyStyle.top})`,
+          width: `var(--announcement-flow-width, ${bodyStyle.width})`,
+          height: `var(--announcement-flow-height, ${bodyStyle.height})`,
+        }}
       >
         {children}
       </div>
@@ -124,62 +139,62 @@ type AnnouncementBoardProps = {
 function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
   return (
     <div
-      className="relative isolate h-full w-full overflow-hidden bg-[#f6e9e1]"
-      style={{ aspectRatio: "1600 / 900", containerType: "inline-size" }}
+      className="announcement-board relative isolate h-full w-full overflow-hidden bg-[#f6e9e1]"
+      style={{ aspectRatio: "var(--announcement-board-aspect-ratio, 1600 / 900)", containerType: "inline-size" }}
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute"
         style={{
-          left: "1.5%",
-          top: "2.66667%",
-          right: "1.5%",
-          bottom: "2.66667%",
-          border: "0.125004cqw solid #b8853d",
-          borderRadius: "1.125cqw",
+          left: "var(--announcement-outer-inset, 1.5%)",
+          top: "var(--announcement-outer-inset, 2.66667%)",
+          right: "var(--announcement-outer-inset, 1.5%)",
+          bottom: "var(--announcement-outer-inset, 2.66667%)",
+          border: "var(--announcement-outer-border-width, 0.125004cqw) solid #b8853d",
+          borderRadius: "var(--announcement-card-radius, 1.125cqw)",
         }}
       />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute"
         style={{
-          left: "2.375%",
-          top: "4.22222%",
-          right: "2.375%",
-          bottom: "4.22222%",
-          border: "0.062496cqw solid #dbad61",
-          borderRadius: "0.875004cqw",
+          left: "var(--announcement-inner-inset, 2.375%)",
+          top: "var(--announcement-inner-inset, 4.22222%)",
+          right: "var(--announcement-inner-inset, 2.375%)",
+          bottom: "var(--announcement-inner-inset, 4.22222%)",
+          border: "var(--announcement-card-border-width, 0.062496cqw) solid #dbad61",
+          borderRadius: "var(--announcement-inner-radius, 0.875004cqw)",
         }}
       />
 
       <div
-        className="absolute inset-0 z-10"
+        className="announcement-content absolute inset-0 z-10"
         style={{ fontFamily: '"Noto Serif SC", serif' }}
       >
         <header
-          className="absolute overflow-hidden text-center"
+          className="announcement-header absolute overflow-hidden text-center"
           style={{
-            left: "11.875%",
-            top: "7.55556%",
-            width: "76.25%",
-            height: "19.55556%",
+            left: "var(--announcement-flow-left, 11.875%)",
+            top: "var(--announcement-flow-top, 7.55556%)",
+            width: "var(--announcement-header-width, 76.25%)",
+            height: "var(--announcement-flow-height, 19.55556%)",
             boxSizing: "border-box",
             backgroundColor: "#FEF8EE",
-            border: "0.09375cqw solid #C7944D",
-            borderRadius: "2.124996cqw",
+            border: "var(--announcement-header-border-width, 0.09375cqw) solid #C7944D",
+            borderRadius: "var(--announcement-header-radius, 2.124996cqw)",
           }}
         >
           <h1
             className="absolute m-0 flex items-center justify-center text-center"
             style={{
-              left: "5.7377%",
-              top: "10.22727%",
-              width: "88.52459%",
-              height: "39.77273%",
+              left: "var(--announcement-flow-left, 5.7377%)",
+              top: "var(--announcement-flow-top, 10.22727%)",
+              width: "var(--announcement-flow-width, 88.52459%)",
+              height: "var(--announcement-flow-height, 39.77273%)",
               color: "#1F427A",
               fontWeight: 700,
-              fontSize: "3cqw",
-              lineHeight: "3.999996cqw",
+              fontSize: "var(--announcement-title-font-size, 3cqw)",
+              lineHeight: "var(--announcement-title-line-height, 3.999996cqw)",
             }}
           >
             {announcement.title}
@@ -187,14 +202,14 @@ function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
           <p
             className="absolute m-0 flex items-center justify-center text-center"
             style={{
-              left: "22.95082%",
-              top: "48.86364%",
-              width: "54.09836%",
-              height: "25%",
+              left: "var(--announcement-flow-left, 22.95082%)",
+              top: "var(--announcement-flow-top, 48.86364%)",
+              width: "var(--announcement-flow-width, 54.09836%)",
+              height: "var(--announcement-flow-height, 25%)",
               color: "#8C522E",
               fontWeight: 600,
-              fontSize: "1.749996cqw",
-              lineHeight: "2.499996cqw",
+              fontSize: "var(--announcement-subtitle-font-size, 1.749996cqw)",
+              lineHeight: "var(--announcement-subtitle-line-height, 2.499996cqw)",
             }}
           >
             {announcement.subtitle}
@@ -202,14 +217,14 @@ function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
           <p
             className="absolute m-0 flex items-center justify-center text-center"
             style={{
-              left: "31.14754%",
-              top: "75%",
-              width: "37.70492%",
-              height: "15.90909%",
+              left: "var(--announcement-flow-left, 31.14754%)",
+              top: "var(--announcement-flow-top, 75%)",
+              width: "var(--announcement-flow-width, 37.70492%)",
+              height: "var(--announcement-flow-height, 15.90909%)",
               color: "#946B3D",
               fontWeight: 500,
-              fontSize: "0.75cqw",
-              lineHeight: "1.250004cqw",
+              fontSize: "var(--announcement-eyebrow-font-size, 0.75cqw)",
+              lineHeight: "var(--announcement-eyebrow-line-height, 1.250004cqw)",
               letterSpacing: "0.08em",
             }}
           >
@@ -267,29 +282,29 @@ function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
 
         <section
           aria-label="活动简介"
-          className="absolute overflow-hidden"
+          className="announcement-summary absolute overflow-hidden"
           style={{
-            left: "16.25%",
-            top: "28%",
-            width: "67.5%",
-            height: "11.77778%",
+            left: "var(--announcement-flow-left, 16.25%)",
+            top: "var(--announcement-flow-top, 28%)",
+            width: "var(--announcement-summary-width, 67.5%)",
+            height: "var(--announcement-flow-height, 11.77778%)",
             boxSizing: "border-box",
             backgroundColor: "#FCF7EC",
-            border: "0.062496cqw solid #D6AB6B",
-            borderRadius: "1.5cqw",
+            border: "var(--announcement-card-border-width, 0.062496cqw) solid #D6AB6B",
+            borderRadius: "var(--announcement-summary-radius, 1.5cqw)",
           }}
         >
           <p
             className="absolute m-0 flex items-center justify-center whitespace-pre-line text-center"
             style={{
-              left: "3.7037%",
-              top: "2.83019%",
-              width: "92.59259%",
-              height: "94.33962%",
+              left: "var(--announcement-flow-left, 3.7037%)",
+              top: "var(--announcement-flow-top, 2.83019%)",
+              width: "var(--announcement-flow-width, 92.59259%)",
+              height: "var(--announcement-flow-height, 94.33962%)",
               color: "#243D61",
               fontWeight: 400,
-              fontSize: "0.875004cqw",
-              lineHeight: "1.5cqw",
+              fontSize: "var(--announcement-body-font-size, 0.875004cqw)",
+              lineHeight: "var(--announcement-body-line-height, 1.5cqw)",
             }}
           >
             {announcement.summary}
@@ -308,308 +323,329 @@ function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
           />
         </section>
 
-        <InfoCard
-          title="漂亮哥哥的请客清单"
-          titleColor="#D46B75"
-          fill="#FDF6F0"
-          borderColor="#D4A161"
-          style={{
-            left: "7.5%",
-            top: "41.11111%",
-            width: "26.25%",
-            height: "40%",
-          }}
-          headingStyle={{ left: "4.28571%", top: "5%", width: "91.42857%" }}
-          bodyStyle={{
-            left: "20.95238%",
-            top: "25.55556%",
-            width: "71.42857%",
-            height: "68.88889%",
-          }}
-          bodyClassName="flex-col items-stretch justify-between text-left"
-        >
-          <div className="relative h-full w-full">
-            <ul className="m-0 list-none p-0">
-              {giftItemSlots.map((slot, index) => {
-                const gift = announcement.gifts[index];
-                if (gift === undefined) return null;
+        <div className="announcement-body">
+          <div className="announcement-first-row">
+            <InfoCard
+              className="announcement-gifts"
+              title="漂亮哥哥的请客清单"
+              titleColor="#D46B75"
+              fill="#FDF6F0"
+              borderColor="#D4A161"
+              style={{
+                left: "7.5%",
+                top: "41.11111%",
+                width: "26.25%",
+                height: "40%",
+              }}
+              headingStyle={{ left: "4.28571%", top: "5%", width: "91.42857%" }}
+              bodyStyle={{
+                left: "20.95238%",
+                top: "25.55556%",
+                width: "71.42857%",
+                height: "68.88889%",
+              }}
+              bodyClassName="flex-col items-stretch justify-between text-left"
+            >
+              <div className="announcement-gift-content relative h-full w-full">
+                <ul className="m-0 list-none p-0">
+                  {giftItemSlots.map((slot, index) => {
+                    const gift = announcement.gifts[index];
+                    if (gift === undefined) return null;
 
-                return (
-                  <li
-                    key={index}
-                    className="absolute flex w-full flex-col justify-center text-left"
-                    style={{
-                      ...slot,
-                      color: "#1F3B6B",
-                      fontWeight: 400,
-                      fontSize: "1.5cqw",
-                      lineHeight: "2.499996cqw",
-                      gap: "1.5cqw",
-                    }}
-                  >
-                    {gift.split(/\r?\n/).map((line, lineIndex) => (
-                      <span
-                        key={lineIndex}
-                        className="w-full whitespace-pre-wrap"
+                    return (
+                      <li
+                        key={index}
+                        className="announcement-gift-item absolute flex w-full flex-col justify-center text-left"
+                        style={{
+                          ...slot,
+                          top: `var(--announcement-flow-top, ${slot.top})`,
+                          height: `var(--announcement-flow-height, ${slot.height})`,
+                          color: "#1F3B6B",
+                          fontWeight: 400,
+                          fontSize: "var(--announcement-body-font-size, 1.5cqw)",
+                          lineHeight: "var(--announcement-body-line-height, 2.499996cqw)",
+                          gap: "var(--announcement-gift-line-gap, 1.5cqw)",
+                        }}
                       >
-                        {line}
-                      </span>
-                    ))}
-                  </li>
-                );
-              })}
-            </ul>
-            <p
-              className="absolute m-0 flex items-center justify-center text-center"
-              style={{
-                left: "-9.33333%",
-                bottom: 0,
-                width: "100%",
-                height: "1.5cqw",
-                color: "#A16E52",
-                fontWeight: 400,
-                fontSize: "0.75cqw",
-                lineHeight: "1.250004cqw",
-              }}
-            >
-              {announcement.giftCaption}
-            </p>
+                        {gift.split(/\r?\n/).map((line, lineIndex) => (
+                          <span
+                            key={lineIndex}
+                            className="w-full whitespace-pre-wrap"
+                          >
+                            {line}
+                          </span>
+                        ))}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p
+                  className="announcement-gift-caption absolute m-0 flex items-center justify-center text-center"
+                  style={{
+                    left: "var(--announcement-flow-left, -9.33333%)",
+                    bottom: "var(--announcement-flow-bottom, 0px)",
+                    width: "100%",
+                    height: "var(--announcement-flow-height, 1.5cqw)",
+                    color: "#A16E52",
+                    fontWeight: 400,
+                    fontSize: "var(--announcement-caption-font-size, 0.75cqw)",
+                    lineHeight: "var(--announcement-caption-line-height, 1.250004cqw)",
+                  }}
+                >
+                  {announcement.giftCaption}
+                </p>
+              </div>
+            </InfoCard>
+
+            <div className="announcement-place-time">
+              <InfoCard
+                title="领取地点"
+                titleColor="#427AB8"
+                fill="#F6F8FB"
+                borderColor="#C7A16B"
+                style={{
+                  left: "35.3125%",
+                  top: "41.11111%",
+                  width: "24.6875%",
+                  height: "18.88889%",
+                }}
+                headingStyle={{
+                  left: "4.55696%",
+                  top: "8.23529%",
+                  width: "90.88608%",
+                }}
+                bodyStyle={{
+                  left: "7.08861%",
+                  top: "36.47059%",
+                  width: "85.82278%",
+                  height: "56.47059%",
+                }}
+              >
+                <p
+                  className="m-0 flex w-full flex-col text-center"
+                  style={{
+                    color: "#1F3B66",
+                    fontWeight: 400,
+                    fontSize: "var(--announcement-body-font-size, 1.250004cqw)",
+                    lineHeight: "var(--announcement-body-line-height, 2.25cqw)",
+                    gap: "var(--announcement-text-line-gap, 1.250004cqw)",
+                  }}
+                >
+                  {announcement.location.split(/\r?\n/).map((line, index) => (
+                    <span key={index} className="w-full whitespace-pre-wrap">
+                      {line}
+                    </span>
+                  ))}
+                </p>
+              </InfoCard>
+
+              <InfoCard
+                title="领取时间"
+                titleColor="#C75C61"
+                fill="#FEF3F0"
+                borderColor="#C7A16B"
+                style={{
+                  left: "35.3125%",
+                  top: "62.22222%",
+                  width: "24.6875%",
+                  height: "18.88889%",
+                }}
+                headingStyle={{
+                  left: "4.55696%",
+                  top: "8.23529%",
+                  width: "90.88608%",
+                }}
+                bodyStyle={{
+                  left: "5.06329%",
+                  top: "36.47059%",
+                  width: "89.87342%",
+                  height: "56.47059%",
+                }}
+              >
+                <p
+                  className="m-0 flex w-full flex-col text-center"
+                  style={{
+                    color: "#1F3B66",
+                    fontWeight: 400,
+                    fontSize: "var(--announcement-body-font-size, 1.250004cqw)",
+                    lineHeight: "var(--announcement-body-line-height, 2.25cqw)",
+                    gap: "var(--announcement-text-line-gap, 1.250004cqw)",
+                  }}
+                >
+                  {announcement.time.split(/\r?\n/).map((line, index) => (
+                    <span key={index} className="w-full whitespace-pre-wrap">
+                      {line}
+                    </span>
+                  ))}
+                </p>
+              </InfoCard>
+
+            </div>
           </div>
-        </InfoCard>
-
-        <InfoCard
-          title="领取地点"
-          titleColor="#427AB8"
-          fill="#F6F8FB"
-          borderColor="#C7A16B"
-          style={{
-            left: "35.3125%",
-            top: "41.11111%",
-            width: "24.6875%",
-            height: "18.88889%",
-          }}
-          headingStyle={{
-            left: "4.55696%",
-            top: "8.23529%",
-            width: "90.88608%",
-          }}
-          bodyStyle={{
-            left: "7.08861%",
-            top: "36.47059%",
-            width: "85.82278%",
-            height: "56.47059%",
-          }}
-        >
-          <p
-            className="m-0 flex w-full flex-col text-center"
+          <InfoCard
+            className="announcement-requirements"
+            title="领取条件（需同时满足）"
+            titleColor="#4273B2"
+            fill="#F5F7FB"
+            borderColor="#C7A16B"
             style={{
-              color: "#1F3B66",
-              fontWeight: 400,
-              fontSize: "1.250004cqw",
-              lineHeight: "2.25cqw",
-              gap: "1.250004cqw",
-            }}
-          >
-            {announcement.location.split(/\r?\n/).map((line, index) => (
-              <span key={index} className="w-full whitespace-pre-wrap">
-                {line}
-              </span>
-            ))}
-          </p>
-        </InfoCard>
-
-        <InfoCard
-          title="领取时间"
-          titleColor="#C75C61"
-          fill="#FEF3F0"
-          borderColor="#C7A16B"
-          style={{
-            left: "35.3125%",
-            top: "62.22222%",
-            width: "24.6875%",
-            height: "18.88889%",
-          }}
-          headingStyle={{
-            left: "4.55696%",
-            top: "8.23529%",
-            width: "90.88608%",
-          }}
-          bodyStyle={{
-            left: "5.06329%",
-            top: "36.47059%",
-            width: "89.87342%",
-            height: "56.47059%",
-          }}
-        >
-          <p
-            className="m-0 flex w-full flex-col text-center"
-            style={{
-              color: "#1F3B66",
-              fontWeight: 400,
-              fontSize: "1.250004cqw",
-              lineHeight: "2.25cqw",
-              gap: "1.250004cqw",
-            }}
-          >
-            {announcement.time.split(/\r?\n/).map((line, index) => (
-              <span key={index} className="w-full whitespace-pre-wrap">
-                {line}
-              </span>
-            ))}
-          </p>
-        </InfoCard>
-
-        <InfoCard
-          title="领取条件（需同时满足）"
-          titleColor="#4273B2"
-          fill="#F5F7FB"
-          borderColor="#C7A16B"
-          style={{
-            left: "61.5625%",
-            top: "41.11111%",
-            width: "30.9375%",
-            height: "22.22222%",
-          }}
-          headingStyle={{ left: "3.63636%", top: "6%", width: "92.72727%" }}
-          bodyStyle={{
-            left: "4.0404%",
-            top: "32%",
-            width: "91.91919%",
-            height: "68%",
-          }}
-          bodyClassName="items-stretch"
-        >
-          <div className="relative h-full w-full">
-            <p
-              className="absolute m-0 w-full whitespace-pre-wrap text-left"
-              style={{
-                left: 0,
-                top: 0,
-                height: "79.41176%",
-                color: "#1F3661",
-                fontWeight: 400,
-                fontSize: "0.75cqw",
-                lineHeight: "1.250004cqw",
-              }}
-            >
-              {announcement.requirements}
-            </p>
-            <p
-              className="absolute m-0 flex items-center justify-center text-center"
-              style={{
-                left: "0.43956%",
-                top: "79.41176%",
-                width: "99.12088%",
-                height: "14.70588%",
-                color: "#2E61A3",
-                fontWeight: 400,
-                fontSize: "0.75cqw",
-                lineHeight: "1.250004cqw",
-              }}
-            >
-              {announcement.requirementsExtra}
-            </p>
-          </div>
-        </InfoCard>
-
-        <InfoCard
-          title="注意事项"
-          titleColor="#4070A8"
-          fill="#FBF6F0"
-          borderColor="#C7A16B"
-          style={{
-            left: "61.5625%",
-            top: "65.55556%",
-            width: "30.9375%",
-            height: "15.55556%",
-          }}
-          headingStyle={{
-            left: "3.63636%",
-            top: "7.14286%",
-            width: "92.72727%",
-          }}
-          bodyStyle={{
-            left: "4.0404%",
-            top: "40%",
-            width: "91.91919%",
-            height: "57.14286%",
-          }}
-          bodyClassName="items-start justify-start text-left"
-        >
-          <p
-            className="m-0 h-full w-full whitespace-pre-wrap"
-            style={{
-              color: "#243857",
-              fontWeight: 400,
-              fontSize: "0.75cqw",
-              lineHeight: "1.250004cqw",
-            }}
-          >
-            {announcement.notes}
-          </p>
-        </InfoCard>
-
-        <footer
-          className="absolute overflow-hidden"
-          style={{
-            left: "10%",
-            top: "84.44444%",
-            width: "80%",
-            height: "10%",
-            backgroundColor: "#F9E9D7",
-          }}
-        >
-          <p
-            className="absolute m-0 flex items-center justify-center text-center"
-            style={{
-              left: "15.625%",
-              top: "0%",
-              width: "68.75%",
-              height: "35.55556%",
-              color: "#2E4261",
-              fontWeight: 400,
-              fontSize: "1.125cqw",
-              lineHeight: "2.000004cqw",
-            }}
-          >
-            {announcement.footerDescription}
-          </p>
-          <p
-            className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
-            style={{
-              left: "7.8125%",
-              top: "42.22222%",
-              width: "84.375%",
-              height: "31.11111%",
-              color: "#1F4D8C",
-              fontWeight: 400,
-              fontSize: "0.999996cqw",
-              lineHeight: "1.749996cqw",
-            }}
-          >
-            {announcement.footerTags.join("   ")}
-          </p>
-          <p
-            className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
-            style={{
-              left: "16.40625%",
-              top: "75.55556%",
-              width: "67.1875%",
+              left: "61.5625%",
+              top: "41.11111%",
+              width: "30.9375%",
               height: "22.22222%",
-              color: "#8C663D",
-              fontWeight: 400,
-              fontSize: "0.75cqw",
-              lineHeight: "1.250004cqw",
+            }}
+            headingStyle={{ left: "3.63636%", top: "6%", width: "92.72727%" }}
+            bodyStyle={{
+              left: "4.0404%",
+              top: "32%",
+              width: "91.91919%",
+              height: "68%",
+            }}
+            bodyClassName="items-stretch"
+          >
+            <div className="announcement-requirements-content relative h-full w-full">
+              <p
+                className="announcement-paragraphs absolute m-0 w-full whitespace-pre-wrap text-left"
+                style={{
+                  left: "var(--announcement-flow-left, 0px)",
+                  top: "var(--announcement-flow-top, 0px)",
+                  height: "var(--announcement-flow-height, 79.41176%)",
+                  color: "#1F3661",
+                  fontWeight: 400,
+                  fontSize: "var(--announcement-body-font-size, 0.75cqw)",
+                  lineHeight: "var(--announcement-body-line-height, 1.250004cqw)",
+                }}
+              >
+                {announcement.requirements.split(/\r?\n/).map((line, index, lines) => (
+                  <Fragment key={index}>
+                    <span>{line}</span>
+                    {index < lines.length - 1 ? "\n" : null}
+                  </Fragment>
+                ))}
+              </p>
+              <p
+                className="absolute m-0 flex items-center justify-center text-center"
+                style={{
+                  left: "var(--announcement-flow-left, 0.43956%)",
+                  top: "var(--announcement-flow-top, 79.41176%)",
+                  width: "var(--announcement-flow-width, 99.12088%)",
+                  height: "var(--announcement-flow-height, 14.70588%)",
+                  color: "#2E61A3",
+                  fontWeight: 400,
+                  fontSize: "var(--announcement-body-font-size, 0.75cqw)",
+                  lineHeight: "var(--announcement-body-line-height, 1.250004cqw)",
+                }}
+              >
+                {announcement.requirementsExtra}
+              </p>
+            </div>
+          </InfoCard>
+
+          <InfoCard
+            className="announcement-notes"
+            title="注意事项"
+            titleColor="#4070A8"
+            fill="#FBF6F0"
+            borderColor="#C7A16B"
+            style={{
+              left: "61.5625%",
+              top: "65.55556%",
+              width: "30.9375%",
+              height: "15.55556%",
+            }}
+            headingStyle={{
+              left: "3.63636%",
+              top: "7.14286%",
+              width: "92.72727%",
+            }}
+            bodyStyle={{
+              left: "4.0404%",
+              top: "40%",
+              width: "91.91919%",
+              height: "57.14286%",
+            }}
+            bodyClassName="items-start justify-start text-left"
+          >
+            <p
+              className="announcement-paragraphs m-0 h-full w-full whitespace-pre-wrap"
+              style={{
+                color: "#243857",
+                fontWeight: 400,
+                fontSize: "var(--announcement-body-font-size, 0.75cqw)",
+                lineHeight: "var(--announcement-body-line-height, 1.250004cqw)",
+              }}
+            >
+              {announcement.notes.split(/\r?\n/).map((line, index, lines) => (
+                <Fragment key={index}>
+                  <span>{line}</span>
+                  {index < lines.length - 1 ? "\n" : null}
+                </Fragment>
+              ))}
+            </p>
+          </InfoCard>
+
+          <footer
+            className="announcement-footer absolute overflow-hidden"
+            style={{
+              left: "var(--announcement-flow-left, 10%)",
+              top: "var(--announcement-flow-top, 84.44444%)",
+              width: "var(--announcement-flow-width, 80%)",
+              height: "var(--announcement-flow-height, 10%)",
+              backgroundColor: "#F9E9D7",
             }}
           >
-            {announcement.footerEnglishCaption}
-          </p>
-        </footer>
+            <p
+              className="absolute m-0 flex items-center justify-center text-center"
+              style={{
+                left: "var(--announcement-flow-left, 15.625%)",
+                top: "var(--announcement-flow-top, 0%)",
+                width: "var(--announcement-flow-width, 68.75%)",
+                height: "var(--announcement-flow-height, 35.55556%)",
+                color: "#2E4261",
+                fontWeight: 400,
+                fontSize: "var(--announcement-body-font-size, 1.125cqw)",
+                lineHeight: "var(--announcement-body-line-height, 2.000004cqw)",
+              }}
+            >
+              {announcement.footerDescription}
+            </p>
+            <p
+              className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
+              style={{
+                left: "var(--announcement-flow-left, 7.8125%)",
+                top: "var(--announcement-flow-top, 42.22222%)",
+                width: "var(--announcement-flow-width, 84.375%)",
+                height: "var(--announcement-flow-height, 31.11111%)",
+                color: "#1F4D8C",
+                fontWeight: 400,
+                fontSize: "var(--announcement-body-font-size, 0.999996cqw)",
+                lineHeight: "var(--announcement-body-line-height, 1.749996cqw)",
+              }}
+            >
+              {announcement.footerTags.join("   ")}
+            </p>
+            <p
+              className="absolute m-0 flex items-center justify-center whitespace-pre-wrap text-center"
+              style={{
+                left: "var(--announcement-flow-left, 16.40625%)",
+                top: "var(--announcement-flow-top, 75.55556%)",
+                width: "var(--announcement-flow-width, 67.1875%)",
+                height: "var(--announcement-flow-height, 22.22222%)",
+                color: "#8C663D",
+                fontWeight: 400,
+                fontSize: "var(--announcement-caption-font-size, 0.75cqw)",
+                lineHeight: "var(--announcement-caption-line-height, 1.250004cqw)",
+              }}
+            >
+              {announcement.footerEnglishCaption}
+            </p>
+          </footer>
+        </div>
       </div>
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[15]"
+        className="announcement-stars pointer-events-none absolute inset-0 z-[15]"
       >
         {stars.map(([x, y, size]) => (
           <span
@@ -631,8 +667,14 @@ function AnnouncementBoard({ announcement }: AnnouncementBoardProps) {
         src={boardDecoration}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+        className="announcement-decoration-desktop pointer-events-none absolute inset-0 z-20 h-full w-full"
       />
+      <div aria-hidden="true" className="announcement-decoration-cap announcement-decoration-top">
+        <img src={boardDecoration} alt="" />
+      </div>
+      <div aria-hidden="true" className="announcement-decoration-cap announcement-decoration-bottom">
+        <img src={boardDecoration} alt="" />
+      </div>
     </div>
   );
 }

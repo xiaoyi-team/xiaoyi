@@ -1,0 +1,1101 @@
+.wish-box-home-wordmark {
+  display: none;
+}
+
+.wish-box-announcement-dismiss,
+.announcement-decoration-cap {
+  display: none;
+}
+
+.wish-box-announcement-scroll,
+.announcement-body,
+.announcement-first-row,
+.announcement-place-time {
+  display: contents;
+}
+
+@media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  /* Mobile Loading uses the existing full-width Scene, without a parent scale. */
+  .wish-box-scene .wish-box-loading {
+    --wish-box-loading-unit: calc(100cqw / 956 * 0.75);
+  }
+
+  .wish-box-scene .wish-box-loading--center {
+    left: calc(100% * 418 / 956);
+    top: calc(100% * 160 / 440);
+  }
+
+  .wish-box-scene .wish-box-loading--corner {
+    right: calc(100% * 64 / 956);
+    bottom: calc(100% * 24 / 440);
+  }
+
+  .wish-box-scene[data-wish-box-view="home"] {
+    --wish-box-scene-aspect-ratio: auto;
+    --wish-box-scene-max-width: none;
+    height: 100%;
+  }
+
+  .wish-box-home {
+    container-type: size;
+  }
+
+  .wish-box-home-plane {
+    /* The background and both entrances share this uncropped 16:9 plane. */
+    --wish-box-home-plane-width: max(100cqw, 177.777778cqh);
+    inset: auto;
+    width: var(--wish-box-home-plane-width);
+    height: calc(var(--wish-box-home-plane-width) * 9 / 16);
+    left: calc((100cqw - var(--wish-box-home-plane-width)) / 2);
+    top: calc((100cqh - var(--wish-box-home-plane-width) * 9 / 16) * 0.50637);
+    container-type: inline-size;
+  }
+
+  .wish-box-home-sign {
+    /* Keep the lettering and hit target readable while its anchor follows the garden. */
+    --wish-box-home-sign-width: max(180.6958px, 18.901234cqw);
+    --wish-box-home-sign-height: max(73.7832px, 7.717908cqw);
+  }
+
+  .wish-box-home-sign-image {
+    display: none;
+  }
+
+  .wish-box-home-wordmark {
+    display: block;
+    position: absolute;
+    inset: 0;
+    container-type: inline-size;
+    pointer-events: none;
+    font-family: "Noto Serif SC", serif;
+    text-align: left;
+    text-shadow: 0.498px 0.996px 3.635px rgb(0 0 0 / 39%);
+  }
+
+  .wish-box-home-wordmark > img {
+    position: absolute;
+    height: auto;
+    max-width: none;
+  }
+
+  .wish-box-home-wordmark-hatch-left {
+    left: 0;
+    top: 37.79095%;
+    width: 35.418643%;
+  }
+
+  .wish-box-home-wordmark-hatch-right {
+    left: 31.964294%;
+    top: 53.312211%;
+    width: 35.418643%;
+  }
+
+  .wish-box-home-wordmark-script {
+    left: 34.168736%;
+    top: 28.343227%;
+    width: 34.31181%;
+  }
+
+  .wish-box-home-wordmark-chinese {
+    position: absolute;
+    left: 4.408775%;
+    top: 0;
+    width: 66.133247%;
+    color: #fff;
+    font-size: 31.867px;
+    font-weight: 700;
+    line-height: 41.825px;
+    white-space: nowrap;
+  }
+
+  .wish-box-home-wordmark-rule {
+    position: absolute;
+    left: 6.062106%;
+    top: 58.710911%;
+    width: 57.866591%;
+    height: 0.497917px;
+    background: #fff;
+    box-shadow: 0.498px 0.996px 3.635px rgb(0 0 0 / 39%);
+  }
+
+  .wish-box-home-wordmark-english {
+    position: absolute;
+    left: 40.230952%;
+    top: 70.183148%;
+    width: 59.76896%;
+    height: 22px;
+    color: #f4f4f4;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgb(76 57 43 / 85%), 0 0 1px rgb(76 57 43 / 70%);
+  }
+
+  .wish-box-home-return {
+    /* Undo the plane's crop offset for the viewport-pinned, safe-area-aware Link. */
+    --wish-box-home-return-left: calc((100cqw - 100dvw) / 2 + max(38px, env(safe-area-inset-left, 0px) + 12px));
+    --wish-box-home-return-top: calc((56.25cqw - 100dvh) * 0.50637 + max(12px, env(safe-area-inset-top, 0px) + 12px));
+    --wish-box-home-return-width: 104px;
+    --wish-box-home-return-height: 44px;
+    --wish-box-home-return-radius: 6px;
+    --wish-box-home-return-icon-left: 4px;
+    --wish-box-home-return-icon-width: 30px;
+    --wish-box-home-return-content-top: 9px;
+    --wish-box-home-return-content-height: 26px;
+    --wish-box-home-return-text-left: 42px;
+    --wish-box-home-return-text-width: 62px;
+    --wish-box-home-return-font-size: 18px;
+    --wish-box-home-return-line-height: 26px;
+    z-index: 1;
+  }
+
+  .wish-box-home-return > img {
+    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+  }
+
+  .wish-box-home-return > span {
+    -webkit-text-stroke: 0.25px rgb(76 57 43 / 55%);
+    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+  }
+
+  .wish-box-announcement-legacy {
+    --wish-box-announcement-aspect-ratio: auto;
+    --wish-box-announcement-max-width: none;
+    height: 100%;
+  }
+
+  .wish-box-scene[data-wish-box-view="home"] > .wish-box-home[inert] {
+    /* Home's existing inline inactive opacity stays unchanged outside this overlay. */
+    opacity: 0.34 !important;
+  }
+
+  .wish-box-announcement-detail {
+    --announcement-return-left: max(36px, env(safe-area-inset-left, 0px) + 12px);
+    --announcement-return-top: max(5px, env(safe-area-inset-top, 0px));
+    --announcement-return-width: 110.5px;
+    --announcement-return-height: 48.1px;
+    --announcement-return-radius: 6px;
+    --announcement-return-icon-left: 4.55px;
+    --announcement-return-icon-top: 3.25px;
+    --announcement-return-icon-width: 48.1px;
+    --announcement-return-icon-height: 41.6px;
+    --announcement-return-text-left: 52.65px;
+    --announcement-return-text-top: 11.05px;
+    --announcement-return-text-width: 36px;
+    --announcement-return-text-height: 26px;
+    --announcement-return-weight: 600;
+    --announcement-return-font-size: 18px;
+    --announcement-return-line-height: 26px;
+    --announcement-article-left: auto;
+    --announcement-article-top: auto;
+    --announcement-article-width: min(800px, calc(100% - 28px));
+    --announcement-article-height: auto;
+  }
+
+  .wish-box-announcement-dismiss {
+    display: block;
+    z-index: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .wish-box-announcement-return > img {
+    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+  }
+
+  .wish-box-announcement-detail .wish-box-announcement-return > span {
+    text-align: left;
+    -webkit-text-stroke: 0.25px rgb(76 57 43 / 55%);
+    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+  }
+
+  .wish-box-announcement-detail .wish-box-announcement-scroll {
+    position: absolute;
+    z-index: 10;
+    display: block;
+    left: max(clamp(16px, 6.694561cqw, 64px), env(safe-area-inset-left, 0px));
+    right: max(clamp(16px, 6.694561cqw, 64px), env(safe-area-inset-right, 0px));
+    top: max(56px, env(safe-area-inset-top, 0px) + 52px);
+    bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+  }
+
+  .wish-box-announcement-detail .wish-box-announcement-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wish-box-announcement-detail .wish-box-announcement-article {
+    position: relative;
+    margin-inline: auto;
+    margin-bottom: 14px;
+  }
+
+  .wish-box-announcement-detail .announcement-board {
+    --announcement-board-aspect-ratio: auto;
+    --announcement-flow-left: auto;
+    --announcement-flow-top: auto;
+    --announcement-flow-bottom: auto;
+    --announcement-flow-width: 100%;
+    --announcement-flow-height: auto;
+    --announcement-outer-inset: 12px;
+    --announcement-inner-inset: 19px;
+    --announcement-outer-border-width: 1px;
+    --announcement-card-border-width: 0.5px;
+    --announcement-card-radius: 9px;
+    --announcement-inner-radius: 7px;
+    --announcement-header-width: min(610px, 100%);
+    --announcement-header-border-width: 0.75px;
+    --announcement-header-radius: 17px;
+    --announcement-summary-width: min(540px, 100%);
+    --announcement-summary-radius: 12px;
+    --announcement-title-font-size: 24px;
+    --announcement-title-line-height: 34px;
+    --announcement-subtitle-font-size: 14px;
+    --announcement-subtitle-line-height: 20px;
+    --announcement-eyebrow-font-size: 12px;
+    --announcement-eyebrow-line-height: 18px;
+    --announcement-heading-font-size: 16px;
+    --announcement-heading-line-height: 24px;
+    --announcement-heading-height: auto;
+    --announcement-heading-radius: 6px;
+    --announcement-body-font-size: 14px;
+    --announcement-body-line-height: 22px;
+    --announcement-caption-font-size: 12px;
+    --announcement-caption-line-height: 18px;
+    --announcement-gift-line-gap: 0px;
+    --announcement-text-line-gap: 0px;
+    height: auto;
+    padding: 34px clamp(20px, 10%, 80px) 54px;
+    border-radius: 0;
+  }
+
+  .wish-box-announcement-detail .announcement-content {
+    position: relative;
+    inset: auto;
+  }
+
+  .wish-box-announcement-detail .announcement-board > [aria-hidden="true"]:nth-child(2) {
+    /* Paint the inner gold hairline without Chrome rounding a 0.5px border to 1px. */
+    --announcement-card-border-width: 0px;
+    box-shadow: inset 0 0 0 0.5px #dbad61;
+  }
+
+  .wish-box-announcement-detail .announcement-header,
+  .wish-box-announcement-detail .announcement-summary,
+  .wish-box-announcement-detail .announcement-info-card,
+  .wish-box-announcement-detail .announcement-info-heading,
+  .wish-box-announcement-detail .announcement-info-body,
+  .wish-box-announcement-detail .announcement-gift-item,
+  .wish-box-announcement-detail .announcement-gift-caption,
+  .wish-box-announcement-detail .announcement-header > h1,
+  .wish-box-announcement-detail .announcement-header > p,
+  .wish-box-announcement-detail .announcement-summary > p,
+  .wish-box-announcement-detail .announcement-requirements-content > p,
+  .wish-box-announcement-detail .announcement-footer,
+  .wish-box-announcement-detail .announcement-footer > p {
+    position: relative;
+    overflow: visible;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .wish-box-announcement-detail .announcement-header {
+    margin-inline: auto;
+    min-height: 88px;
+    padding: 8px 12px 6px;
+  }
+
+  .wish-box-announcement-detail .announcement-header > h1 {
+    max-width: 540px;
+    margin-inline: auto;
+    white-space: pre-wrap;
+  }
+
+  .wish-box-announcement-detail .announcement-summary {
+    min-height: 53px;
+    margin: 3px auto 0;
+    padding: 3px 20px;
+  }
+
+  .wish-box-announcement-detail .announcement-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+  }
+
+  .wish-box-announcement-detail .announcement-first-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .wish-box-announcement-detail .announcement-place-time {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .wish-box-announcement-detail .announcement-info-card {
+    min-height: 107px;
+    padding: 12px;
+  }
+
+  .wish-box-announcement-detail .announcement-info-heading {
+    min-height: 30px;
+    flex-shrink: 0;
+    padding: 3px 4px;
+  }
+
+  .wish-box-announcement-detail .announcement-info-body {
+    margin-top: 8px;
+  }
+
+  .wish-box-announcement-detail .announcement-gifts {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    min-height: 226px;
+  }
+
+  .wish-box-announcement-detail .announcement-gifts .announcement-info-body {
+    flex: 1;
+  }
+
+  .wish-box-announcement-detail .announcement-gift-content,
+  .wish-box-announcement-detail .announcement-requirements-content,
+  .wish-box-announcement-detail .announcement-notes .announcement-info-body > p {
+    height: auto;
+  }
+
+  .wish-box-announcement-detail .announcement-gift-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .wish-box-announcement-detail .announcement-gift-content > ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 10px;
+  }
+
+  .wish-box-announcement-detail .announcement-gift-item {
+    text-align: center;
+  }
+
+  .wish-box-announcement-detail .announcement-gift-caption {
+    margin-top: 8px;
+  }
+
+  .wish-box-announcement-detail .announcement-requirements {
+    min-height: 215px;
+  }
+
+  .wish-box-announcement-detail .announcement-requirements-content > p + p {
+    margin-top: 3px;
+  }
+
+  .wish-box-announcement-detail .announcement-paragraphs {
+    white-space: normal;
+  }
+
+  .wish-box-announcement-detail .announcement-paragraphs > span {
+    display: block;
+    white-space: pre-wrap;
+  }
+
+  .wish-box-announcement-detail .announcement-paragraphs > span + span {
+    margin-top: 3px;
+  }
+
+  .wish-box-announcement-detail .announcement-notes {
+    min-height: 135px;
+  }
+
+  .wish-box-announcement-detail .announcement-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    min-height: 92px;
+    padding: 8px 20px;
+    /* Only the mobile detail overrides the shared Board's inline footer fill. */
+    background-color: transparent !important;
+  }
+
+  .wish-box-announcement-detail .announcement-stars {
+    /* Keep the original 1600x900 star coordinates, independent of board height. */
+    display: block;
+    z-index: 5;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1600 / 900;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-desktop {
+    display: none;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-cap {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    display: block;
+    width: 100%;
+    /* Use the full board width, not its padded container-query content box. */
+    height: auto;
+    aspect-ratio: 800 / 260;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-cap > img {
+    position: absolute;
+    width: 100%;
+    height: auto;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-top,
+  .wish-box-announcement-detail .announcement-decoration-top > img {
+    top: 0;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-bottom,
+  .wish-box-announcement-detail .announcement-decoration-bottom > img {
+    bottom: 0;
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-top {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
+  }
+
+  .wish-box-announcement-detail .announcement-decoration-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 100%);
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  /* Only Review's visual layer expands. The existing Scene remains the coordinate
+     container for Timeline and Viewer; neither their size nor their logic changes. */
+  .wish-box-scene:has(> .wish-box-review-visual) {
+    overflow: visible;
+  }
+
+  .wish-box-review-visual {
+    --review-mobile-unit: calc(100cqw / 956);
+    left: calc((100% - 100dvw) / 2);
+    right: auto;
+    width: 100dvw;
+    container-type: inline-size;
+  }
+
+  .wish-box-review-visual .wish-box-review-mobile-geometry {
+    left: var(--review-mobile-left) !important;
+    top: var(--review-mobile-top) !important;
+    width: var(--review-mobile-width) !important;
+    height: var(--review-mobile-height) !important;
+  }
+
+  .wish-box-review-visual .wish-box-review-star {
+    /* The mobile information card covers the decorative star layer in Figma. */
+    z-index: 10 !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-header] {
+    border-width: calc(var(--review-mobile-unit) * 0.611) !important;
+    border-radius: calc(var(--review-mobile-unit) * 13.852) !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-title] {
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 16px;
+    font-size: 20px !important;
+    line-height: 28px !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-title] > span {
+    max-width: 100% !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-title="status"] {
+    height: 50% !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-header] > [role="status"] {
+    left: 16px !important;
+    top: 50% !important;
+    width: calc(100% - 32px) !important;
+    height: auto !important;
+    font-size: 14px !important;
+    line-height: 20px;
+  }
+
+  .wish-box-review-visual [data-activity-review-fixture] [data-activity-review-title] {
+    height: 100% !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-fixture] [data-activity-review-header] > p {
+    display: none;
+  }
+
+  .wish-box-review-visual [data-review-header-petal="center"] {
+    left: calc(var(--review-mobile-unit) * 354.852) !important;
+    top: calc(var(--review-mobile-unit) * 39.519) !important;
+    width: calc(var(--review-mobile-unit) * 11.407) !important;
+    height: calc(var(--review-mobile-unit) * 8.556) !important;
+  }
+
+  .wish-box-review-visual [data-review-header-petal="left"] {
+    left: calc(var(--review-mobile-unit) * 57.037) !important;
+    top: calc(var(--review-mobile-unit) * 31.37) !important;
+    width: calc(var(--review-mobile-unit) * 11.407) !important;
+    height: calc(var(--review-mobile-unit) * 8.556) !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-info-card] {
+    border-width: calc(var(--review-mobile-unit) * 0.407) !important;
+    border-radius: calc(var(--review-mobile-unit) * 7.333) !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-info-scroll] {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    left: calc(var(--review-mobile-unit) * 16 - 1px);
+    top: calc(var(--review-mobile-unit) * 16 - 1px);
+    width: calc(var(--review-mobile-unit) * 192);
+    height: calc(var(--review-mobile-unit) * 228);
+    padding-bottom: 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .wish-box-review-visual [data-activity-review-info-scroll]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wish-box-review-visual [data-review-info-label] {
+    position: static !important;
+    flex-shrink: 0;
+    width: auto !important;
+    height: 22px !important;
+    gap: 6px !important;
+  }
+
+  .wish-box-review-visual [data-review-info-label] > span:first-child {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .wish-box-review-visual [data-review-info-label] > span:last-child {
+    width: auto !important;
+    height: auto !important;
+    font-size: 16px !important;
+    line-height: 22px !important;
+  }
+
+  .wish-box-review-visual [data-review-info-content] {
+    position: static !important;
+    display: block !important;
+    flex-shrink: 0;
+    width: 100% !important;
+    height: auto !important;
+    min-width: 0;
+    overflow: visible !important;
+    font-size: 14px !important;
+    line-height: 21px !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+  }
+
+  .wish-box-review-visual [data-review-info-content="location"],
+  .wish-box-review-visual [data-review-info-content="time"] {
+    margin-bottom: 8px;
+  }
+
+  .wish-box-review-visual [data-review-info-content="time"] > span {
+    overflow: visible;
+    white-space: pre-wrap;
+    text-overflow: clip;
+  }
+
+  .wish-box-review-visual [data-review-info-sparkle] {
+    left: calc(var(--review-mobile-unit) * 201.59 - 1px) !important;
+    top: calc(var(--review-mobile-unit) * 240.59 - 1px) !important;
+    width: calc(var(--review-mobile-unit) * 8.342) !important;
+    height: calc(var(--review-mobile-unit) * 8.342) !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-photo-board] {
+    left: calc(var(--review-mobile-unit) * 391) !important;
+    top: calc(var(--review-mobile-unit) * 120) !important;
+    /* Scale the entire accepted 1119-wide board, including all M5 geometry and
+       corner art. New visual Scene cqw is based on 956, not the old 1920. */
+    transform: scale(calc(458 * 1920 / 1119 / 956));
+    transform-origin: top left;
+  }
+
+  .wish-box-review-visual [data-activity-review-return] {
+    left: calc(var(--review-mobile-unit) * 60) !important;
+    top: calc(var(--review-mobile-unit) * 8) !important;
+    width: calc(var(--review-mobile-unit) * 110.5) !important;
+    height: calc(var(--review-mobile-unit) * 48.1) !important;
+    min-height: 44px;
+    border-radius: calc(var(--review-mobile-unit) * 14.3) !important;
+    filter: drop-shadow(0 2.6px 2.438px #000);
+  }
+
+  .wish-box-review-visual [data-activity-review-return] > img {
+    left: calc(var(--review-mobile-unit) * 4.55) !important;
+    top: calc(var(--review-mobile-unit) * 3.25) !important;
+    width: calc(var(--review-mobile-unit) * 48.1) !important;
+    height: calc(var(--review-mobile-unit) * 41.6) !important;
+  }
+
+  .wish-box-review-visual [data-activity-review-return] > span {
+    left: calc(var(--review-mobile-unit) * 55.25) !important;
+    top: calc(var(--review-mobile-unit) * 11.05) !important;
+    width: auto !important;
+    height: 26px !important;
+    font-size: 18px !important;
+    line-height: 26px !important;
+    text-shadow: 0 0 1.3px #000 !important;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  /* Timeline alone uses the 956x440 mobile Scene. Review/Viewer retain their host. */
+  .wish-box-scene:has(> .wish-box-timeline) {
+    --wish-box-scene-aspect-ratio: auto;
+    --wish-box-scene-max-width: none;
+    height: 100%;
+  }
+
+  .wish-box-timeline {
+    --timeline-mobile-unit: calc(100cqw / 956);
+    /* Reuse the accepted 350-wide Card and both frames at 200 mobile Scene px. */
+    --timeline-mobile-card-scale: calc(1920 * 200 / 956 / 350);
+  }
+
+  .wish-box-timeline [data-timeline-background],
+  .wish-box-timeline [data-timeline-edge-decoration] {
+    top: calc(var(--timeline-mobile-unit) * -49);
+    height: calc(var(--timeline-mobile-unit) * 537.75);
+  }
+
+  .wish-box-timeline [data-timeline-background] {
+    opacity: 0.64;
+  }
+
+  .wish-box-timeline [data-timeline-title-glow] {
+    left: calc(var(--timeline-mobile-unit) * 329.123) !important;
+    top: calc(var(--timeline-mobile-unit) * 1.992) !important;
+    width: calc(var(--timeline-mobile-unit) * 297.754) !important;
+    height: calc(var(--timeline-mobile-unit) * 77.675) !important;
+  }
+
+  .wish-box-timeline [data-timeline-header-title] {
+    left: 50% !important;
+    top: calc(var(--timeline-mobile-unit) * 11.5) !important;
+    width: 128px !important;
+    height: 42px !important;
+    font-size: 32px !important;
+    line-height: 42px !important;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .wish-box-timeline [data-timeline-header-subtitle] {
+    display: none;
+  }
+
+  .wish-box-timeline [data-timeline-title-ornament] {
+    top: calc(var(--timeline-mobile-unit) * 13.5) !important;
+    width: calc(var(--timeline-mobile-unit) * 89.235) !important;
+    height: calc(var(--timeline-mobile-unit) * 37.842) !important;
+  }
+
+  .wish-box-timeline [data-timeline-title-ornament="left"] {
+    left: calc(var(--timeline-mobile-unit) * 291) !important;
+  }
+
+  .wish-box-timeline [data-timeline-title-ornament="right"] {
+    left: calc(var(--timeline-mobile-unit) * 579) !important;
+    width: calc(var(--timeline-mobile-unit) * 88.714) !important;
+  }
+
+  .wish-box-timeline [data-timeline-filters] {
+    left: calc(var(--timeline-mobile-unit) * 68) !important;
+    top: calc(var(--timeline-mobile-unit) * 65) !important;
+    width: calc(var(--timeline-mobile-unit) * 824) !important;
+    height: calc(var(--timeline-mobile-unit) * 40) !important;
+    border-width: 0.498px !important;
+    border-radius: calc(var(--timeline-mobile-unit) * 12.448) !important;
+  }
+
+  .wish-box-timeline [data-timeline-filter-label] {
+    top: calc(var(--timeline-mobile-unit) * 20 - 10px) !important;
+    width: auto !important;
+    height: 20px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+  }
+
+  .wish-box-timeline [data-timeline-filter-label="year"] { left: calc(var(--timeline-mobile-unit) * 28) !important; }
+  .wish-box-timeline [data-timeline-filter-label="kind"] { left: calc(var(--timeline-mobile-unit) * 303 - max(0px, 14px - var(--timeline-mobile-unit) * 14)) !important; }
+  .wish-box-timeline [data-timeline-filter-label="form"] { left: calc(var(--timeline-mobile-unit) * 499 - max(0px, 14px - var(--timeline-mobile-unit) * 14)) !important; }
+
+  .wish-box-timeline [data-timeline-filter-pill],
+  .wish-box-timeline [data-timeline-kind-trigger] {
+    top: calc(var(--timeline-mobile-unit) * 20 - 22px) !important;
+    width: max(44px, var(--timeline-mobile-unit) * 48) !important;
+    height: 44px !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    isolation: isolate;
+  }
+
+  /* The visible 28px pill and the 44px hit area share one native button. */
+  .wish-box-timeline [data-timeline-filter-pill]::before,
+  .wish-box-timeline [data-timeline-kind-trigger]::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 8px 0;
+    border: 0.498px solid rgb(181 165 139 / 65%);
+    border-radius: 11.95px;
+    background: #F3EDE1;
+  }
+
+  .wish-box-timeline [data-timeline-filter-pill][aria-pressed="true"]::before { background: #927A54; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(1) { left: calc(var(--timeline-mobile-unit) * 75) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(2) { left: calc(var(--timeline-mobile-unit) * 127) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(3) { left: calc(var(--timeline-mobile-unit) * 179) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(4) { left: calc(var(--timeline-mobile-unit) * 231) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(6) { left: calc(var(--timeline-mobile-unit) * 577) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(7) { left: calc(var(--timeline-mobile-unit) * 629) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(8) { left: calc(var(--timeline-mobile-unit) * 681) !important; }
+  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(9) {
+    left: calc(var(--timeline-mobile-unit) * 733) !important;
+    width: calc(var(--timeline-mobile-unit) * 70) !important;
+  }
+
+  .wish-box-timeline [data-timeline-kind-trigger] {
+    left: calc(var(--timeline-mobile-unit) * 381) !important;
+    width: calc(var(--timeline-mobile-unit) * 94) !important;
+  }
+
+  .wish-box-timeline [data-timeline-kind-trigger]::before {
+    border-color: #C5B79E;
+    border-radius: 10.954px;
+    background: rgb(255 249 237 / 70%);
+  }
+
+  .wish-box-timeline [data-timeline-filter-separator] {
+    top: calc(var(--timeline-mobile-unit) * 9) !important;
+    width: 1px !important;
+    height: calc(var(--timeline-mobile-unit) * 22) !important;
+  }
+
+  .wish-box-timeline [data-timeline-filter-separator="year"] { left: calc(var(--timeline-mobile-unit) * 291) !important; }
+  .wish-box-timeline [data-timeline-filter-separator="form"] { left: calc(var(--timeline-mobile-unit) * 487) !important; }
+
+  .wish-box-timeline #timeline-kind-options {
+    left: calc(var(--timeline-mobile-unit) * 381) !important;
+    top: calc(var(--timeline-mobile-unit) * 35) !important;
+    display: flex;
+    flex-direction: column;
+    width: 160px !important;
+    height: auto !important;
+    max-height: calc(100dvh - var(--timeline-mobile-unit) * 100 - 12px);
+    padding: 4px 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    scrollbar-width: none;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: #FAF8F0 !important;
+    box-shadow: inset 0 0 0 0.75px #D9C299, 0 4px 12px rgb(77 56 36 / 16%);
+  }
+
+  .wish-box-timeline #timeline-kind-options::-webkit-scrollbar { display: none; }
+
+  .wish-box-timeline #timeline-kind-options > button {
+    position: relative;
+    inset: auto !important;
+    flex-shrink: 0;
+    width: 100% !important;
+    height: 44px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #614C37 !important;
+    font-family: "Noto Serif SC", serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 22px;
+  }
+
+  .wish-box-timeline #timeline-kind-options > button:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    height: 0.5px;
+    background: rgb(191 158 102 / 25%);
+  }
+
+  .wish-box-timeline #timeline-kind-options > button[aria-pressed="true"] { background: #F3EDE1 !important; }
+
+  .wish-box-timeline [data-timeline-viewport] {
+    left: calc(var(--timeline-mobile-unit) * 64) !important;
+    top: calc(var(--timeline-mobile-unit) * 110) !important;
+    width: calc(var(--timeline-mobile-unit) * 828) !important;
+    height: calc(var(--timeline-mobile-unit) * 308) !important;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+  }
+
+  .wish-box-timeline [data-timeline-path] {
+    width: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-content-width) + var(--timeline-mobile-end-padding))) !important;
+    height: calc(var(--timeline-mobile-unit) * 308) !important;
+  }
+
+  .wish-box-timeline [data-timeline-vine] {
+    top: calc(var(--timeline-mobile-unit) * 68) !important;
+    height: calc(var(--timeline-mobile-unit) * 156) !important;
+    background-size: calc(var(--timeline-mobile-unit) * 468) calc(var(--timeline-mobile-unit) * 156) !important;
+  }
+
+  .wish-box-timeline [data-timeline-activity-group] {
+    right: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-end-padding)) !important;
+    width: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-content-width)) !important;
+  }
+
+  .wish-box-timeline [data-timeline-card] {
+    left: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-slot) * 120) !important;
+    top: 0 !important;
+    transform: scale(var(--timeline-mobile-card-scale));
+    transform-origin: top left;
+  }
+
+  .wish-box-timeline [data-timeline-direction="down"] [data-timeline-card] { top: calc(var(--timeline-mobile-unit) * 163) !important; }
+
+  .wish-box-timeline [data-timeline-card-visual] > .truncate {
+    left: calc(var(--timeline-mobile-unit) * 16 / var(--timeline-mobile-card-scale)) !important;
+    top: calc(var(--timeline-mobile-unit) * 97 / var(--timeline-mobile-card-scale)) !important;
+    width: calc(var(--timeline-mobile-unit) * 168 / var(--timeline-mobile-card-scale)) !important;
+    height: calc(var(--timeline-mobile-unit) * 18 / var(--timeline-mobile-card-scale)) !important;
+    font-size: calc(var(--timeline-mobile-unit) * 13 / var(--timeline-mobile-card-scale)) !important;
+    line-height: calc(var(--timeline-mobile-unit) * 18 / var(--timeline-mobile-card-scale)) !important;
+  }
+
+  .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
+    left: calc(var(--timeline-mobile-unit) * 14 / var(--timeline-mobile-card-scale)) !important;
+    top: calc(var(--timeline-mobile-unit) * 112 / var(--timeline-mobile-card-scale)) !important;
+    width: calc(var(--timeline-mobile-unit) * 172 / var(--timeline-mobile-card-scale)) !important;
+    height: calc(var(--timeline-mobile-unit) * 17 / var(--timeline-mobile-card-scale)) !important;
+    font-size: calc(var(--timeline-mobile-unit) * 12 / var(--timeline-mobile-card-scale)) !important;
+    line-height: calc(var(--timeline-mobile-unit) * 17 / var(--timeline-mobile-card-scale)) !important;
+  }
+
+  @supports (text-box-trim: trim-both) and (text-box-edge: cap alphabetic) {
+    /* Figma positions the trimmed text box, not the full CSS line box. */
+    .wish-box-timeline [data-timeline-card-visual] > .truncate,
+    .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
+      height: auto !important;
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
+
+    .wish-box-timeline [data-timeline-card-visual] > .truncate {
+      /* Keep horizontal ellipsis without clipping Chinese glyph overhangs. */
+      overflow: clip visible !important;
+    }
+
+    .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
+      display: block !important;
+    }
+  }
+
+  .wish-box-timeline [data-timeline-marker] {
+    left: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-slot) * 120) !important;
+    top: calc(var(--timeline-mobile-unit) * 136) !important;
+    width: calc(var(--timeline-mobile-unit) * 82) !important;
+    height: calc(var(--timeline-mobile-unit) * 20) !important;
+    padding: 0 !important;
+    border-width: 0.5px !important;
+    border-radius: calc(var(--timeline-mobile-unit) * 7.967) !important;
+    font-size: calc(var(--timeline-mobile-unit) * 14) !important;
+    line-height: calc(var(--timeline-mobile-unit) * 18) !important;
+  }
+
+  .wish-box-timeline [data-timeline-marker-direction="down"] { top: calc(var(--timeline-mobile-unit) * 143) !important; }
+
+  .wish-box-timeline [data-timeline-marker] > span {
+    width: auto !important;
+    height: auto !important;
+    line-height: inherit !important;
+  }
+
+  .wish-box-timeline [data-timeline-gold-glow] {
+    left: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-slot) * 120 + 91.3)) !important;
+    top: calc(var(--timeline-mobile-unit) * 116.7) !important;
+    width: calc(var(--timeline-mobile-unit) * 17.371429) !important;
+    height: calc(var(--timeline-mobile-unit) * 52.114286) !important;
+  }
+
+  /* Shorten only the PC SVG stems to Figma's mobile 9px / 9.4px lengths. */
+  .wish-box-timeline [data-timeline-gold-glow] line {
+    transform-box: view-box;
+  }
+
+  .wish-box-timeline [data-timeline-gold-glow] line[y1="39"] {
+    transform-origin: 15.5px 39px;
+    transform: scaleY(0.4605263158);
+  }
+
+  .wish-box-timeline [data-timeline-gold-glow] line[y1="104"] {
+    transform-origin: 15.5px 68px;
+    transform: scaleY(0.480994152);
+  }
+
+  .wish-box-timeline [data-timeline-navigation] {
+    left: calc(var(--timeline-mobile-unit) * 64) !important;
+    top: auto !important;
+    bottom: 0;
+    width: calc(var(--timeline-mobile-unit) * 828) !important;
+    height: 28px !important;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .wish-box-timeline [data-timeline-nav] {
+    top: auto !important;
+    bottom: 0;
+    width: 110px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+    align-items: flex-end;
+    pointer-events: auto;
+  }
+
+  .wish-box-timeline [data-timeline-nav="latest"] { left: auto !important; right: 0; }
+
+  .wish-box-timeline [data-timeline-navigation] > p {
+    left: calc(var(--timeline-mobile-unit) * 372.507) !important;
+    top: auto !important;
+    bottom: 0;
+    width: auto !important;
+    height: 18px !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+    white-space: nowrap !important;
+  }
+
+  .wish-box-timeline [data-timeline-return] {
+    left: calc(var(--timeline-mobile-unit) * 36) !important;
+    top: calc(var(--timeline-mobile-unit) * 4) !important;
+    width: calc(var(--timeline-mobile-unit) * 110.5) !important;
+    height: max(44px, var(--timeline-mobile-unit) * 48.1) !important;
+    border-radius: 14.3px !important;
+    filter: drop-shadow(0 2.6px 2.438px #000);
+  }
+
+  .wish-box-timeline [data-timeline-return] > img {
+    left: calc(var(--timeline-mobile-unit) * 4.55) !important;
+    top: calc(var(--timeline-mobile-unit) * 3.25) !important;
+    width: calc(var(--timeline-mobile-unit) * 48.1) !important;
+    height: calc(var(--timeline-mobile-unit) * 41.6) !important;
+  }
+
+  .wish-box-timeline [data-timeline-return] > span {
+    left: calc(var(--timeline-mobile-unit) * 52.65) !important;
+    top: calc(var(--timeline-mobile-unit) * 11.05) !important;
+    width: auto !important;
+    height: 26px !important;
+    font-size: 18px !important;
+    line-height: 26px !important;
+    text-shadow: 0 0 1.3px #000 !important;
+  }
+
+  .wish-box-timeline [data-timeline-query-status] {
+    left: calc(var(--timeline-mobile-unit) * 64) !important;
+    max-width: calc(100% - var(--timeline-mobile-unit) * 128) !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  /* Composite the existing 32%-opacity Review over Figma's cream, not white. */
+  .wish-box-scene:has(> [role="dialog"] > [data-photo-viewer-background])::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 calc((100% - 100dvw) / 2);
+    width: 100dvw;
+    background: #F6E9E1;
+    pointer-events: none;
+  }
+
+  /* Match Review's full-width visual layer without changing its Scene host. */
+  .wish-box-scene > [role="dialog"]:has(> [data-photo-viewer-background]) {
+    --viewer-mobile-unit: calc(100cqw / 956);
+    left: calc((100% - 100dvw) / 2);
+    right: auto;
+    width: 100dvw;
+    container-type: inline-size;
+  }
+
+  /* The sample is 360px tall; reuse its 40px vertical inset as a wide-photo guard. */
+  .wish-box-scene [data-photo-viewer-placeholder] {
+    left: 50% !important;
+    top: 50% !important;
+    max-width: calc(100cqw - var(--viewer-mobile-unit) * 80);
+    max-height: min(calc(var(--viewer-mobile-unit) * 360), calc(100dvh - var(--viewer-mobile-unit) * 80));
+    box-shadow: calc(var(--viewer-mobile-unit) * 3.139) calc(var(--viewer-mobile-unit) * 2.69) calc(var(--viewer-mobile-unit) * 4.439) rgb(0 0 0 / 32%) !important;
+    transform: translate(-50%, -50%) rotate(-0.735704deg) !important;
+  }
+
+  .wish-box-scene [data-photo-viewer-placeholder]:has(> img) {
+    width: max-content !important;
+    height: max-content !important;
+    background-color: transparent !important;
+  }
+
+  .wish-box-scene [data-photo-viewer-placeholder] > img {
+    width: auto;
+    height: auto;
+    max-width: calc(100cqw - var(--viewer-mobile-unit) * 80);
+    max-height: min(calc(var(--viewer-mobile-unit) * 360), calc(100dvh - var(--viewer-mobile-unit) * 80));
+  }
+}

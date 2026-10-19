@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import bow from "../../assets/wish-box/activity-review-bow.png";
 import bouquetRibbon from "../../assets/wish-box/activity-review-bouquet-ribbon.png";
@@ -12,6 +12,8 @@ import headerPetalLeft from "../../assets/wish-box/activity-review-header-petal-
 import headerPetalRight from "../../assets/wish-box/activity-review-header-petal-right.png";
 import irisDivider from "../../assets/wish-box/activity-review-iris-divider.png";
 import irisPurple from "../../assets/wish-box/activity-review-iris-purple.png";
+import mobileCornerLeft from "../../assets/wish-box/activity-review-mobile-corner-left.png";
+import mobileCornerRight from "../../assets/wish-box/activity-review-mobile-corner-right.png";
 import photoPinGold from "../../assets/wish-box/activity-review-photo-pin-gold.png";
 import photoStickerColorGold from "../../assets/wish-box/activity-review-photo-sticker-color-gold.png";
 import photoStickerPink from "../../assets/wish-box/activity-review-photo-sticker-pink.png";
@@ -67,6 +69,15 @@ const sceneX = (designPixels: number) =>
 const sceneY = (designPixels: number) =>
   `${((designPixels / 1080) * 100).toFixed(7)}%`;
 
+// Non-photo page geometry from the 956 × 440 mobile Review Frame (3610:161).
+// These variables are consumed only by Review's scoped mobile stylesheet.
+const mobileReviewGeometry = (x: number, y: number, width: number, height: number): CSSProperties => ({
+  "--review-mobile-left": `${x / 9.56}cqw`,
+  "--review-mobile-top": `${y / 9.56}cqw`,
+  "--review-mobile-width": `${width / 9.56}cqw`,
+  "--review-mobile-height": `${height / 9.56}cqw`,
+} as CSSProperties);
+
 // Six entries exercise the largest supported layout; this is not a business default count.
 const ACTIVITY_REVIEW_PHOTO_FIXTURE: readonly ActivityReviewPhotoSelectionFixture[] = [
   { fixtureId: "activity-review-photo-slot-1", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
@@ -101,44 +112,44 @@ type PhotoBoardLayout = {
   decorations: readonly PhotoBoardDecoration[];
 };
 
-// Local UI layout coordinates within the 1070 × 584 board, not transport data.
+// PC layouts from Figma 2349:84; rotations below use CSS (screen-coordinate) angles.
 const PHOTO_BOARD_LAYOUTS: Partial<Record<number, PhotoBoardLayout>> = {
-  1: {
+  1: { // 2447:84
     slots: [
-      { x: 190, y: 75, width: 690, height: 430, rotation: 1 },
+      { x: 190, y: 75, width: 690, height: 430, rotation: -1 },
     ],
     decorations: [
       { type: "pin", x: 495.5, y: 53, width: 79, height: 79 },
     ],
   },
-  2: {
+  2: { // 2447:94
     slots: [
-      { x: 60, y: 135, width: 440, height: 300, rotation: -2 },
-      { x: 575, y: 105, width: 440, height: 300, rotation: 2 },
+      { x: 59.55, y: 147.891, width: 440, height: 274.203, rotation: 2 },
+      { x: 575.45, y: 117.891, width: 440, height: 274.203, rotation: -2 },
     ],
     decorations: [
-      { type: "pin", x: 240.5, y: 113, width: 79, height: 79 },
-      { type: "pin", x: 755.5, y: 83, width: 79, height: 79 },
+      { type: "pin", x: 240.05, y: 125.891, width: 79, height: 79 },
+      { type: "pin", x: 755.95, y: 95.891, width: 79, height: 79 },
     ],
   },
-  3: {
+  3: { // 2349:85
     slots: [
-      { x: 45, y: 110, width: 480, height: 340, rotation: -2 },
-      { x: 605, y: 50, width: 390, height: 210, rotation: 2 },
-      { x: 590, y: 325, width: 400, height: 215, rotation: -1 },
+      { x: 44.287, y: 130.422, width: 480, height: 299.13, rotation: 2 },
+      { x: 631.495, y: 49.075, width: 336.977, height: 210, rotation: -2 },
+      { x: 617.496, y: 325.48, width: 345, height: 215, rotation: 1 },
     ],
     decorations: [
-      { type: "pin", x: 245.5, y: 88, width: 79, height: 79 },
+      { type: "pin", x: 244.787, y: 108.422, width: 79, height: 79 },
       { type: "pin", x: 760.5, y: 28, width: 79, height: 79 },
       { type: "pin", x: 750.5, y: 303, width: 79, height: 79 },
     ],
   },
-  4: {
+  4: { // 2349:109
     slots: [
-      { x: 65, y: 55, width: 430, height: 220, rotation: -2 },
-      { x: 575, y: 65, width: 425, height: 225, rotation: 2 },
-      { x: 70, y: 325, width: 430, height: 220, rotation: 1.5 },
-      { x: 575, y: 330, width: 425, height: 220, rotation: -1.5 },
+      { x: 103.465, y: 56.343, width: 353.023, height: 220, rotation: 2 },
+      { x: 606.957, y: 63.884, width: 361.047, height: 225, rotation: -2 },
+      { x: 108.475, y: 323.992, width: 353.023, height: 220, rotation: -1.5 },
+      { x: 610.976, y: 330.942, width: 353.023, height: 220, rotation: 1.5 },
     ],
     decorations: [
       { type: "pin", x: 240.5, y: 33, width: 79, height: 79 },
@@ -147,41 +158,90 @@ const PHOTO_BOARD_LAYOUTS: Partial<Record<number, PhotoBoardLayout>> = {
       { type: "colorSticker", x: 763, y: 308, width: 49, height: 49 },
     ],
   },
-  5: {
+  5: { // 2349:134
     slots: [
-      { x: 45, y: 65, width: 425, height: 250, rotation: -1.5 },
-      { x: 565, y: 50, width: 430, height: 220, rotation: 1.5 },
-      { x: 45, y: 370, width: 300, height: 170, rotation: 2 },
-      { x: 385, y: 340, width: 300, height: 200, rotation: -1 },
-      { x: 735, y: 345, width: 285, height: 190, rotation: 1 },
+      { x: 56.915, y: 65.312, width: 401.163, height: 250, rotation: 1.5 },
+      { x: 603.475, y: 48.992, width: 353.023, height: 220, rotation: -1.5 },
+      { x: 58.596, y: 369.525, width: 272.791, height: 170, rotation: -2 },
+      { x: 384.886, y: 346.521, width: 300, height: 186.957, rotation: 1 },
+      { x: 735.108, y: 351.195, width: 285, height: 177.609, rotation: -1 },
     ],
     decorations: [
       { type: "pin", x: 218, y: 43, width: 79, height: 79 },
       { type: "pin", x: 740.5, y: 28, width: 79, height: 79 },
       { type: "pin", x: 155.5, y: 348, width: 79, height: 79 },
-      { type: "colorSticker", x: 510.5, y: 318, width: 49, height: 49 },
-      { type: "tape", x: 838, y: 323, width: 79, height: 79 },
+      { type: "colorSticker", x: 510.386, y: 324.521, width: 49, height: 49 },
+      { type: "tape", x: 838.108, y: 329.195, width: 79, height: 79 },
     ],
   },
-  6: {
+  6: { // 2349:160
     slots: [
-      { x: 45, y: 65, width: 290, height: 205, rotation: -2 },
-      { x: 395, y: 50, width: 290, height: 205, rotation: 1.5 },
-      { x: 740, y: 70, width: 285, height: 200, rotation: -1.5 },
-      { x: 55, y: 350, width: 290, height: 200, rotation: 1.5 },
-      { x: 395, y: 340, width: 290, height: 205, rotation: -2 },
-      { x: 735, y: 355, width: 290, height: 195, rotation: 1.5 },
+      { x: 44.576, y: 77.13, width: 290, height: 180.725, rotation: 2 },
+      { x: 395.318, y: 62.134, width: 290, height: 180.725, rotation: -1.5 },
+      { x: 739.707, y: 81.192, width: 285, height: 177.609, rotation: 1.5 },
+      { x: 55.252, y: 359.634, width: 290, height: 180.725, rotation: -1.5 },
+      { x: 394.576, y: 352.13, width: 290, height: 180.725, rotation: 2 },
+      { x: 735.187, y: 362.135, width: 290, height: 180.725, rotation: -1.5 },
     ],
     decorations: [
-      { type: "pin", x: 150.5, y: 43, width: 79, height: 79 },
-      { type: "pin", x: 500.5, y: 28, width: 79, height: 79 },
-      { type: "pin", x: 843, y: 48, width: 79, height: 79 },
-      { type: "colorSticker", x: 175.5, y: 328, width: 49, height: 49 },
-      { type: "tape", x: 500.5, y: 318, width: 79, height: 79 },
-      { type: "pinkSticker", x: 848, y: 333, width: 64, height: 64 },
+      { type: "pin", x: 150.076, y: 55.13, width: 79, height: 79 },
+      { type: "pin", x: 500.818, y: 40.134, width: 79, height: 79 },
+      { type: "pin", x: 842.707, y: 59.192, width: 79, height: 79 },
+      { type: "colorSticker", x: 175.752, y: 337.634, width: 49, height: 49 },
+      { type: "tape", x: 500.076, y: 330.13, width: 79, height: 79 },
+      { type: "pinkSticker", x: 848.187, y: 340.135, width: 64, height: 64 },
     ],
   },
 };
+
+type PhotoBoardGeometry = Omit<PhotoBoardSlot, "rotation"> & { rotation?: number };
+
+const PHOTO_BOARD_MOBILE_MEDIA =
+  "(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)";
+
+const PHOTO_BOARD_IMAGE_STYLES = `
+  [data-activity-review-photo-board] [data-activity-photo-key] > img {
+    object-position: var(--photo-board-image-position, 50% 50%);
+  }
+
+  @media ${PHOTO_BOARD_MOBILE_MEDIA} {
+    [data-activity-review-photo-board] {
+      --photo-board-overflow: visible;
+    }
+
+    /* Native @2x exports retain rotation, filters and transparent margins.
+       Convert their full 108x85 / 112x87 bitmaps from the 458-wide Figma board
+       to Scene units, compensating for the parent's 1px inside border. */
+    [data-activity-review-photo-board] [data-activity-photo-corner="left"] {
+      left: ${toSceneCqw(-8.596 * 1119 / 458 - 1)};
+      top: ${toSceneCqw(-4.502 * 1119 / 458 - 1)};
+      --photo-board-corner-width: ${toSceneCqw(54 * 1119 / 458)};
+      --photo-board-corner-height: ${toSceneCqw(42.5 * 1119 / 458)};
+    }
+
+    [data-activity-review-photo-board] [data-activity-photo-corner="right"] {
+      left: ${toSceneCqw(411.646 * 1119 / 458 - 1)};
+      top: ${toSceneCqw(218.948 * 1119 / 458 - 1)};
+      right: auto;
+      bottom: auto;
+      --photo-board-corner-width: ${toSceneCqw(56 * 1119 / 458)};
+      --photo-board-corner-height: ${toSceneCqw(43.5 * 1119 / 458)};
+    }
+  }
+`;
+
+function photoBoardGeometryStyle(current: PhotoBoardGeometry): CSSProperties {
+  // Figma child coordinates include the parent's 1px inside border; CSS positioning starts inside it.
+  return {
+    left: toSceneCqw(current.x - 1),
+    top: toSceneCqw(current.y - 1),
+    width: toSceneCqw(current.width),
+    height: toSceneCqw(current.height),
+    ...(current.rotation !== undefined ? {
+      transform: `rotate(${current.rotation}deg)`,
+    } : {}),
+  };
+}
 
 const activityReviewStars = [
   { node: "1058", x: 1498, y: 207, size: 20 },
@@ -242,12 +302,14 @@ function IntroductionIcon() {
 }
 
 function SceneStar({ x, y, size }: { x: number; y: number; size: number }) {
+  // Figma retains these stars on a centered 782.222 × 440 decorative plane.
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 20.477 20.477"
-      className="pointer-events-none absolute"
+      className="wish-box-review-mobile-geometry wish-box-review-star pointer-events-none absolute"
       style={{
+        ...mobileReviewGeometry(86.888889 + x * 11 / 27, y * 11 / 27, size * 11 / 27, size * 11 / 27),
         left: sceneX(x),
         top: sceneY(y),
         width: toSceneCqw(size),
@@ -293,6 +355,8 @@ type ReviewData =
 type BoardPhoto = {
   selection: ActivityReviewPhotoSelection;
   thumbnailUrl?: string;
+  posX: number;
+  posY: number;
   placeholderColor: string;
 };
 
@@ -330,7 +394,7 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
   );
 }
 
-function BoardThumbnail({ url }: { url: string }) {
+function BoardThumbnail({ url, posX, posY }: { url: string; posX: number; posY: number }) {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   return (
     <>
@@ -339,7 +403,10 @@ function BoardThumbnail({ url }: { url: string }) {
         alt=""
         draggable={false}
         className="block h-full w-full object-cover"
-        style={{ visibility: status === "ready" ? "visible" : "hidden" }}
+        style={{
+          visibility: status === "ready" ? "visible" : "hidden",
+          "--photo-board-image-position": `${posX}% ${posY}%`,
+        } as CSSProperties}
         onLoad={() => setStatus("ready")}
         onError={() => setStatus("error")}
       />
@@ -360,19 +427,26 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
   const centerTitle = data.source === "record" && data.viewModel !== null && data.message === null;
   const reviewContent = isPreview ? ACTIVITY_REVIEW_UI_FIXTURE : {
     title: viewModel?.title ?? "活动回顾",
-    location: viewModel?.location ?? "暂无地点信息",
+    location: viewModel
+      ? (viewModel.location?.trim() ? viewModel.location : "暂无地点信息")
+      : "",
     time: viewModel ? formatTimelineDateRange(viewModel.startDate, viewModel.endDate) : "—",
-    introduction: viewModel ? viewModel.content ?? "暂无活动介绍"
-      : (data.source === "record" ? data.errorMessage : null) ?? "暂无活动介绍",
+    introduction: viewModel
+      ? (viewModel.content?.trim() ? viewModel.content : "暂无活动介绍")
+      : (data.source === "record" ? data.errorMessage : null) ?? "",
   };
   const photos: BoardPhoto[] = isPreview
     ? ACTIVITY_REVIEW_PHOTO_FIXTURE.map((photo) => ({
         selection: { source: "preview", fixtureId: photo.fixtureId },
+        posX: 50,
+        posY: 50,
         placeholderColor: photo.placeholderColor,
       }))
     : viewModel?.photos.status === "ready" ? viewModel.photos.items.map((photo) => ({
         selection: { source: "record", recordId: viewModel.recordId, imgKey: photo.imgKey },
         thumbnailUrl: photo.thumbnailUrl,
+        posX: photo.posX,
+        posY: photo.posY,
         placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR,
       })) : [];
   const photoBoardLayout = PHOTO_BOARD_LAYOUTS[photos.length];
@@ -414,7 +488,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     <>
     <div
       ref={visualRef}
-      className="absolute inset-0"
+      className="wish-box-review-visual absolute inset-0"
       inert={viewerOpen}
       aria-hidden={viewerOpen ? true : undefined}
       style={{ opacity: viewerOpen ? 0.32 : 1, pointerEvents: viewerOpen ? "none" : undefined }}
@@ -424,31 +498,33 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
       data-activity-review-record-id={data.source === "record" ? data.recordId : undefined}
       data-activity-review-fixture={isPreview ? "activity-review-preview" : undefined}
       className="absolute inset-0 isolate overflow-hidden"
-      style={{ backgroundColor: "#F6E9E1" }}
+      style={{ backgroundColor: "#F6E9E1", opacity: showCenterLoading ? 0.55 : 1 }}
     >
       <img
         src={floralLeft}
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute left-0 top-0 h-full select-none"
-        style={{ width: sceneX(693), maxWidth: "none", zIndex: 13 }}
+        className="wish-box-review-mobile-geometry pointer-events-none absolute left-0 top-0 h-full select-none"
+        // Existing final-render PNGs already contain the visible Scene-edge crop.
+        style={{ ...mobileReviewGeometry(0, 0, 282.333333, 440), width: sceneX(693), maxWidth: "none", zIndex: 13 }}
       />
       <img
         src={floralRight}
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute top-0 h-full select-none"
-        style={{ left: sceneX(1256), width: sceneX(664), maxWidth: "none", zIndex: 13 }}
+        className="wish-box-review-mobile-geometry pointer-events-none absolute top-0 h-full select-none"
+        style={{ ...mobileReviewGeometry(685.481481, 0, 270.518519, 440), left: sceneX(1256), width: sceneX(664), maxWidth: "none", zIndex: 13 }}
       />
       <img
         src={rose}
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(625.074074, 70.481481, 59.569426, 62.212525),
           left: sceneX(1321),
           top: sceneY(173),
           width: toSceneCqw(146.215),
@@ -462,8 +538,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(398.148148, 0, 159.296296, 70.074074),
           left: sceneX(764),
           top: sceneY(0),
           width: toSceneCqw(391),
@@ -475,8 +552,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
 
       <div
         data-activity-review-header
-        className="absolute"
+        className="wish-box-review-mobile-geometry absolute"
         style={{
+          ...mobileReviewGeometry(290.185185, 38.703704, 369.925926, 71.703704),
           left: sceneX(499),
           top: sceneY(95),
           width: sceneX(908),
@@ -490,6 +568,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         }}
       >
         <h1
+          data-activity-review-title={centerTitle ? "success" : "status"}
           className="absolute m-0 flex items-center justify-center text-center"
           style={{
             left: centerTitle ? 0 : toSceneCqw(147),
@@ -557,6 +636,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         ) : null}
         <img
           src={headerPetalCenter}
+          data-review-header-petal="center"
           alt=""
           aria-hidden="true"
           draggable={false}
@@ -565,6 +645,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         />
         <img
           src={headerPetalLeft}
+          data-review-header-petal="left"
           alt=""
           aria-hidden="true"
           draggable={false}
@@ -578,15 +659,16 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
-        style={{ left: sceneX(1618), top: sceneY(213), width: toSceneCqw(31), height: toSceneCqw(24), zIndex: 10 }}
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        style={{ ...mobileReviewGeometry(746.074074, 86.777778, 12.62963, 9.777778), left: sceneX(1618), top: sceneY(213), width: toSceneCqw(31), height: toSceneCqw(24), zIndex: 10 }}
       />
 
       <article
         aria-label="活动信息"
         data-activity-review-info-card
-        className="absolute"
+        className="wish-box-review-mobile-geometry absolute"
         style={{
+          ...mobileReviewGeometry(133, 119, 224, 260),
           left: sceneX(230),
           top: sceneY(311),
           width: toSceneCqw(379),
@@ -599,56 +681,65 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           zIndex: 20,
         }}
       >
-        <div
-          className="absolute flex items-center"
-          style={{ left: toSceneCqw(22), top: toSceneCqw(26), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
-        >
-          <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><LocationIcon /></span>
-          <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动地点</span>
-        </div>
-        <div
-          role={isPreview ? undefined : "region"}
-          aria-label={isPreview ? undefined : "活动地点详情"}
-          tabIndex={isPreview ? undefined : 0}
-          className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
-          style={{ left: toSceneCqw(161), top: toSceneCqw(26), width: toSceneCqw(199), height: toSceneCqw(67), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
-        >
-          {typeof reviewContent.location === "string" ? reviewContent.location : reviewContent.location.map((line) => <span key={line}>{line}</span>)}
-        </div>
+        <div data-activity-review-info-scroll className="contents">
+          <div
+            data-review-info-label
+            className="absolute flex items-center"
+            style={{ left: toSceneCqw(22), top: toSceneCqw(26), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+          >
+            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><LocationIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动地点</span>
+          </div>
+          <div
+            data-review-info-content="location"
+            role={isPreview ? undefined : "region"}
+            aria-label={isPreview ? undefined : "活动地点详情"}
+            tabIndex={isPreview ? undefined : 0}
+            className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
+            style={{ left: toSceneCqw(161), top: toSceneCqw(26), width: toSceneCqw(199), height: toSceneCqw(67), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
+          >
+            {typeof reviewContent.location === "string" ? reviewContent.location : reviewContent.location.map((line) => <span key={line}>{line}</span>)}
+          </div>
 
-        <div
-          className="absolute flex items-center"
-          style={{ left: toSceneCqw(22), top: toSceneCqw(98), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
-        >
-          <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><CalendarIcon /></span>
-          <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动时间</span>
-        </div>
-        <div
-          className="absolute flex items-center whitespace-nowrap"
-          style={{ left: toSceneCqw(161), top: toSceneCqw(101.5), width: toSceneCqw(199), height: toSceneCqw(25), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24) }}
-        >
-          <span className="block min-w-0 truncate" title={reviewContent.time}>{reviewContent.time}</span>
-        </div>
+          <div
+            data-review-info-label
+            className="absolute flex items-center"
+            style={{ left: toSceneCqw(22), top: toSceneCqw(98), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+          >
+            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><CalendarIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动时间</span>
+          </div>
+          <div
+            data-review-info-content="time"
+            className="absolute flex items-center whitespace-nowrap"
+            style={{ left: toSceneCqw(161), top: toSceneCqw(101.5), width: toSceneCqw(199), height: toSceneCqw(25), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24) }}
+          >
+            <span className="block min-w-0 truncate" title={reviewContent.time}>{reviewContent.time}</span>
+          </div>
 
-        <div
-          className="absolute flex items-center"
-          style={{ left: toSceneCqw(22), top: toSceneCqw(138), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
-        >
-          <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><IntroductionIcon /></span>
-          <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动介绍</span>
-        </div>
-        <div
-          role={isPreview ? undefined : "region"}
-          aria-label={isPreview ? undefined : "活动介绍正文"}
-          tabIndex={isPreview ? undefined : 0}
-          className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
-          style={{ left: toSceneCqw(22), top: toSceneCqw(178), width: toSceneCqw(325), height: toSceneCqw(148), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), whiteSpace: isPreview ? undefined : "pre-wrap", overflowWrap: "anywhere" }}
-        >
-          {typeof reviewContent.introduction === "string" ? reviewContent.introduction : reviewContent.introduction.map((paragraph) => (
-            <p key={paragraph} className="m-0">{paragraph}</p>
-          ))}
+          <div
+            data-review-info-label
+            className="absolute flex items-center"
+            style={{ left: toSceneCqw(22), top: toSceneCqw(138), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+          >
+            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><IntroductionIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动介绍</span>
+          </div>
+          <div
+            data-review-info-content="introduction"
+            role={isPreview ? undefined : "region"}
+            aria-label={isPreview ? undefined : "活动介绍正文"}
+            tabIndex={isPreview ? undefined : 0}
+            className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
+            style={{ left: toSceneCqw(22), top: toSceneCqw(178), width: toSceneCqw(325), height: toSceneCqw(148), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), whiteSpace: isPreview ? undefined : "pre-wrap", overflowWrap: "anywhere" }}
+          >
+            {typeof reviewContent.introduction === "string" ? reviewContent.introduction : reviewContent.introduction.map((paragraph) => (
+              <p key={paragraph} className="m-0">{paragraph}</p>
+            ))}
+          </div>
         </div>
         <svg
+          data-review-info-sparkle
           aria-hidden="true"
           viewBox="0 0 20.477 20.477"
           className="pointer-events-none absolute"
@@ -668,7 +759,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           width: toSceneCqw(1119),
           height: toSceneCqw(630),
           boxSizing: "border-box",
-          overflow: "hidden",
+          overflow: "var(--photo-board-overflow, hidden)",
           border: `${toSceneCqw(1)} solid #C7944D`,
           borderRadius: toSceneCqw(18),
           backgroundColor: "#FEF8EE",
@@ -676,12 +767,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         }}
       >
         <div
+          data-activity-photo-board-inner
           className="absolute"
           style={{
-            left: toSceneCqw(25),
-            top: toSceneCqw(23),
-            width: toSceneCqw(1070),
-            height: toSceneCqw(584),
+            ...photoBoardGeometryStyle({ x: 25, y: 23, width: 1070, height: 584 }),
             boxSizing: "border-box",
             overflow: "hidden",
             border: `${toSceneCqw(1)} solid #C7944D`,
@@ -706,21 +795,22 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
                     onClick={() => onOpenPhoto(photo.selection)}
                     className="pointer-events-auto absolute overflow-hidden cursor-zoom-in border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#4c392b]"
                     style={{
-                      left: toSceneCqw(slot.x),
-                      top: toSceneCqw(slot.y),
-                      width: toSceneCqw(slot.width),
-                      height: toSceneCqw(slot.height),
+                      ...photoBoardGeometryStyle(slot),
                       appearance: "none",
                       backgroundColor: photo.placeholderColor,
                       borderRadius: 0,
                       margin: 0,
                       boxShadow: `${toSceneCqw(7)} ${toSceneCqw(6)} ${toSceneCqw(9.9)} rgba(0, 0, 0, 0.32)`,
-                      transform: `rotate(${slot.rotation}deg)`,
                       transformOrigin: "top left",
                     }}
                   >
                     {photo.thumbnailUrl !== undefined ? (
-                      <BoardThumbnail key={JSON.stringify([photo.selection, photo.thumbnailUrl])} url={photo.thumbnailUrl} />
+                      <BoardThumbnail
+                        key={JSON.stringify([photo.selection, photo.thumbnailUrl])}
+                        url={photo.thumbnailUrl}
+                        posX={photo.posX}
+                        posY={photo.posY}
+                      />
                     ) : null}
                   </button>
                 );
@@ -735,10 +825,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
                   draggable={false}
                   className="pointer-events-none absolute select-none"
                   style={{
-                    left: toSceneCqw(decoration.x),
-                    top: toSceneCqw(decoration.y),
-                    width: toSceneCqw(decoration.width),
-                    height: toSceneCqw(decoration.height),
+                    ...photoBoardGeometryStyle(decoration),
                     maxWidth: "none",
                     zIndex: 1,
                   }}
@@ -754,23 +841,43 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           )}
         </div>
 
+        <style>{PHOTO_BOARD_IMAGE_STYLES}</style>
+
         {/* These PNGs already contain the final Figma rotation/crop; scene placement remains a local calibration estimate. */}
-        <img
-          src={cornerLeft}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="pointer-events-none absolute left-0 top-0 select-none"
-          style={{ width: toSceneCqw(111), height: toSceneCqw(92), maxWidth: "none", zIndex: 2 }}
-        />
-        <img
-          src={cornerRight}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="pointer-events-none absolute bottom-0 right-0 select-none"
-          style={{ width: toSceneCqw(113.5), height: toSceneCqw(95.5), maxWidth: "none", zIndex: 2 }}
-        />
+        <picture className="contents">
+          <source media={PHOTO_BOARD_MOBILE_MEDIA} srcSet={mobileCornerLeft} />
+          <img
+            src={cornerLeft}
+            data-activity-photo-corner="left"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="pointer-events-none absolute left-0 top-0 select-none"
+            style={{
+              width: `var(--photo-board-corner-width, ${toSceneCqw(111)})`,
+              height: `var(--photo-board-corner-height, ${toSceneCqw(92)})`,
+              maxWidth: "none",
+              zIndex: 2,
+            }}
+          />
+        </picture>
+        <picture className="contents">
+          <source media={PHOTO_BOARD_MOBILE_MEDIA} srcSet={mobileCornerRight} />
+          <img
+            src={cornerRight}
+            data-activity-photo-corner="right"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="pointer-events-none absolute bottom-0 right-0 select-none"
+            style={{
+              width: `var(--photo-board-corner-width, ${toSceneCqw(113.5)})`,
+              height: `var(--photo-board-corner-height, ${toSceneCqw(95.5)})`,
+              maxWidth: "none",
+              zIndex: 2,
+            }}
+          />
+        </picture>
       </section>
 
       <img
@@ -778,8 +885,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(260.444444, 68.851852, 61.715829, 61.715829),
           left: sceneX(426),
           top: sceneY(169),
           width: toSceneCqw(151.485),
@@ -793,8 +901,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(814.111, 189.921066, 69.34179, 69.34179),
           left: sceneX(1640),
           top: sceneY(396),
           width: toSceneCqw(199.605),
@@ -811,8 +920,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(346.807129, 292.937, 112.19336, 112.027121),
           left: sceneX(495),
           top: sceneY(733),
           width: toSceneCqw(323),
@@ -826,8 +936,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(358.281, 222.323502, 53.113204, 94.023204),
           left: sceneX(532),
           top: sceneY(470),
           width: toSceneCqw(153),
@@ -841,8 +952,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="pointer-events-none absolute select-none"
+        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
         style={{
+          ...mobileReviewGeometry(779.976624, 59.444, 95.349164, 95.349164),
           left: sceneX(1577),
           top: sceneY(163),
           width: toSceneCqw(274.469),
@@ -852,9 +964,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         }}
       />
 
-      {showCenterLoading ? (
-        <WishBoxLoading variant="center" className="z-40" />
-      ) : showCornerLoading ? (
+      {showCornerLoading ? (
         <WishBoxLoading variant="corner" className="z-40" />
       ) : null}
 
@@ -900,6 +1010,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           </span>
         </button>
     </section>
+    {showCenterLoading ? <WishBoxLoading variant="center" className="z-40" /> : null}
     </div>
     {viewerMedia && selectedPhoto ? (
       <WishBoxPhotoViewer media={viewerMedia} onClose={() => onClosePhoto(selectedPhoto)} />

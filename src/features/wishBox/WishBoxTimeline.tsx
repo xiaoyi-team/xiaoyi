@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import edgeDecoration from "../../assets/wish-box/timeline-edge-decoration.png";
 import gardenBackground from "../../assets/wish-box/timeline-garden-background.png";
@@ -82,8 +82,10 @@ function TimelineMarker({ marker }: { marker: TimelineMonthLabelPresentation }) 
     <div
       aria-hidden="true"
       data-timeline-marker={marker.text}
+      data-timeline-marker-direction={marker.y === 266 ? "up" : "down"}
       className="pointer-events-none absolute flex items-center justify-center"
       style={{
+        "--timeline-mobile-slot": marker.slotIndex,
         left: toSceneCqw(getTimelineSlotX(marker.slotIndex)),
         top: toSceneCqw(marker.y),
         width: toSceneCqw(122),
@@ -101,7 +103,7 @@ function TimelineMarker({ marker }: { marker: TimelineMonthLabelPresentation }) 
         letterSpacing: 0,
         textAlign: "left",
         whiteSpace: "nowrap",
-      }}
+      } as CSSProperties}
     >
       <span
         style={{
@@ -129,12 +131,13 @@ function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerPresentation
       data-timeline-gold-glow={marker.slotIndex}
       className="pointer-events-none absolute"
       style={{
+        "--timeline-mobile-slot": marker.slotIndex,
         left: toSceneCqw(getTimelineSlotX(marker.slotIndex) + 159),
         top: toSceneCqw(276),
         width: toSceneCqw(32),
         height: toSceneCqw(96),
         overflow: "visible",
-      }}
+      } as CSSProperties}
     >
       <svg
         aria-hidden="true"
@@ -240,6 +243,7 @@ function TimelineFilterPill({
       onClick={onClick}
       aria-label={ariaLabel}
       aria-pressed={selected}
+      data-timeline-filter-pill
       className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
       style={{
         left: toSceneCqw(left),
@@ -312,17 +316,33 @@ function WishBoxTimeline({
       return { status: "error", error };
     }
   }, [query.data]);
-  const presentation = mappingResult.status === "success" ? mappingResult.presentation : null;
+  const currentPresentation = mappingResult.status === "success" ? mappingResult.presentation : null;
+  const [lastPresentation, setLastPresentation] = useState<TimelinePresentation | null>(null);
+  // This is a display snapshot only; never write it into the target Query's cache.
+  if (currentPresentation !== null && currentPresentation !== lastPresentation) {
+    setLastPresentation(currentPresentation);
+  }
+  const previousPresentation = lastPresentation?.cards.length ? lastPresentation : null;
+  const presentation = currentPresentation ?? previousPresentation;
+  const showingPreviousResults = currentPresentation === null && previousPresentation !== null;
   const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
+  // Mobile geometry is a view of the same ordered records, not a second data model.
+  const mobileContentWidth = presentation && presentation.cards.length > 0
+    ? (presentation.cards.length - 1) * 120 + 200
+    : 0;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
   const showCenterLoading =
     query.isLoading && presentation === null && !hasError;
+  const showCornerLoading = showingPreviousResults && query.isFetching;
+  const showEmpty = query.isSuccess && currentPresentation?.cards.length === 0;
+  const hasActiveFilters = selectedYear !== "全部" || selectedKind !== "全部种类" || selectedForm !== "全部";
   const error = mappingResult.status === "error" ? mappingResult.error : query.error;
   const errorMessage = error instanceof Error ? error.message : "无法识别的活动数据错误";
 
   const cancelPendingScrollIntent = () => {
     if (
+      currentPresentation === null ||
       !scrollIntent || scrollIntent.filterKey !== filterKey ||
       scrollIntent.id <= settledScrollIntentIdRef.current
     ) return;
@@ -546,6 +566,7 @@ function WishBoxTimeline({
   };
 
   const openActivity = (activity: ActivityReviewSelection) => {
+    if (showingPreviousResults) return;
     onOpenActivity(activity, {
       filterKey,
       scrollLeft: Math.max(0, timelineViewportRef.current?.scrollLeft ?? 0),
@@ -553,9 +574,20 @@ function WishBoxTimeline({
   };
 
   return (
-    <div className="absolute inset-0 isolate overflow-hidden bg-white">
+    <>
+    <div
+      className="wish-box-timeline absolute inset-0 isolate overflow-hidden bg-white"
+      style={{ opacity: showCenterLoading ? 0.55 : 1 }}
+      onKeyDown={(event) => {
+        if (kindMenuOpen && event.key === "Escape") {
+          event.stopPropagation();
+          closeKindMenu();
+        }
+      }}
+    >
       <img
         src={gardenBackground}
+        data-timeline-background
         alt=""
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 h-full w-full"
@@ -563,6 +595,7 @@ function WishBoxTimeline({
 
       <img
         src={edgeDecoration}
+        data-timeline-edge-decoration
         alt=""
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 h-full w-full"
@@ -572,6 +605,9 @@ function WishBoxTimeline({
         ref={timelineViewportRef}
         role="region"
         aria-label="活动时间轴"
+        data-timeline-viewport
+        aria-busy={showCenterLoading || showCornerLoading}
+        inert={kindMenuOpen}
         tabIndex={0}
         onPointerDown={handleTimelinePointerDown}
         onPointerMove={handleTimelinePointerMove}
@@ -588,7 +624,7 @@ function WishBoxTimeline({
           }
         }}
         onScroll={(event) => {
-          if (presentation) {
+          if (currentPresentation) {
             onScrollSnapshot({ filterKey, scrollLeft: Math.max(0, event.currentTarget.scrollLeft) });
           }
         }}
@@ -607,12 +643,15 @@ function WishBoxTimeline({
           data-timeline-path
           className="pointer-events-none absolute left-0 top-0"
           style={{
+            "--timeline-mobile-content-width": mobileContentWidth,
+            "--timeline-mobile-end-padding": pathEndPadding * 200 / 350,
             width: toSceneCqw(presentation.pathWidth + pathEndPadding),
-            minWidth: presentation.cards.length > 0 ? "100%" : undefined,
+            minWidth: presentation.cards.length > 0 || showEmpty ? "100%" : undefined,
             height: toSceneCqw(PATH_HEIGHT),
-          }}
+          } as CSSProperties}
         >
           <div
+            data-timeline-vine
             className="absolute left-0"
             style={{
               top: toSceneCqw(VINE_Y),
@@ -626,6 +665,7 @@ function WishBoxTimeline({
           />
           <div
             data-timeline-activity-group
+            inert={showingPreviousResults}
             className="absolute top-0 h-full"
             style={{
               right: toSceneCqw(pathEndPadding),
@@ -633,16 +673,23 @@ function WishBoxTimeline({
             }}
           >
             {presentation.cards.map((card) => (
-              <TimelineCard
+              <div
                 key={card.activity.recordId}
-                activity={card.activity}
-                coverThumbnailUrl={card.coverThumbnailUrl}
-                variant={card.variant}
-                cardY={card.cardY}
-                slotIndex={card.slotIndex}
-                slotLeft={toSceneCqw(getTimelineSlotX(card.slotIndex))}
-                onOpenActivity={openActivity}
-              />
+                data-timeline-card-slot
+                data-timeline-direction={card.cardY === 28 ? "up" : "down"}
+                className="contents"
+                style={{ "--timeline-mobile-slot": card.slotIndex } as CSSProperties}
+              >
+                <TimelineCard
+                  activity={card.activity}
+                  coverThumbnailUrl={card.coverThumbnailUrl}
+                  variant={card.variant}
+                  cardY={card.cardY}
+                  slotIndex={card.slotIndex}
+                  slotLeft={toSceneCqw(getTimelineSlotX(card.slotIndex))}
+                  onOpenActivity={openActivity}
+                />
+              </div>
             ))}
             {presentation.monthLabels.map((marker) => (
               <TimelineMarker key={marker.monthKey} marker={marker} />
@@ -652,13 +699,60 @@ function WishBoxTimeline({
             ))}
           </div>
         </div> : null}
+        {showEmpty ? (
+          <div
+            data-timeline-empty
+            role="status"
+            className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center"
+            style={{
+              gap: "clamp(10px, 0.625cqw, 12px)",
+              fontFamily: '"Noto Serif SC", serif',
+              textShadow: "-1px -1px 1px #FFFAEF, 1px -1px 1px #FFFAEF, -1px 1px 1px #FFFAEF, 1px 1px 1px #FFFAEF, 0 1px 6px #FFFAEF",
+            }}
+          >
+            <h2
+              className="m-0 font-semibold text-[#465B49]"
+              style={{ marginBottom: "96px", fontSize: "clamp(24px, 1.6666667cqw, 32px)", lineHeight: 1.5 }}
+            >
+              这段花径还未盛放
+            </h2>
+            <p
+              className="m-0 text-[#647568]"
+              style={{ fontSize: "clamp(16px, 1.0416667cqw, 20px)", lineHeight: 1.5 }}
+            >
+              换一种筛选，寻找其他相遇
+            </p>
+            {hasActiveFilters ? (
+              <button
+                type="button"
+                onClick={() => {
+                  backButtonRef.current?.focus({ preventScroll: true });
+                  onFiltersChange({ year: "全部", kind: "全部种类", form: "全部" });
+                }}
+                className="pointer-events-auto cursor-pointer rounded-full border border-[#9BA68F] bg-[#FAF8F0] px-7 py-2.5 text-[#465B49] transition-colors hover:bg-[#F0F2E9] active:bg-[#E5EADD] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#465B49] motion-reduce:transition-none"
+                style={{
+                  marginTop: "8px",
+                  minWidth: "140px",
+                  minHeight: "48px",
+                  fontSize: "clamp(16px, 0.9375cqw, 18px)",
+                  lineHeight: 1.5,
+                  textShadow: "none",
+                }}
+              >
+                清除筛选
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
-      {showCenterLoading ? (
-        <WishBoxLoading variant="center" />
-      ) : query.isPending || hasError ? (
+      {showCornerLoading ? (
+        <WishBoxLoading variant="corner" className="z-30" />
+      ) : null}
+      {!showCenterLoading && (hasError || (query.isPending && !showCornerLoading)) ? (
         <div
           role={hasError ? "alert" : "status"}
+          data-timeline-query-status
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
           style={{
             left: "5.2604167%",
@@ -670,7 +764,9 @@ function WishBoxTimeline({
         >
           <span>
             {hasError
-              ? hasMappingError
+              ? showingPreviousResults
+                ? "筛选结果加载失败，当前保留此前结果，暂不可打开活动。"
+                : hasMappingError
                 ? `活动数据转换失败：${errorMessage}`
                 : presentation
                   ? "活动列表更新失败，已保留当前内容。"
@@ -695,6 +791,7 @@ function WishBoxTimeline({
 
       <div
         aria-hidden="true"
+        data-timeline-title-glow
         className="pointer-events-none absolute"
         style={{
           left: "34.4270833%",
@@ -750,6 +847,7 @@ function WishBoxTimeline({
 
       <img
         src={titleOrnamentLeft}
+        data-timeline-title-ornament="left"
         alt=""
         aria-hidden="true"
         draggable={false}
@@ -766,6 +864,7 @@ function WishBoxTimeline({
 
       <img
         src={titleOrnamentRight}
+        data-timeline-title-ornament="right"
         alt=""
         aria-hidden="true"
         draggable={false}
@@ -784,12 +883,14 @@ function WishBoxTimeline({
         <button
           type="button"
           aria-label="关闭活动种类选单"
+          data-timeline-menu-dismiss
           onClick={closeKindMenu}
           className="absolute inset-0 z-10 cursor-default border-0 bg-transparent p-0"
         />
       ) : null}
 
       <div
+        data-timeline-filters
         className="absolute"
         style={{
           left: "9.8958333%",
@@ -803,6 +904,7 @@ function WishBoxTimeline({
         }}
       >
         <div
+          data-timeline-filter-label="year"
           className="absolute whitespace-nowrap"
           style={{
             left: toSceneCqw(35),
@@ -847,6 +949,7 @@ function WishBoxTimeline({
 
         <div
           aria-hidden="true"
+          data-timeline-filter-separator="year"
           className="absolute"
           style={{
             left: toSceneCqw(565),
@@ -858,6 +961,7 @@ function WishBoxTimeline({
         />
 
         <div
+          data-timeline-filter-label="kind"
           className="absolute whitespace-nowrap"
           style={{
             left: toSceneCqw(592),
@@ -876,6 +980,7 @@ function WishBoxTimeline({
         </div>
         <button
           ref={kindButtonRef}
+          data-timeline-kind-trigger
           type="button"
           onClick={() => setKindMenuOpen((open) => !open)}
           aria-expanded={kindMenuOpen}
@@ -907,6 +1012,15 @@ function WishBoxTimeline({
             id="timeline-kind-options"
             role="group"
             aria-label="活动种类选项"
+            onKeyDown={(event) => {
+              if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+              const buttons = [...event.currentTarget.querySelectorAll("button")];
+              const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1
+                : (current + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
+              event.preventDefault();
+              buttons[next]?.focus({ preventScroll: true });
+            }}
             className="absolute"
             style={{
               left: toSceneCqw(703),
@@ -954,6 +1068,7 @@ function WishBoxTimeline({
 
         <div
           aria-hidden="true"
+          data-timeline-filter-separator="form"
           className="absolute"
           style={{
             left: toSceneCqw(941),
@@ -965,6 +1080,7 @@ function WishBoxTimeline({
         />
 
         <div
+          data-timeline-filter-label="form"
           className="absolute whitespace-nowrap"
           style={{
             left: toSceneCqw(969),
@@ -1009,6 +1125,7 @@ function WishBoxTimeline({
       </div>
 
       <div
+        data-timeline-navigation
         className="absolute overflow-hidden"
         style={{
           left: "4.1666667%",
@@ -1019,6 +1136,7 @@ function WishBoxTimeline({
       >
         <button
           type="button"
+          data-timeline-nav="earlier"
           onClick={() => scrollToEnd("left")}
           className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
           style={{
@@ -1041,6 +1159,7 @@ function WishBoxTimeline({
         </button>
         <button
           type="button"
+          data-timeline-nav="latest"
           onClick={() => scrollToEnd("right")}
           className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
           style={{
@@ -1087,6 +1206,7 @@ function WishBoxTimeline({
         type="button"
         onClick={onBack}
         aria-label="返回心愿盒主页"
+        data-timeline-return
         className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
         style={{
           left: "3.8541667%",
@@ -1127,6 +1247,8 @@ function WishBoxTimeline({
         </span>
       </button>
     </div>
+    {showCenterLoading ? <WishBoxLoading variant="center" className="z-30" /> : null}
+    </>
   );
 }
 

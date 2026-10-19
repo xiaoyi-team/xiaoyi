@@ -12,6 +12,7 @@ import WishBoxTimeline, {
   type TimelineScrollIntent,
   type TimelineScrollSnapshot,
 } from "../features/wishBox/WishBoxTimeline";
+import "../features/wishBox/WishBoxMobile.css";
 
 type WishBoxView = "home" | "timeline" | "activityReviewPreview" | "photoViewerPreview";
 
@@ -182,10 +183,11 @@ function WishBoxPage() {
     <main className="grid h-dvh w-full place-items-center overflow-hidden bg-slate-100">
       <section
         aria-label="心愿盒场景"
-        className="relative w-full overflow-hidden bg-white"
+        data-wish-box-view={currentView}
+        className="wish-box-scene relative w-full overflow-hidden bg-white"
         style={{
-          aspectRatio: "16 / 9",
-          maxWidth: "177.7778dvh",
+          aspectRatio: "var(--wish-box-scene-aspect-ratio, 16 / 9)",
+          maxWidth: "var(--wish-box-scene-max-width, 177.7778dvh)",
           containerType: "inline-size",
         }}
       >
@@ -200,10 +202,21 @@ function WishBoxPage() {
               inactive={announcementOpen}
             />
             {announcementOpen ? (
-              <AnnouncementView
-                announcement={currentAnnouncement}
-                onClose={closeAnnouncement}
-              />
+              <div className="absolute inset-0 z-10 grid place-items-center">
+                <div
+                  className="wish-box-announcement-legacy relative w-full overflow-hidden"
+                  style={{
+                    aspectRatio: "var(--wish-box-announcement-aspect-ratio, 16 / 9)",
+                    maxWidth: "var(--wish-box-announcement-max-width, 177.7778dvh)",
+                    containerType: "inline-size",
+                  }}
+                >
+                  <AnnouncementView
+                    announcement={currentAnnouncement}
+                    onClose={closeAnnouncement}
+                  />
+                </div>
+              </div>
             ) : null}
           </>
         ) : currentView === "timeline" ? (
