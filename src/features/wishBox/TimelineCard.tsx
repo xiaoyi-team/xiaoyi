@@ -35,16 +35,16 @@ const TIMELINE_CARD_LAYOUTS: Record<TimelineCardVariant, TimelineCardLayout> = {
     date: { x: 48, y: 191, width: 272, height: 24 },
   },
   iris: {
-    photo: { x: 5, y: 13, width: 337, height: 146 },
+    photo: { x: 14, y: 14, width: 322, height: 151 },
     frame: {
       src: irisCardFrame,
-      x: -18,
-      y: -12,
-      width: 386,
-      height: 248,
+      x: -11.06543,
+      y: -14.510489,
+      width: 372.131744,
+      height: 261.874115,
     },
-    title: { x: 48, y: 155, width: 272, height: 32 },
-    date: { x: 48, y: 188, width: 272, height: 24 },
+    title: { x: 48, y: 162, width: 272, height: 32 },
+    date: { x: 48, y: 191, width: 272, height: 24 },
   },
 };
 
