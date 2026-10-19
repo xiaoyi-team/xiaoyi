@@ -13,6 +13,7 @@ export function useSupportRecords(params: SupportRecordListParams = {}) {
       'wishBox',
       'supportRecords',
       'list',
+      normalized.plate ?? null,
       normalized.year ?? null,
       normalized.act_kind ?? null,
       normalized.act_category ?? null,

@@ -296,6 +296,7 @@ function WishBoxTimeline({
   const [kindMenuOpen, setKindMenuOpen] = useState(false);
   const filterKey = JSON.stringify([selectedYear, selectedKind, selectedForm]);
   const query = useSupportRecords({
+    plate: "timeline",
     year: selectedYear === "全部" ? undefined : selectedYear,
     act_kind: selectedKind === "全部种类" ? undefined : selectedKind,
     act_category: selectedForm === "全部" ? undefined : selectedForm,
