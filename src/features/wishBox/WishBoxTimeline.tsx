@@ -332,6 +332,7 @@ function WishBoxTimeline({
     : 0;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
+  const isInitialError = hasError && presentation === null;
   const showCenterLoading =
     query.isLoading && presentation === null && !hasError;
   const showCornerLoading = showingPreviousResults && query.isFetching;
@@ -758,8 +759,9 @@ function WishBoxTimeline({
             left: "5.2604167%",
             top: presentation ? "21.6666667%" : "41.6666667%",
             maxWidth: "91.6666667%",
-            fontSize: toSceneCqw(presentation ? 12 : 16),
-            lineHeight: toSceneCqw(presentation ? 18 : 24),
+            fontSize: isInitialError ? `max(14px, ${toSceneCqw(16)})` : toSceneCqw(presentation ? 12 : 16),
+            lineHeight: isInitialError ? `max(20px, ${toSceneCqw(24)})` : toSceneCqw(presentation ? 18 : 24),
+            gap: isInitialError ? "12px" : undefined,
           }}
         >
           <span>
@@ -781,7 +783,10 @@ function WishBoxTimeline({
                 backButtonRef.current?.focus({ preventScroll: true });
                 void query.refetch();
               }}
-              className="shrink-0 cursor-pointer rounded border border-[#C5B79E] bg-transparent px-2 focus-visible:outline-2 focus-visible:outline-[#614B35] disabled:cursor-wait"
+              className={`shrink-0 cursor-pointer rounded border focus-visible:outline-2 disabled:cursor-wait ${isInitialError
+                ? "border-[#C7944D] bg-[#FFF9E9] px-4 text-[#243D61] hover:bg-[#F3DDB0] focus-visible:outline-offset-2 focus-visible:outline-[#243D61]"
+                : "border-[#C5B79E] bg-transparent px-2 focus-visible:outline-[#614B35]"}`}
+              style={isInitialError ? { minWidth: "80px", minHeight: "44px" } : undefined}
             >
               {query.isFetching ? "重试中…" : "重试"}
             </button>
