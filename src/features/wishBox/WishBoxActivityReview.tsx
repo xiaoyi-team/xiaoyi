@@ -465,6 +465,21 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     data.source === "record" && data.showCenterLoading && !viewerOpen;
   const showCornerLoading =
     data.source === "record" && viewModel !== null && data.isFetching && !viewerOpen;
+  const statusData = data.source === "record" && data.message && !showCenterLoading ? data : null;
+  const hasErrorStatus = Boolean(statusData?.errorMessage);
+  const statusContent = statusData ? (
+    <>
+      <span title={statusData.errorMessage ?? undefined}>{statusData.message}</span>
+      {statusData.retry ? (
+        <button type="button" disabled={statusData.isFetching} onClick={() => {
+          visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
+          statusData.retry?.();
+        }} className="cursor-pointer underline focus-visible:outline-2 disabled:cursor-wait">
+          {statusData.isFetching ? "正在重试…" : "重试"}
+        </button>
+      ) : null}
+    </>
+  ) : null;
 
   // Render already excludes invalid media; this only synchronizes Page's identity state.
   useEffect(() => {
@@ -497,6 +512,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
       aria-label="活动回顾"
       data-activity-review-record-id={data.source === "record" ? data.recordId : undefined}
       data-activity-review-fixture={isPreview ? "activity-review-preview" : undefined}
+      data-activity-review-error={hasErrorStatus || undefined}
       className="absolute inset-0 isolate overflow-hidden"
       style={{ backgroundColor: "#F6E9E1", opacity: showCenterLoading ? 0.55 : 1 }}
     >
@@ -621,17 +637,9 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         >
           {ACTIVITY_REVIEW_UI_FIXTURE.eyebrow}
         </p>
-        </> : data.source === "record" && data.message && !showCenterLoading ? (
+        </> : statusData ? (
           <div role="status" className="absolute flex flex-col items-center justify-center text-[#243D61]" style={{ left: toSceneCqw(147), top: toSceneCqw(85), width: toSceneCqw(614), height: toSceneCqw(75), fontSize: toSceneCqw(14), gap: toSceneCqw(6) }}>
-            <span title={data.errorMessage ?? undefined}>{data.message}</span>
-            {data.retry ? (
-              <button type="button" disabled={data.isFetching} onClick={() => {
-                visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
-                data.retry?.();
-              }} className="cursor-pointer underline focus-visible:outline-2 disabled:cursor-wait">
-                {data.isFetching ? "正在重试…" : "重试"}
-              </button>
-            ) : null}
+            {statusContent}
           </div>
         ) : null}
         <img
@@ -963,6 +971,12 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           zIndex: 30,
         }}
       />
+
+      {hasErrorStatus ? (
+        <div data-activity-review-mobile-error role="status">
+          {statusContent}
+        </div>
+      ) : null}
 
       {showCornerLoading ? (
         <WishBoxLoading variant="corner" className="z-40" />
