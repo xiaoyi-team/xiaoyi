@@ -713,6 +713,7 @@
     left: calc(var(--review-mobile-unit) * 60) !important;
     top: calc(var(--review-mobile-unit) * 8) !important;
     width: calc(var(--review-mobile-unit) * 110.5) !important;
+    min-width: 72px;
     height: calc(var(--review-mobile-unit) * 48.1) !important;
     min-height: 44px;
     border-radius: calc(var(--review-mobile-unit) * 14.3) !important;
@@ -728,11 +729,12 @@
 
   .wish-box-review-visual [data-activity-review-return] > span {
     left: calc(var(--review-mobile-unit) * 55.25) !important;
-    top: calc(var(--review-mobile-unit) * 11.05) !important;
+    top: calc(var(--review-mobile-unit) * 24.05 - 13px) !important;
     width: auto !important;
     height: 26px !important;
     font-size: 18px !important;
     line-height: 26px !important;
+    white-space: nowrap;
     text-shadow: 0 0 1.3px #000 !important;
   }
 }
