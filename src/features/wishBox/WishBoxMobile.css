@@ -936,6 +936,33 @@
     overscroll-behavior-x: contain;
   }
 
+  /* 819px Scene width provides less than the Empty stack's 264px padded height. */
+  @container (max-width: 819px) {
+    .wish-box-timeline [data-timeline-empty] {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      justify-content: stretch;
+      justify-items: center;
+      align-items: center;
+      gap: 8px !important;
+      padding-block: 4px;
+    }
+
+    .wish-box-timeline [data-timeline-empty] > h2 {
+      grid-row: 1;
+      margin-bottom: 0 !important;
+    }
+
+    .wish-box-timeline [data-timeline-empty] > p {
+      grid-row: 3;
+    }
+
+    .wish-box-timeline [data-timeline-empty] > button {
+      grid-row: 4;
+      margin-top: 0 !important;
+    }
+  }
+
   .wish-box-timeline [data-timeline-path] {
     width: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-content-width) + var(--timeline-mobile-end-padding))) !important;
     height: calc(var(--timeline-mobile-unit) * 308) !important;
