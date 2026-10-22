@@ -515,6 +515,17 @@
     height: var(--review-mobile-height) !important;
   }
 
+  .wish-box-review-visual img[src*="activity-review-floral-"] {
+    /* Preserve both PNG ratios while covering the visual layer's actual height. */
+    width: auto !important;
+    height: max(100%, calc(var(--review-mobile-unit) * 440)) !important;
+  }
+
+  .wish-box-review-visual img[src*="activity-review-floral-right"] {
+    left: auto !important;
+    right: 0;
+  }
+
   .wish-box-review-visual .wish-box-review-star {
     /* The mobile information card covers the decorative star layer in Figma. */
     z-index: 10 !important;
@@ -736,6 +747,83 @@
     line-height: 26px !important;
     white-space: nowrap;
     text-shadow: 0 0 1.3px #000 !important;
+  }
+
+  .wish-box-review-visual > [data-activity-review-record-id] {
+    display: grid;
+    grid-template-columns: 100%;
+    /* The definite section height is H; the scene unit is W / 956.
+       Row 1 splits only the extra height, while row 3 grows with the title. */
+    grid-template-rows:
+      max(0px, calc((100% - var(--review-mobile-unit) * 440) / 2))
+      calc(var(--review-mobile-unit) * 38.703704)
+      auto
+      minmax(0, 1fr);
+
+    & > [data-activity-review-header] {
+      position: relative !important;
+      grid-area: 3 / 1 / 4 / 2;
+      align-self: start;
+      top: 0 !important;
+      height: auto !important;
+      min-height: var(--review-mobile-height);
+      display: grid;
+      place-items: center;
+
+      & > [data-activity-review-title] {
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-width: 0;
+        padding: 4px 16px;
+        white-space: normal !important;
+
+        & > span {
+          white-space: normal !important;
+          text-overflow: clip !important;
+          overflow: hidden !important;
+          overflow-wrap: anywhere;
+          /* A visual two-line guard, not a business title-length limit. */
+          max-block-size: 2lh;
+        }
+      }
+
+      & [data-review-header-petal="center"] {
+        top: calc(50% + var(--review-mobile-unit) * 3.667148) !important;
+      }
+
+      & [data-review-header-petal="left"] {
+        top: calc(50% - var(--review-mobile-unit) * 4.481852) !important;
+      }
+    }
+
+    /* 110.407408 = the original header top + height. Anchoring to its
+       actual bottom adds D3 and title growth once, including attached art. */
+    & > [data-activity-review-info-card],
+    & > img[src*="activity-review-iris-purple"],
+    & > img[src*="activity-review-bouquet-ribbon"],
+    & > img[src*="activity-review-bouquet-vertical"],
+    & > img[src*="activity-review-white-flowers"],
+    & > img[src*="activity-review-rose"],
+    & > img[src*="activity-review-bow"],
+    & > img[src*="activity-review-header-petal-right"],
+    & > svg.wish-box-review-star {
+      grid-area: 4 / 1 / 5 / 2;
+      top: calc(var(--review-mobile-top) - var(--review-mobile-unit) * 110.407408) !important;
+    }
+
+    & > [data-activity-review-photo-board] {
+      grid-area: 4 / 1 / 5 / 2;
+      /* The photo board starts at design Y=120, relative to the header bottom. */
+      top: calc(var(--review-mobile-unit) * 9.592592) !important;
+    }
+
+    & > img[src*="activity-review-iris-divider"] {
+      grid-area: 2 / 1 / 5 / 2;
+      top: var(--review-mobile-top) !important;
+    }
   }
 }
 
