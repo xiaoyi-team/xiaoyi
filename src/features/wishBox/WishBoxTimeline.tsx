@@ -752,6 +752,7 @@ function WishBoxTimeline({
         <div
           role={hasError ? "alert" : "status"}
           data-timeline-query-status
+          data-timeline-retained-error={hasError && presentation !== null ? "" : undefined}
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
           style={{
             left: "5.2604167%",

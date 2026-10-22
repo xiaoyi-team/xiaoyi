@@ -739,6 +739,59 @@
   }
 }
 
+/* Only the PC layout replaces the scroll hint with the existing retained-error bar. */
+@media not all and (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  .wish-box-timeline [data-timeline-retained-error] {
+    left: 50% !important;
+    top: auto !important;
+    bottom: max(8px, 1.25cqw);
+    width: max-content;
+    max-width: calc(100% - 28.125cqw - 24px) !important;
+    transform: translateX(-50%);
+    gap: 12px !important;
+    border-color: #c7944d;
+    color: #243d61;
+    font-size: max(14px, 0.8333333cqw) !important;
+    line-height: max(20px, 1.25cqw) !important;
+  }
+
+  .wish-box-timeline [data-timeline-retained-error] > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .wish-box-timeline [data-timeline-retained-error] > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 44px;
+    padding-inline: 4px;
+    border-color: #c7944d;
+    background-color: #fff9e9;
+    color: #243d61;
+    white-space: nowrap;
+    outline-color: #243d61;
+    outline-offset: 2px;
+  }
+
+  .wish-box-timeline [data-timeline-retained-error] > button:hover {
+    background-color: #f3ddb0;
+  }
+
+  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-navigation] {
+    pointer-events: none;
+  }
+
+  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-nav] {
+    pointer-events: auto;
+  }
+
+  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-navigation] > p {
+    display: none;
+  }
+}
+
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   /* Timeline alone uses the 956x440 mobile Scene. Review/Viewer retain their host. */
   .wish-box-scene:has(> .wish-box-timeline) {
