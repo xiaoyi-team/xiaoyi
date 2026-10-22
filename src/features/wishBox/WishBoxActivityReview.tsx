@@ -337,7 +337,7 @@ type WishBoxActivityReviewProps = ReviewControls & (
 type DetailMappingResult =
   | { status: "pending" }
   | { status: "success"; viewModel: ActivityReviewViewModel }
-  | { status: "error"; message: string };
+  | { status: "error"; error: unknown };
 
 type ReviewData =
   | { source: "preview" }
@@ -368,17 +368,20 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
     try {
       return { status: "success", viewModel: mapSupportRecordDetailToReview(query.data, recordId) };
     } catch (error) {
-      return { status: "error", message: error instanceof Error ? error.message : "无法识别的活动数据错误" };
+      return { status: "error", error };
     }
   }, [query.data, recordId]);
   const viewModel = isValidRecordId && mapped.status === "success" ? mapped.viewModel : null;
   const errorMessage = !isValidRecordId ? "无效的活动 ID"
-    : mapped.status === "error" ? mapped.message
+    : mapped.status === "error" ? mapped.error instanceof Error ? mapped.error.message : "无法识别的活动数据错误"
     : query.isError ? query.error.message : null;
   const showCenterLoading =
     isValidRecordId && query.isLoading && viewModel === null && errorMessage === null;
   const message = errorMessage
-    ? viewModel ? "更新失败，已保留当前详情" : "活动回顾加载失败"
+    ? !isValidRecordId ? "无法打开此活动，请返回时间轴"
+      : viewModel ? "更新失败，已保留当前详情"
+      : mapped.status === "error" ? "活动内容暂时无法显示，请重试"
+      : "活动详情加载失败，请重试"
     : viewModel ? null : "正在加载活动回顾…";
 
   return (
@@ -433,7 +436,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     time: viewModel ? formatTimelineDateRange(viewModel.startDate, viewModel.endDate) : "—",
     introduction: viewModel
       ? (viewModel.content?.trim() ? viewModel.content : "暂无活动介绍")
-      : (data.source === "record" ? data.errorMessage : null) ?? "",
+      : "",
   };
   const photos: BoardPhoto[] = isPreview
     ? ACTIVITY_REVIEW_PHOTO_FIXTURE.map((photo) => ({
@@ -469,7 +472,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
   const hasErrorStatus = Boolean(statusData?.errorMessage);
   const statusContent = statusData ? (
     <>
-      <span title={statusData.errorMessage ?? undefined}>{statusData.message}</span>
+      <span>{statusData.message}</span>
       {statusData.retry ? (
         <button type="button" disabled={statusData.isFetching} onClick={() => {
           visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });

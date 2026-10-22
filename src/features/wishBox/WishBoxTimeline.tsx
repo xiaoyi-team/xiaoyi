@@ -338,8 +338,6 @@ function WishBoxTimeline({
   const showCornerLoading = showingPreviousResults && query.isFetching;
   const showEmpty = query.isSuccess && currentPresentation?.cards.length === 0;
   const hasActiveFilters = selectedYear !== "全部" || selectedKind !== "全部种类" || selectedForm !== "全部";
-  const error = mappingResult.status === "error" ? mappingResult.error : query.error;
-  const errorMessage = error instanceof Error ? error.message : "无法识别的活动数据错误";
 
   const cancelPendingScrollIntent = () => {
     if (
@@ -766,13 +764,15 @@ function WishBoxTimeline({
         >
           <span>
             {hasError
-              ? showingPreviousResults
-                ? "筛选结果加载失败，当前保留此前结果，暂不可打开活动。"
-                : hasMappingError
-                ? `活动数据转换失败：${errorMessage}`
-                : presentation
-                  ? "活动列表更新失败，已保留当前内容。"
-                  : `活动列表请求失败：${errorMessage}`
+              ? hasMappingError
+                ? showingPreviousResults
+                  ? "活动内容暂时无法显示，已保留此前结果，暂不可打开"
+                  : "活动内容暂时无法显示，请重试"
+                : showingPreviousResults
+                  ? "筛选结果加载失败，当前保留此前结果，暂不可打开活动。"
+                  : presentation
+                    ? "活动列表更新失败，已保留当前内容。"
+                    : "活动列表加载失败，请重试"
               : "正在加载活动…"}
           </span>
           {hasError ? (
