@@ -739,6 +739,62 @@
   }
 }
 
+/* Keep PC retry feedback inside the existing header without shrinking its hit target. */
+@media not all and (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
+  .wish-box-review-visual [data-activity-review-error] [data-activity-review-header]:has(> [role="status"] > button) {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    justify-items: center;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 20px;
+
+    & > [data-activity-review-title="status"] {
+      position: static;
+      min-width: 0;
+      max-width: 100%;
+      height: auto !important;
+    }
+
+    & > [role="status"] {
+      position: static;
+      flex-direction: row;
+      width: 100% !important;
+      height: auto !important;
+      gap: 12px !important;
+      font-size: 14px !important;
+      line-height: 20px;
+    }
+
+    & > [role="status"] > button {
+      flex: 0 0 80px;
+      box-sizing: border-box;
+      width: 80px;
+      height: 44px;
+      padding: 0 4px;
+      border: 1px solid #c7944d;
+      border-radius: 4px;
+      background: #fff9e9;
+      color: #243d61;
+      white-space: nowrap;
+      text-decoration: none;
+      outline-offset: 2px;
+
+      &:hover:not(:disabled) {
+        background: #f3ddb0;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #243d61;
+      }
+
+      &:disabled {
+        opacity: 0.65;
+      }
+    }
+  }
+}
+
 /* Only the PC layout replaces the scroll hint with the existing retained-error bar. */
 @media not all and (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   .wish-box-timeline [data-timeline-retained-error] {
