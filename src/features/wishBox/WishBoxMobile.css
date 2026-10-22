@@ -864,8 +864,11 @@
 
   .wish-box-timeline [data-timeline-background],
   .wish-box-timeline [data-timeline-edge-decoration] {
-    top: calc(var(--timeline-mobile-unit) * -49);
-    height: calc(var(--timeline-mobile-unit) * 537.75);
+    top: 0;
+    height: 100%;
+    object-fit: cover;
+    /* Preserve the 956x440 crop: 49px of the 537.75 - 440px overflow above. */
+    object-position: 50% 50.127877%;
   }
 
   .wish-box-timeline [data-timeline-background] {
