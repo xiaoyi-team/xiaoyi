@@ -20,6 +20,7 @@ import photoStickerPink from "../../assets/wish-box/activity-review-photo-sticke
 import photoTapeVGold from "../../assets/wish-box/activity-review-photo-tape-v-gold.png";
 import rose from "../../assets/wish-box/activity-review-rose.png";
 import whiteFlowers from "../../assets/wish-box/activity-review-white-flowers.png";
+import { HttpError } from "../../services/request";
 import { mapSupportRecordDetailToReview, type ActivityReviewViewModel } from "./activityReviewData";
 import { useSupportRecordDetail } from "./hooks/useSupportRecordDetail";
 import { formatTimelineDateRange } from "./timelinePresentation";
@@ -339,15 +340,32 @@ type DetailMappingResult =
   | { status: "success"; viewModel: ActivityReviewViewModel }
   | { status: "error"; error: unknown };
 
+type ReviewStatePanel = {
+  title: string;
+  description: string;
+  canRetry: boolean;
+};
+
+function requestFailurePanel(error: unknown): ReviewStatePanel {
+  if (error instanceof HttpError && (error.status === 401 || error.status === 403)) {
+    return { title: "暂时无法访问此活动", description: "当前无法查看活动详情，请重试或返回时间轴。", canRetry: true };
+  }
+  if (error instanceof HttpError && error.status === 404) {
+    return { title: "活动暂不可用", description: "暂时无法找到此活动，请重试或返回时间轴。", canRetry: true };
+  }
+  return { title: "活动详情加载失败", description: "活动详情加载失败，请重试", canRetry: true };
+}
+
 type ReviewData =
   | { source: "preview" }
   | {
       source: "record";
       recordId: number;
       viewModel: ActivityReviewViewModel | null;
-      message: string | null;
-      errorMessage: string | null;
+      panel: ReviewStatePanel | null;
       retry?: () => void;
+      retryPending: boolean;
+      isPaused: boolean;
       isFetching: boolean;
       showCenterLoading: boolean;
     };
@@ -363,6 +381,15 @@ type BoardPhoto = {
 function RecordActivityReview(props: ReviewControls & { recordId: number }) {
   const { recordId } = props;
   const { query, isValidRecordId } = useSupportRecordDetail(recordId);
+  // Keyed by recordId at the component boundary. Keep only interaction feedback,
+  // never a second copy of the server data or the last valid ViewModel.
+  const [retryState, setRetryState] = useState<{
+    pending: boolean;
+    panel: ReviewStatePanel;
+    dataUpdatedAt: number;
+    error?: unknown;
+  } | null>(null);
+  const retryInFlight = useRef(false);
   const mapped = useMemo<DetailMappingResult>(() => {
     if (query.data === undefined) return { status: "pending" };
     try {
@@ -372,24 +399,65 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
     }
   }, [query.data, recordId]);
   const viewModel = isValidRecordId && mapped.status === "success" ? mapped.viewModel : null;
-  const errorMessage = !isValidRecordId ? "无效的活动 ID"
-    : mapped.status === "error" ? mapped.error instanceof Error ? mapped.error.message : "无法识别的活动数据错误"
-    : query.isError ? query.error.message : null;
+  const retryPending = retryState?.pending === true;
+  // A later automatic success also releases a previous explicit Retry intent.
+  // HTTP 200 alone is insufficient: the current response must map successfully.
+  if (retryState && !retryPending && query.isSuccess && !query.isFetching && viewModel
+    && query.dataUpdatedAt > retryState.dataUpdatedAt) {
+    setRetryState(null);
+  }
+  const requestError = query.isError ? query.error : retryState?.error;
+  const hasRequestError = query.isError || (retryState !== null && "error" in retryState);
+  const silentRefreshFailure = isValidRecordId && viewModel !== null && retryState === null
+    && requestError instanceof HttpError && [408, 429, 502, 503, 504].includes(requestError.status);
+  const accessFailure = requestError instanceof HttpError && [401, 403, 404].includes(requestError.status);
+  const panel: ReviewStatePanel | null = !isValidRecordId
+    ? { title: "无法打开此活动", description: "无法打开此活动，请返回时间轴", canRetry: false }
+    : retryPending ? retryState.panel
+    : accessFailure ? requestFailurePanel(requestError)
+    : mapped.status === "error"
+      ? { title: "活动内容暂不可用", description: "活动内容暂时无法显示，请重试", canRetry: true }
+      : hasRequestError && !silentRefreshFailure ? requestFailurePanel(requestError)
+      : query.isPaused ? { title: "等待网络连接", description: "网络恢复后将继续加载活动详情。", canRetry: false }
+      : null;
+  const visibleViewModel = panel ? null : viewModel;
   const showCenterLoading =
-    isValidRecordId && query.isLoading && viewModel === null && errorMessage === null;
-  const message = errorMessage
-    ? !isValidRecordId ? "无法打开此活动，请返回时间轴"
-      : viewModel ? "更新失败，已保留当前详情"
-      : mapped.status === "error" ? "活动内容暂时无法显示，请重试"
-      : "活动详情加载失败，请重试"
-    : viewModel ? null : "正在加载活动回顾…";
+    isValidRecordId && query.isLoading && viewModel === null && panel === null;
+
+  async function retry() {
+    if (!panel?.canRetry || !isValidRecordId || retryInFlight.current || query.isFetching || query.isPaused) return;
+    retryInFlight.current = true;
+    const feedback = { panel, dataUpdatedAt: query.dataUpdatedAt };
+    setRetryState({ ...feedback, pending: true });
+    try {
+      // refetch resolves a Query result on normal request failure; it does not
+      // throw by default. Rendering classifies that result and maps its data.
+      const result = await query.refetch();
+      if (result.isSuccess && result.data !== undefined) {
+        try {
+          mapSupportRecordDetailToReview(result.data, recordId);
+          setRetryState(null);
+          return;
+        } catch {
+          // The render-time mapping retains the original exception for debugging.
+        }
+      }
+      setRetryState({ ...feedback, pending: false });
+    } catch (error) {
+      setRetryState({ ...feedback, pending: false, error });
+    } finally {
+      retryInFlight.current = false;
+    }
+  }
 
   return (
     <ReviewScene
       {...props}
       data={{
-        source: "record", recordId, viewModel, message, errorMessage,
-        retry: isValidRecordId && errorMessage ? () => { void query.refetch(); } : undefined,
+        source: "record", recordId, viewModel: visibleViewModel, panel,
+        retry: panel?.canRetry ? () => { void retry(); } : undefined,
+        retryPending,
+        isPaused: query.isPaused,
         isFetching: query.isFetching,
         showCenterLoading,
       }}
@@ -427,7 +495,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
   const previousViewerSelectionRef = useRef<ActivityReviewPhotoSelection | null>(null);
   const isPreview = data.source === "preview";
   const viewModel = data.source === "record" ? data.viewModel : null;
-  const centerTitle = data.source === "record" && data.viewModel !== null && data.message === null;
+  const centerTitle = data.source === "record" && data.viewModel !== null;
+  const showContent = isPreview || viewModel !== null;
   const reviewContent = isPreview ? ACTIVITY_REVIEW_UI_FIXTURE : {
     title: viewModel?.title ?? "活动回顾",
     location: viewModel
@@ -468,21 +537,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     data.source === "record" && data.showCenterLoading && !viewerOpen;
   const showCornerLoading =
     data.source === "record" && viewModel !== null && data.isFetching && !viewerOpen;
-  const statusData = data.source === "record" && data.message && !showCenterLoading ? data : null;
-  const hasErrorStatus = Boolean(statusData?.errorMessage);
-  const statusContent = statusData ? (
-    <>
-      <span>{statusData.message}</span>
-      {statusData.retry ? (
-        <button type="button" disabled={statusData.isFetching} onClick={() => {
-          visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
-          statusData.retry?.();
-        }} className="cursor-pointer underline focus-visible:outline-2 disabled:cursor-wait">
-          {statusData.isFetching ? "正在重试…" : "重试"}
-        </button>
-      ) : null}
-    </>
-  ) : null;
+  const statusData = data.source === "record" && data.panel ? data : null;
 
   // Render already excludes invalid media; this only synchronizes Page's identity state.
   useEffect(() => {
@@ -515,7 +570,6 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
       aria-label="活动回顾"
       data-activity-review-record-id={data.source === "record" ? data.recordId : undefined}
       data-activity-review-fixture={isPreview ? "activity-review-preview" : undefined}
-      data-activity-review-error={hasErrorStatus || undefined}
       className="absolute inset-0 isolate overflow-hidden"
       style={{ backgroundColor: "#F6E9E1", opacity: showCenterLoading ? 0.55 : 1 }}
     >
@@ -536,6 +590,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         className="wish-box-review-mobile-geometry pointer-events-none absolute top-0 h-full select-none"
         style={{ ...mobileReviewGeometry(685.481481, 0, 270.518519, 440), left: sceneX(1256), width: sceneX(664), maxWidth: "none", zIndex: 13 }}
       />
+      {showContent ? <>
       <img
         src={rose}
         alt=""
@@ -640,11 +695,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         >
           {ACTIVITY_REVIEW_UI_FIXTURE.eyebrow}
         </p>
-        </> : statusData ? (
-          <div role="status" className="absolute flex flex-col items-center justify-center text-[#243D61]" style={{ left: toSceneCqw(147), top: toSceneCqw(85), width: toSceneCqw(614), height: toSceneCqw(75), fontSize: toSceneCqw(14), gap: toSceneCqw(6) }}>
-            {statusContent}
-          </div>
-        ) : null}
+        </> : null}
         <img
           src={headerPetalCenter}
           data-review-header-petal="center"
@@ -847,7 +898,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             <p role="status" className="absolute inset-0 m-0 grid place-items-center text-[#243D61]" style={{ fontSize: toSceneCqw(18) }}>
               {viewModel?.photos.status === "empty" ? "暂无活动照片"
                 : viewModel?.photos.status === "invalid" ? "活动照片数据错误"
-                : data.source === "record" && data.errorMessage ? "照片暂不可用" : "正在加载活动照片…"}
+                : "正在加载活动照片…"}
             </p>
           )}
         </div>
@@ -975,9 +1026,25 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         }}
       />
 
-      {hasErrorStatus ? (
-        <div data-activity-review-mobile-error role="status">
-          {statusContent}
+      </> : null}
+
+      {statusData?.panel ? (
+        <div className="wish-box-review-standalone-state">
+          <div className="wish-box-review-standalone-panel" role="status" aria-live="polite" aria-busy={statusData.retryPending}>
+            <h1>{statusData.panel.title}</h1>
+            <p>{statusData.panel.description}</p>
+            {statusData.isPaused && statusData.panel.canRetry ? <p>正在等待网络连接，恢复后将继续请求。</p> : null}
+            {statusData.retry ? (
+              <button type="button" className="wish-box-review-standalone-retry"
+                disabled={statusData.retryPending || statusData.isFetching || statusData.isPaused}
+                onClick={() => {
+                  visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
+                  statusData.retry?.();
+                }}>
+                {statusData.retryPending ? "正在重试…" : "重试"}
+              </button>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
