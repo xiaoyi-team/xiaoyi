@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import WishBoxLoading from "./WishBoxLoading";
 
 const toSceneCqw = (designPixels: number) =>
@@ -34,10 +35,20 @@ function ViewerContent({
   onClose,
 }: WishBoxPhotoViewerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const returnButtonRef = useRef<HTMLButtonElement>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     media.source === "record" ? "loading" : "ready",
   );
   const isLoading = status === "loading";
+  const focusCloseControl = useCallback(() => {
+    const returnButton = returnButtonRef.current;
+    const target = returnButton?.getClientRects().length
+      ? returnButton
+      : closeButtonRef.current;
+    target?.focus({ preventScroll: true });
+  }, []);
+
+  useLayoutEffect(focusCloseControl, [focusCloseControl]);
 
   return (
     <section
@@ -52,7 +63,7 @@ function ViewerContent({
       onKeyDown={(event) => {
         if (event.key === "Tab") {
           event.preventDefault();
-          closeButtonRef.current?.focus();
+          focusCloseControl();
         } else if (event.key === "Escape") {
           event.preventDefault();
           event.stopPropagation();
@@ -71,6 +82,18 @@ function ViewerContent({
         style={{ appearance: "none" }}
       />
 
+      <button
+        ref={returnButtonRef}
+        type="button"
+        data-photo-viewer-return
+        aria-label="返回活动回顾"
+        className="absolute z-40 overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
+        onClick={onClose}
+      >
+        <img src={backDoubleChevron} alt="" aria-hidden="true" />
+        <span>返回</span>
+      </button>
+
       {isLoading ? (
         <div
           data-photo-viewer-placeholder
@@ -78,7 +101,7 @@ function ViewerContent({
           aria-hidden="true"
           onPointerDown={(event) => {
             event.preventDefault();
-            closeButtonRef.current?.focus();
+            focusCloseControl();
           }}
           style={{ ...mediaStyle, backgroundColor: "#FEF8EE", opacity: 0.55 }}
         />
@@ -91,7 +114,7 @@ function ViewerContent({
         onPointerDown={(event) => {
           // The media is not focusable; keep keyboard ownership inside the dialog.
           event.preventDefault();
-          closeButtonRef.current?.focus();
+          focusCloseControl();
         }}
         style={{
           ...mediaStyle,
