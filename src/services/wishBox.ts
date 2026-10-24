@@ -10,7 +10,7 @@ export type SupportRecordListItem = {
   location: string | null
   content: string | null
   link: string | null
-  cover_thumbnail_url: string | null
+  cover_img: PhotoItem | null
   content_photo_list: Record<string, unknown>[]
   template_type: string
 }
@@ -19,6 +19,8 @@ export type PhotoItem = {
   img_key: string
   img_url: string
   thumbnail_url: string
+  pos_x?: number
+  pos_y?: number
 }
 
 export type SupportRecordDetail = {

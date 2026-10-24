@@ -814,6 +814,8 @@ function WishBoxTimeline({
                 <TimelineCard
                   activity={card.activity}
                   coverThumbnailUrl={card.coverThumbnailUrl}
+                  coverPosX={card.coverPosX}
+                  coverPosY={card.coverPosY}
                   variant={card.variant}
                   cardY={card.cardY}
                   slotIndex={card.slotIndex}

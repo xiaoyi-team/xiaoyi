@@ -13,6 +13,8 @@ type TimelineDirection = "up" | "down";
 export type TimelineCardPresentation = {
   activity: { recordId: number; title: string; date: string };
   coverThumbnailUrl: string | null;
+  coverPosX: number;
+  coverPosY: number;
   slotIndex: number;
   variant: TimelineCardVariant;
   cardY: number;
@@ -120,6 +122,8 @@ export function deriveTimelinePresentation(
     cards.push({
       activity: { recordId: record.recordId, title: record.title, date },
       coverThumbnailUrl: record.coverThumbnailUrl,
+      coverPosX: record.coverPosX,
+      coverPosY: record.coverPosY,
       slotIndex,
       variant,
       cardY: direction === "up" ? 28 : 378 + (isMonthFirst ? MONTH_LABEL_HEIGHT : 0),

@@ -54,6 +54,8 @@ const toSceneCqw = (designPixels: number) =>
 function TimelineCard({
   activity,
   coverThumbnailUrl,
+  coverPosX,
+  coverPosY,
   variant,
   cardY,
   slotIndex,
@@ -62,6 +64,8 @@ function TimelineCard({
 }: {
   activity: ActivityReviewSelection;
   coverThumbnailUrl: string | null;
+  coverPosX: number;
+  coverPosY: number;
   variant: TimelineCardVariant;
   cardY: number;
   slotIndex: number;
@@ -131,6 +135,7 @@ function TimelineCard({
               aria-hidden="true"
               draggable={false}
               className="pointer-events-none h-full w-full select-none object-cover"
+              style={{ objectPosition: `${coverPosX}% ${coverPosY}%` }}
               onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
             />
           ) : null}

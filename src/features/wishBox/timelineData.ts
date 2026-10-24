@@ -7,6 +7,8 @@ export type TimelineRecord = {
   startDate: TimelineDateParts;
   endDate: TimelineDateParts;
   coverThumbnailUrl: string | null;
+  coverPosX: number;
+  coverPosY: number;
 };
 
 const BEIJING_DATETIME_PATTERN =
@@ -41,6 +43,13 @@ export function extractBeijingDate(
   }
 }
 
+function normalizeCoverPosition(value: unknown): number {
+  // Match CMS preview defaults per axis; zero is a valid edge alignment.
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 100
+    ? value
+    : 50;
+}
+
 export function mapSupportRecordsToTimeline(
   records: readonly SupportRecordListItem[],
 ): TimelineRecord[] {
@@ -57,12 +66,16 @@ export function mapSupportRecordsToTimeline(
       });
     }
 
+    const cover = record.cover_img;
+    const thumbnailUrl = cover?.thumbnail_url;
     return {
       recordId: record.id,
       title: record.title,
       startDate,
       endDate,
-      coverThumbnailUrl: record.cover_thumbnail_url,
+      coverThumbnailUrl: typeof thumbnailUrl === "string" && thumbnailUrl.trim() ? thumbnailUrl : null,
+      coverPosX: normalizeCoverPosition(cover?.pos_x),
+      coverPosY: normalizeCoverPosition(cover?.pos_y),
     };
   });
 }
