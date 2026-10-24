@@ -18,6 +18,11 @@
   display: none;
 }
 
+.wish-box-timeline [data-timeline-dropdown-trigger="year"],
+.wish-box-timeline [data-timeline-dropdown-trigger="form"] {
+  display: none;
+}
+
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   /* Mobile Loading uses the existing full-width Scene, without a parent scale. */
   .wish-box-scene .wish-box-loading {
@@ -1063,92 +1068,109 @@
   }
 
   .wish-box-timeline [data-timeline-filters] {
+    --timeline-filter-layout: compact;
     left: calc(var(--timeline-mobile-unit) * 68) !important;
-    top: calc(var(--timeline-mobile-unit) * 65) !important;
+    top: var(--timeline-filter-top, calc(var(--timeline-mobile-unit) * 65)) !important;
     width: calc(var(--timeline-mobile-unit) * 824) !important;
     height: calc(var(--timeline-mobile-unit) * 40) !important;
     border-width: 0.498px !important;
     border-radius: calc(var(--timeline-mobile-unit) * 12.448) !important;
+    /* Fixed 14px labels (42/70/70) and original label gaps (5/8/8). */
+    --timeline-filter-content-width: calc(203px + max(48px, var(--timeline-mobile-unit) * 48) + 2 * max(94px, var(--timeline-mobile-unit) * 94));
+    display: flex;
+    align-items: center;
+    padding-inline: max(12px, min(var(--timeline-mobile-unit) * 28, (var(--timeline-mobile-unit) * 824 - var(--timeline-filter-content-width) - 28px) / 2));
   }
 
   .wish-box-timeline [data-timeline-filter-label] {
-    top: calc(var(--timeline-mobile-unit) * 20 - 10px) !important;
+    position: static;
+    flex-shrink: 0;
     width: auto !important;
     height: 20px !important;
     font-size: 14px !important;
     line-height: 20px !important;
   }
 
-  .wish-box-timeline [data-timeline-filter-label="year"] { left: calc(var(--timeline-mobile-unit) * 28) !important; }
-  .wish-box-timeline [data-timeline-filter-label="kind"] { left: calc(var(--timeline-mobile-unit) * 303 - max(0px, 14px - var(--timeline-mobile-unit) * 14)) !important; }
-  .wish-box-timeline [data-timeline-filter-label="form"] { left: calc(var(--timeline-mobile-unit) * 499 - max(0px, 14px - var(--timeline-mobile-unit) * 14)) !important; }
+  .wish-box-timeline [data-timeline-filter-label="year"] { order: 1; margin-right: 5px; }
+  .wish-box-timeline [data-timeline-filter-label="kind"] { order: 4; margin-right: 8px; }
+  .wish-box-timeline [data-timeline-filter-label="form"] { order: 7; margin-right: 8px; }
 
-  .wish-box-timeline [data-timeline-filter-pill],
-  .wish-box-timeline [data-timeline-kind-trigger] {
-    top: calc(var(--timeline-mobile-unit) * 20 - 22px) !important;
-    width: max(44px, var(--timeline-mobile-unit) * 48) !important;
-    height: 44px !important;
+  .wish-box-timeline [data-timeline-filter-pill] { display: none; }
+
+  .wish-box-timeline [data-timeline-dropdown-trigger] {
+    display: flex;
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    flex-shrink: 0;
+    width: max(94px, var(--timeline-mobile-unit) * 94) !important;
+    height: calc(var(--timeline-mobile-unit) * 28) !important;
     border: 0 !important;
     border-radius: 12px !important;
     background: transparent !important;
     font-size: 14px !important;
     line-height: 20px !important;
     isolation: isolate;
+    overflow: visible;
   }
 
-  /* The visible 28px pill and the 44px hit area share one native button. */
-  .wish-box-timeline [data-timeline-filter-pill]::before,
-  .wish-box-timeline [data-timeline-kind-trigger]::before {
+  .wish-box-timeline [data-timeline-dropdown-trigger="year"] { order: 2; width: max(48px, var(--timeline-mobile-unit) * 48) !important; }
+  .wish-box-timeline [data-timeline-dropdown-trigger="kind"] { order: 5; }
+  .wish-box-timeline [data-timeline-dropdown-trigger="form"] { order: 8; }
+
+  /* Visible 28s pill; the same button owns the separately constrained hit area. */
+  .wish-box-timeline [data-timeline-dropdown-trigger]::before {
     content: "";
     position: absolute;
     z-index: -1;
-    inset: 8px 0;
-    border: 0.498px solid rgb(181 165 139 / 65%);
-    border-radius: 11.95px;
-    background: #F3EDE1;
-  }
-
-  .wish-box-timeline [data-timeline-filter-pill][aria-pressed="true"]::before { background: #927A54; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(1) { left: calc(var(--timeline-mobile-unit) * 75) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(2) { left: calc(var(--timeline-mobile-unit) * 127) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(3) { left: calc(var(--timeline-mobile-unit) * 179) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(4) { left: calc(var(--timeline-mobile-unit) * 231) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(6) { left: calc(var(--timeline-mobile-unit) * 577) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(7) { left: calc(var(--timeline-mobile-unit) * 629) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(8) { left: calc(var(--timeline-mobile-unit) * 681) !important; }
-  .wish-box-timeline [data-timeline-filter-pill]:nth-of-type(9) {
-    left: calc(var(--timeline-mobile-unit) * 733) !important;
-    width: calc(var(--timeline-mobile-unit) * 70) !important;
-  }
-
-  .wish-box-timeline [data-timeline-kind-trigger] {
-    left: calc(var(--timeline-mobile-unit) * 381) !important;
-    width: calc(var(--timeline-mobile-unit) * 94) !important;
-  }
-
-  .wish-box-timeline [data-timeline-kind-trigger]::before {
-    border-color: #C5B79E;
-    border-radius: 10.954px;
+    inset: 0;
+    box-sizing: border-box;
+    border: 0.498px solid #C5B79E;
+    border-radius: calc(var(--timeline-mobile-unit) * 10.954);
     background: rgb(255 249 237 / 70%);
   }
 
-  .wish-box-timeline [data-timeline-filter-separator] {
-    top: calc(var(--timeline-mobile-unit) * 9) !important;
-    width: 1px !important;
-    height: calc(var(--timeline-mobile-unit) * 22) !important;
+  .wish-box-timeline [data-timeline-dropdown-trigger]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: calc((100% - var(--timeline-filter-hit-height, 28px)) / 2 + var(--timeline-filter-hit-offset, 0px));
+    width: 100%;
+    height: var(--timeline-filter-hit-height, 28px);
+    background: transparent;
   }
 
-  .wish-box-timeline [data-timeline-filter-separator="year"] { left: calc(var(--timeline-mobile-unit) * 291) !important; }
-  .wish-box-timeline [data-timeline-filter-separator="form"] { left: calc(var(--timeline-mobile-unit) * 487) !important; }
+  .wish-box-timeline [data-timeline-filter-separator] {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    flex: 1;
+    min-width: 12px;
+    width: auto !important;
+    height: calc(var(--timeline-mobile-unit) * 22) !important;
+    background: transparent !important;
+  }
 
-  .wish-box-timeline #timeline-kind-options {
-    left: calc(var(--timeline-mobile-unit) * 381) !important;
-    top: calc(var(--timeline-mobile-unit) * 35) !important;
+  .wish-box-timeline [data-timeline-filter-separator="year"] { order: 3; }
+  .wish-box-timeline [data-timeline-filter-separator="form"] { order: 6; }
+
+  .wish-box-timeline [data-timeline-filter-separator]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: #A89272;
+  }
+
+  .wish-box-timeline [data-timeline-filter-menu] {
+    left: var(--timeline-menu-left) !important;
+    top: var(--timeline-menu-top) !important;
     display: flex;
     flex-direction: column;
     width: 160px !important;
     height: auto !important;
-    max-height: calc(100dvh - var(--timeline-mobile-unit) * 100 - 12px);
+    max-height: var(--timeline-menu-max-height);
     padding: 4px 0;
     overflow-x: hidden;
     overflow-y: auto;
@@ -1161,9 +1183,9 @@
     box-shadow: inset 0 0 0 0.75px #D9C299, 0 4px 12px rgb(77 56 36 / 16%);
   }
 
-  .wish-box-timeline #timeline-kind-options::-webkit-scrollbar { display: none; }
+  .wish-box-timeline [data-timeline-filter-menu]::-webkit-scrollbar { display: none; }
 
-  .wish-box-timeline #timeline-kind-options > button {
+  .wish-box-timeline [data-timeline-filter-menu] > button {
     position: relative;
     inset: auto !important;
     flex-shrink: 0;
@@ -1179,7 +1201,7 @@
     line-height: 22px;
   }
 
-  .wish-box-timeline #timeline-kind-options > button:not(:last-child)::after {
+  .wish-box-timeline [data-timeline-filter-menu] > button:not(:last-child)::after {
     content: "";
     position: absolute;
     left: 12px;
@@ -1189,15 +1211,91 @@
     background: rgb(191 158 102 / 25%);
   }
 
-  .wish-box-timeline #timeline-kind-options > button[aria-pressed="true"] { background: #F3EDE1 !important; }
+  .wish-box-timeline [data-timeline-filter-menu] > button[aria-pressed="true"] { background: #F3EDE1 !important; }
+
+  /* Existing Scene container, not the 824s filter bar. Recheck capacity if options
+     or 14px text change: current minimum is ~926.4px; 928 keeps rounding room. */
+  @container (min-width: 928px) {
+    .wish-box-timeline [data-timeline-filters] {
+      --timeline-filter-layout: expanded;
+      padding-left: max(12px, calc(var(--timeline-mobile-unit) * 28 - 1px));
+      padding-right: max(12px, calc(var(--timeline-mobile-unit) * 21 - 1px));
+    }
+
+    .wish-box-timeline [data-timeline-dropdown-trigger="year"],
+    .wish-box-timeline [data-timeline-dropdown-trigger="form"] {
+      display: none;
+    }
+
+    .wish-box-timeline [data-timeline-filter-pill] {
+      display: flex;
+      position: relative;
+      left: auto !important;
+      top: auto !important;
+      flex-shrink: 0;
+      width: max(48px, var(--timeline-mobile-unit) * 48) !important;
+      height: calc(var(--timeline-mobile-unit) * 28) !important;
+      margin-right: 4px;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      font-size: 14px !important;
+      line-height: 20px !important;
+      isolation: isolate;
+      overflow: visible;
+    }
+
+    .wish-box-timeline [data-timeline-filter-field="year"] { order: 2; }
+    .wish-box-timeline [data-timeline-filter-field="form"] { order: 8; }
+    .wish-box-timeline [data-timeline-filter-last] { margin-right: 0; }
+    .wish-box-timeline [data-timeline-filter-wide] { width: max(70px, var(--timeline-mobile-unit) * 70) !important; }
+
+    .wish-box-timeline [data-timeline-filter-pill]::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      box-sizing: border-box;
+      border: 0.498px solid rgb(181 165 139 / 65%);
+      border-radius: calc(var(--timeline-mobile-unit) * 11.95);
+      background: #F3EDE1;
+    }
+
+    .wish-box-timeline [data-timeline-filter-pill][aria-pressed="true"]::before { background: #927A54; }
+
+    .wish-box-timeline [data-timeline-filter-pill]::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: calc((100% - var(--timeline-filter-hit-height)) / 2 + var(--timeline-filter-hit-offset));
+      width: 100%;
+      height: var(--timeline-filter-hit-height);
+      background: transparent;
+    }
+  }
 
   .wish-box-timeline [data-timeline-viewport] {
     left: calc(var(--timeline-mobile-unit) * 64) !important;
-    top: calc(var(--timeline-mobile-unit) * 110) !important;
+    top: var(--timeline-body-top, calc(var(--timeline-mobile-unit) * 110)) !important;
     width: calc(var(--timeline-mobile-unit) * 828) !important;
     height: calc(var(--timeline-mobile-unit) * 308) !important;
     touch-action: pan-x;
     overscroll-behavior-x: contain;
+  }
+
+  /* Keep T1-B's header/hit variables and non-normal capacity fallback intact.
+     Split net extra space between F = paperTop + 40s and N = H - 28px,
+     preserving the 956 baseline: V = (N + F - 297s) / 2.
+     Clamp against filter hits and T1-B's measured card hit envelope. */
+  .wish-box-timeline[data-timeline-mobile-capacity="normal"]:has([data-timeline-card]) [data-timeline-viewport] {
+    top: min(
+      calc(100% - 29px - var(--timeline-card-envelope)),
+      max(
+        calc(var(--timeline-filter-top) + var(--timeline-mobile-unit) * 40 + 3px),
+        calc(var(--timeline-filter-top) + var(--timeline-mobile-unit) * 20 + var(--timeline-filter-hit-offset) + var(--timeline-filter-hit-height) / 2 + 1px),
+        calc((100% - 28px + var(--timeline-filter-top) - var(--timeline-mobile-unit) * 257) / 2)
+      )
+    ) !important;
   }
 
   /* 819px Scene width provides less than the Empty stack's 264px padded height. */

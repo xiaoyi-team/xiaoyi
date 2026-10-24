@@ -36,6 +36,13 @@ const TIMELINE_KIND_OPTIONS = [
   "生日",
   "其他",
 ] as const;
+const TIMELINE_FILTER_OPTIONS = {
+  year: ["全部", "2026", "2025", "2024"],
+  kind: TIMELINE_KIND_OPTIONS,
+  form: ["全部", "线上", "线下", "周边制品"],
+} as const;
+const TIMELINE_FILTER_LABELS = { year: "年份", kind: "活动类型", form: "活动分类" };
+const TIMELINE_MOBILE_MEDIA = "(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)";
 
 type TimelineYearOption = "全部" | "2026" | "2025" | "2024";
 type TimelineKindOption = (typeof TIMELINE_KIND_OPTIONS)[number];
@@ -225,12 +232,18 @@ function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerPresentation
 }
 
 function TimelineFilterPill({
+  field,
+  last = false,
+  wide = false,
   label,
   ariaLabel,
   left,
   selected,
   onClick,
 }: {
+  field: "year" | "form";
+  last?: boolean;
+  wide?: boolean;
   label: string;
   ariaLabel?: string;
   left: number;
@@ -244,6 +257,9 @@ function TimelineFilterPill({
       aria-label={ariaLabel}
       aria-pressed={selected}
       data-timeline-filter-pill
+      data-timeline-filter-field={field}
+      data-timeline-filter-last={last || undefined}
+      data-timeline-filter-wide={wide || undefined}
       className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
       style={{
         left: toSceneCqw(left),
@@ -290,14 +306,18 @@ function WishBoxTimeline({
   onFiltersChange,
   onOpenActivity,
 }: WishBoxTimelineProps) {
+  const sceneRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
-  const kindButtonRef = useRef<HTMLButtonElement>(null);
+  const filterButtonRefs = useRef<Record<keyof TimelineFilters, HTMLButtonElement | null>>({ year: null, kind: null, form: null });
+  const menuEntryRef = useRef<"first" | "last" | null>(null);
+  const filterLayoutRef = useRef<string | null>(null);
+  const filterFocusRef = useRef<{ element: HTMLButtonElement; field: keyof TimelineFilters } | null>(null);
   const timelineViewportRef = useRef<HTMLDivElement>(null);
   const timelinePointerDragRef = useRef<TimelinePointerDrag | null>(null);
   const suppressedTimelineClickRef = useRef<SuppressedTimelineClick | null>(null);
   const settledScrollIntentIdRef = useRef(0);
   const { year: selectedYear, kind: selectedKind, form: selectedForm } = filters;
-  const [kindMenuOpen, setKindMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<keyof TimelineFilters | null>(null);
   const filterKey = JSON.stringify([selectedYear, selectedKind, selectedForm]);
   const query = useSupportRecords({
     plate: "timeline",
@@ -350,10 +370,121 @@ function WishBoxTimeline({
     onScrollIntentSettled(scrollIntent.id);
   };
 
-  const closeKindMenu = () => {
-    setKindMenuOpen(false);
-    kindButtonRef.current?.focus({ preventScroll: true });
+  const closeFilterMenu = (restoreFocus = true) => {
+    setOpenMenu(null);
+    if (restoreFocus && openMenu) filterButtonRefs.current[openMenu]?.focus({ preventScroll: true });
   };
+
+  useLayoutEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const media = window.matchMedia(TIMELINE_MOBILE_MEDIA);
+    const filterBar = scene.querySelector<HTMLElement>("[data-timeline-filters]");
+    const readFilterLayout = () => media.matches && filterBar
+      ? getComputedStyle(filterBar).getPropertyValue("--timeline-filter-layout").trim()
+      : "desktop";
+    if (filterLayoutRef.current === null) filterLayoutRef.current = readFilterLayout();
+    const updateLayout = () => {
+      if (!media.matches) return;
+      const bounds = scene.getBoundingClientRect();
+      const scale = bounds.width / 956;
+      const title = scene.querySelector<HTMLElement>("[data-timeline-header-title]");
+      const viewport = timelineViewportRef.current;
+      const navigation = scene.querySelector<HTMLElement>("[data-timeline-navigation]");
+      if (!title || !viewport || !navigation) return;
+      const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
+      const navTop = navigation.getBoundingClientRect().top - bounds.top;
+      const viewportTop = viewport.getBoundingClientRect().top;
+      const cards = [...viewport.querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")];
+      // Measure the actual interactive cards, not the taller viewport/ornament box.
+      const cardBottom = cards.length
+        ? Math.max(...cards.map((card) => card.getBoundingClientRect().bottom - viewportTop))
+        : 299 * scale;
+      const extra = Math.max(0, bounds.height - 440 * scale);
+      const barHeight = 40 * scale;
+      let paperTop = Math.max(65 * scale, titleBottom + 4);
+      const baseTop = 110 * scale;
+      const lower = Math.max(baseTop, paperTop + barHeight + 3);
+      const upper = navTop - cardBottom - 1;
+      let bodyTop = lower + Math.min(
+        Math.max(0, (extra - (lower - baseTop)) / 2),
+        Math.max(0, navTop - 308 * scale - lower - 4),
+      );
+      let capacity = "normal";
+      if (bodyTop > upper) {
+        bodyTop = upper;
+        capacity = "body-cap";
+        if (paperTop + barHeight + 3 > upper) {
+          const availableGap = upper - titleBottom - barHeight;
+          capacity = availableGap < 0 ? "insufficient" : "compact";
+          paperTop = titleBottom + Math.max(0, Math.min(4, availableGap * 4 / 7));
+        }
+      }
+      // Pure px variables cross containing blocks without re-resolving percentages.
+      const hitHeight = Math.max(0, Math.min(44, bodyTop - titleBottom - 2));
+      const visualCenter = paperTop + 20 * scale;
+      const hitCenter = Math.min(bodyTop - 1 - hitHeight / 2,
+        Math.max(titleBottom + 1 + hitHeight / 2, visualCenter));
+      const variables = {
+        "--timeline-filter-top": paperTop,
+        "--timeline-body-top": bodyTop,
+        "--timeline-card-envelope": cardBottom,
+        "--timeline-filter-hit-height": hitHeight,
+        "--timeline-filter-hit-offset": hitCenter - visualCenter,
+      };
+      for (const [name, value] of Object.entries(variables)) scene.style.setProperty(name, `${value}px`);
+      scene.dataset.timelineMobileCapacity = capacity;
+      if (openMenu) {
+        const owner = filterButtonRefs.current[openMenu];
+        const trigger = owner?.getClientRects().length ? owner.getBoundingClientRect() : null;
+        const paper = scene.querySelector("[data-timeline-filters]")?.getBoundingClientRect();
+        if (trigger && paper) {
+          const border = scene.querySelector<HTMLElement>("[data-timeline-filters]")!.clientLeft;
+          scene.style.setProperty("--timeline-menu-left", `${Math.max(bounds.left + 12, Math.min(trigger.left, bounds.right - 172)) - paper.left - border}px`);
+          scene.style.setProperty("--timeline-menu-top", `${trigger.bottom + 1 - paper.top - border}px`);
+          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - trigger.bottom - 13)}px`);
+        }
+      }
+    };
+    const handleModeChange = () => {
+      setOpenMenu(null);
+      updateLayout();
+    };
+    updateLayout();
+    if (openMenu && menuEntryRef.current) {
+      const options = scene.querySelectorAll<HTMLButtonElement>(`#timeline-${openMenu}-options > button`);
+      options[menuEntryRef.current === "first" ? 0 : options.length - 1]?.focus();
+      menuEntryRef.current = null;
+    }
+    const observer = new ResizeObserver(() => {
+      const layout = readFilterLayout();
+      if (filterLayoutRef.current !== layout) {
+        filterLayoutRef.current = layout;
+        if (openMenu) setOpenMenu(null);
+        const previous = filterFocusRef.current;
+        const active = document.activeElement;
+        const hidden = previous && previous.element.getClientRects().length === 0;
+        // A hidden owner may already have blurred to body before this callback.
+        if (previous && document.hasFocus() &&
+          (active === previous.element || (active === document.body && hidden)) &&
+          (hidden || previous.element.closest("[data-timeline-filter-menu]"))) {
+          const selected = filterBar?.querySelector<HTMLButtonElement>(
+            `[data-timeline-filter-field="${previous.field}"][aria-pressed="true"]`,
+          );
+          const target = [selected, filterButtonRefs.current[previous.field], filterButtonRefs.current.kind, backButtonRef.current]
+            .find((button) => button && button.getClientRects().length > 0 && !button.disabled && !button.closest("[inert]"));
+          target?.focus({ preventScroll: true });
+        }
+      }
+      updateLayout();
+    });
+    observer.observe(scene);
+    media.addEventListener("change", handleModeChange);
+    return () => {
+      observer.disconnect();
+      media.removeEventListener("change", handleModeChange);
+    };
+  }, [openMenu, presentation]);
 
   const clearSuppressedTimelineClick = () => {
     suppressedTimelineClickRef.current = null;
@@ -575,12 +706,13 @@ function WishBoxTimeline({
   return (
     <>
     <div
+      ref={sceneRef}
       className="wish-box-timeline absolute inset-0 isolate overflow-hidden bg-white"
       style={{ opacity: showCenterLoading ? 0.55 : 1 }}
       onKeyDown={(event) => {
-        if (kindMenuOpen && event.key === "Escape") {
+        if (openMenu && event.key === "Escape") {
           event.stopPropagation();
-          closeKindMenu();
+          closeFilterMenu();
         }
       }}
     >
@@ -606,7 +738,7 @@ function WishBoxTimeline({
         aria-label="活动时间轴"
         data-timeline-viewport
         aria-busy={showCenterLoading || showCornerLoading}
-        inert={kindMenuOpen}
+        inert={openMenu !== null}
         tabIndex={0}
         onPointerDown={handleTimelinePointerDown}
         onPointerMove={handleTimelinePointerMove}
@@ -885,12 +1017,13 @@ function WishBoxTimeline({
         }}
       />
 
-      {kindMenuOpen ? (
+      {openMenu ? (
         <button
           type="button"
-          aria-label="关闭活动种类选单"
+          aria-label={`关闭${TIMELINE_FILTER_LABELS[openMenu]}选单`}
           data-timeline-menu-dismiss
-          onClick={closeKindMenu}
+          onClick={() => closeFilterMenu()}
+          tabIndex={-1}
           className="absolute inset-0 z-10 cursor-default border-0 bg-transparent p-0"
         />
       ) : null}
@@ -898,6 +1031,24 @@ function WishBoxTimeline({
       <div
         data-timeline-filters
         className="absolute"
+        onFocusCapture={(event) => {
+          const element = (event.target as HTMLElement).closest<HTMLButtonElement>("button");
+          const field = element?.dataset.timelineFilterField ?? element?.dataset.timelineDropdownTrigger ??
+            element?.closest<HTMLElement>("[data-timeline-filter-menu]")?.dataset.timelineFilterMenu;
+          if (element && (field === "year" || field === "kind" || field === "form")) {
+            filterFocusRef.current = { element, field };
+          }
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            const hiddenBlur = (event.relatedTarget === null || event.relatedTarget === document.body) &&
+              event.target.getClientRects().length === 0;
+            if (!hiddenBlur) filterFocusRef.current = null;
+            if (openMenu && !(event.relatedTarget instanceof Element && event.relatedTarget.hasAttribute("data-timeline-menu-dismiss"))) {
+              closeFilterMenu(false);
+            }
+          }
+        }}
         style={{
           left: "9.8958333%",
           top: "14.8148148%",
@@ -928,6 +1079,7 @@ function WishBoxTimeline({
           年份：
         </div>
         <TimelineFilterPill
+          field="year"
           label="全部"
           ariaLabel="年份：全部"
           left={98}
@@ -935,18 +1087,22 @@ function WishBoxTimeline({
           onClick={() => onFiltersChange({ year: "全部" })}
         />
         <TimelineFilterPill
+          field="year"
           label="2026"
           left={208}
           selected={selectedYear === "2026"}
           onClick={() => onFiltersChange({ year: "2026" })}
         />
         <TimelineFilterPill
+          field="year"
           label="2025"
           left={318}
           selected={selectedYear === "2025"}
           onClick={() => onFiltersChange({ year: "2025" })}
         />
         <TimelineFilterPill
+          field="year"
+          last
           label="2024"
           left={428}
           selected={selectedYear === "2024"}
@@ -984,20 +1140,35 @@ function WishBoxTimeline({
         >
           活动类型：
         </div>
+        {(["year", "kind", "form"] as const).map((field) => (
         <button
-          ref={kindButtonRef}
-          data-timeline-kind-trigger
+          key={field}
+          ref={(element) => { filterButtonRefs.current[field] = element; }}
+          data-timeline-dropdown-trigger={field}
+          data-timeline-kind-trigger={field === "kind" ? "" : undefined}
           type="button"
-          onClick={() => setKindMenuOpen((open) => !open)}
-          aria-expanded={kindMenuOpen}
-          aria-controls="timeline-kind-options"
+          onClick={() => setOpenMenu((open) => open === field ? null : field)}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+            event.preventDefault();
+            menuEntryRef.current = event.key === "ArrowDown" ? "first" : "last";
+            setOpenMenu(field);
+            if (openMenu === field) {
+              const options = sceneRef.current?.querySelectorAll<HTMLButtonElement>(`#timeline-${field}-options > button`);
+              options?.[event.key === "ArrowDown" ? 0 : options.length - 1]?.focus();
+              menuEntryRef.current = null;
+            }
+          }}
+          aria-label={`${TIMELINE_FILTER_LABELS[field]}：${filters[field]}`}
+          aria-expanded={openMenu === field}
+          aria-controls={`timeline-${field}-options`}
           className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
           style={{
             left: toSceneCqw(703),
             top: toSceneCqw(15),
             width: toSceneCqw(196),
             height: toSceneCqw(44),
-            zIndex: kindMenuOpen ? 20 : undefined,
+            zIndex: openMenu === field ? 20 : undefined,
             boxSizing: "border-box",
             border: `${toSceneCqw(1)} solid #C5B79E`,
             borderRadius: toSceneCqw(22),
@@ -1010,14 +1181,16 @@ function WishBoxTimeline({
             letterSpacing: 0,
           }}
         >
-          {selectedKind}
+          {filters[field]}
         </button>
+        ))}
 
-        {kindMenuOpen ? (
+        {openMenu ? (
           <div
-            id="timeline-kind-options"
+            id={`timeline-${openMenu}-options`}
+            data-timeline-filter-menu={openMenu}
             role="group"
-            aria-label="活动种类选项"
+            aria-label={`${TIMELINE_FILTER_LABELS[openMenu]}选项`}
             onKeyDown={(event) => {
               if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
               const buttons = [...event.currentTarget.querySelectorAll("button")];
@@ -1025,7 +1198,7 @@ function WishBoxTimeline({
               const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1
                 : (current + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
               event.preventDefault();
-              buttons[next]?.focus({ preventScroll: true });
+              buttons[next]?.focus();
             }}
             className="absolute"
             style={{
@@ -1040,15 +1213,15 @@ function WishBoxTimeline({
               backgroundColor: "rgba(255, 249, 236, 0.97)",
             }}
           >
-            {TIMELINE_KIND_OPTIONS.map((option, index) => (
+            {TIMELINE_FILTER_OPTIONS[openMenu].map((option, index) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => {
-                  onFiltersChange({ kind: option });
-                  closeKindMenu();
+                  onFiltersChange({ [openMenu]: option });
+                  closeFilterMenu();
                 }}
-                aria-pressed={selectedKind === option}
+                aria-pressed={filters[openMenu] === option}
                 className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#465B49]"
                 style={{
                   left: toSceneCqw(12),
@@ -1104,6 +1277,7 @@ function WishBoxTimeline({
           活动分类：
         </div>
         <TimelineFilterPill
+          field="form"
           label="全部"
           ariaLabel="活动分类：全部"
           left={1086}
@@ -1111,18 +1285,23 @@ function WishBoxTimeline({
           onClick={() => onFiltersChange({ form: "全部" })}
         />
         <TimelineFilterPill
+          field="form"
           label="线上"
           left={1194}
           selected={selectedForm === "线上"}
           onClick={() => onFiltersChange({ form: "线上" })}
         />
         <TimelineFilterPill
+          field="form"
           label="线下"
           left={1302}
           selected={selectedForm === "线下"}
           onClick={() => onFiltersChange({ form: "线下" })}
         />
         <TimelineFilterPill
+          field="form"
+          last
+          wide
           label="周边制品"
           left={1410}
           selected={selectedForm === "周边制品"}
