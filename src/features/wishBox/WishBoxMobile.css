@@ -1387,6 +1387,23 @@
     }
   }
 
+  @container (max-width: 882px) {
+    .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
+      display: none !important;
+    }
+
+    /* Keep the approved B1 center while compensating the nested Card scale. */
+    .wish-box-timeline [data-timeline-card-visual] > .truncate {
+      font-size: calc(13px / var(--timeline-mobile-card-scale)) !important;
+      line-height: calc(18px / var(--timeline-mobile-card-scale)) !important;
+      height: calc(18px / var(--timeline-mobile-card-scale)) !important;
+      top: calc((var(--timeline-mobile-unit) * 108.4 - 9px) / var(--timeline-mobile-card-scale)) !important;
+      text-box-trim: none !important;
+      white-space: nowrap !important;
+      text-overflow: ellipsis !important;
+    }
+  }
+
   .wish-box-timeline [data-timeline-marker] {
     left: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-slot) * 120) !important;
     top: calc(var(--timeline-mobile-unit) * 136) !important;
