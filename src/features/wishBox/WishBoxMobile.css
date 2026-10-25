@@ -1198,6 +1198,7 @@
     top: var(--timeline-menu-top) !important;
     display: flex;
     flex-direction: column;
+    row-gap: 1px;
     width: 160px !important;
     height: auto !important;
     max-height: var(--timeline-menu-max-height);
@@ -1239,6 +1240,7 @@
     bottom: 0;
     height: 0.5px;
     background: rgb(191 158 102 / 25%);
+    pointer-events: none;
   }
 
   .wish-box-timeline [data-timeline-filter-menu] > button[aria-pressed="true"] { background: #F3EDE1 !important; }
