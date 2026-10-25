@@ -180,7 +180,7 @@ function WishBoxPage() {
   }
 
   return (
-    <main className="grid h-dvh w-full place-items-center overflow-hidden bg-slate-100">
+    <main className="grid h-dvh w-full place-items-center overflow-hidden bg-black">
       <section
         aria-label="心愿盒场景"
         data-wish-box-view={currentView}

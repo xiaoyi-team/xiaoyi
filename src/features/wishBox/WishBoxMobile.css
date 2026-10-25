@@ -499,10 +499,27 @@
 }
 
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
-  /* Only Review's visual layer expands. The existing Scene remains the coordinate
-     container for Timeline and Viewer; neither their size nor their logic changes. */
+  /* On normal mobile viewports Review's visual layer expands independently;
+     the Scene remains Timeline and Viewer's existing coordinate container. */
   .wish-box-scene:has(> .wish-box-review-visual) {
     overflow: visible;
+    isolation: isolate;
+  }
+
+  /* Keep Review's 55% Loading composite independent of the page letterbox.
+     The host stays white; only its full-width visual overflow uses the old gray. */
+  .wish-box-scene:has(> .wish-box-review-visual)::after {
+    --review-backplate-side: max(0px, calc((100dvw - 100cqw) / 2));
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 calc((100% - 100dvw) / 2);
+    width: 100dvw;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(to right,
+      var(--color-slate-100) 0 var(--review-backplate-side),
+      #fff var(--review-backplate-side) calc(100% - var(--review-backplate-side)),
+      var(--color-slate-100) calc(100% - var(--review-backplate-side)) 100%);
   }
 
   .wish-box-review-visual {
@@ -1009,6 +1026,12 @@
     --wish-box-scene-aspect-ratio: auto;
     --wish-box-scene-max-width: none;
     height: 100%;
+  }
+
+  @media (min-aspect-ratio: 11 / 5) {
+    .wish-box-scene:has(> .wish-box-timeline) {
+      --wish-box-scene-max-width: max(568px, 177.7778dvh);
+    }
   }
 
   .wish-box-timeline {
@@ -1603,5 +1626,36 @@
     height: auto;
     max-width: calc(100cqw - var(--viewer-mobile-unit) * 80);
     max-height: min(calc(var(--viewer-mobile-unit) * 360), calc(100dvh - var(--viewer-mobile-unit) * 80));
+  }
+
+  /* Match Timeline's letterbox fallback without changing normal mobile layouts. */
+  @media (min-aspect-ratio: 11 / 5) {
+    .wish-box-scene[data-wish-box-view="home"],
+    .wish-box-scene:has(> .wish-box-review-visual) {
+      --wish-box-scene-aspect-ratio: auto;
+      --wish-box-scene-max-width: max(568px, 177.7778dvh);
+      height: 100%;
+    }
+
+    .wish-box-home-return {
+      --wish-box-home-return-left: max(38px, env(safe-area-inset-left, 0px) + 12px);
+    }
+
+    .wish-box-review-visual,
+    .wish-box-scene > [role="dialog"]:has(> [data-photo-viewer-background]) {
+      left: 0;
+      right: auto;
+      width: 100%;
+    }
+
+    .wish-box-scene:has(> [role="dialog"] > [data-photo-viewer-background])::before,
+    .wish-box-scene:has(> .wish-box-review-visual)::after {
+      inset: 0;
+      width: 100%;
+    }
+
+    .wish-box-scene:has(> .wish-box-review-visual)::after {
+      background: #fff;
+    }
   }
 }
