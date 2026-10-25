@@ -1470,7 +1470,8 @@
   .wish-box-timeline [data-timeline-nav="latest"] { left: auto !important; right: 0; }
 
   .wish-box-timeline [data-timeline-navigation] > p {
-    left: calc(var(--timeline-mobile-unit) * 372.507) !important;
+    left: 50% !important;
+    transform: translateX(-50%);
     top: auto !important;
     bottom: 0;
     width: auto !important;
@@ -1484,6 +1485,7 @@
     left: calc(var(--timeline-mobile-unit) * 36) !important;
     top: calc(var(--timeline-mobile-unit) * 4) !important;
     width: calc(var(--timeline-mobile-unit) * 110.5) !important;
+    min-width: 72px;
     height: max(44px, var(--timeline-mobile-unit) * 48.1) !important;
     border-radius: 14.3px !important;
     filter: drop-shadow(0 2.6px 2.438px #000);
@@ -1498,11 +1500,12 @@
 
   .wish-box-timeline [data-timeline-return] > span {
     left: calc(var(--timeline-mobile-unit) * 52.65) !important;
-    top: calc(var(--timeline-mobile-unit) * 11.05) !important;
+    top: calc(var(--timeline-mobile-unit) * 24.05 - 13px) !important;
     width: auto !important;
     height: 26px !important;
     font-size: 18px !important;
     line-height: 26px !important;
+    white-space: nowrap;
     text-shadow: 0 0 1.3px #000 !important;
   }
 
