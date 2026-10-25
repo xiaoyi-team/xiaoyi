@@ -1163,6 +1163,13 @@
     background: transparent;
   }
 
+  /* Keep the closed target; yield its lower extension to an open menu. */
+  .wish-box-timeline [data-timeline-dropdown-trigger][aria-expanded="true"]::after {
+    bottom: 0;
+    height: auto;
+    max-height: var(--timeline-filter-hit-height, 28px);
+  }
+
   .wish-box-timeline [data-timeline-filter-separator] {
     position: relative;
     left: auto !important;
