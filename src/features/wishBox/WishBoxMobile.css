@@ -979,6 +979,17 @@
       }
     }
   }
+
+  /* Keep the visible title to two lines; longer content remains scrollable. */
+  .wish-box-review-visual > [data-activity-review-record-id] > [data-activity-review-header] > [data-activity-review-title="success"] > span {
+    white-space: normal;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    overflow: auto;
+    max-block-size: 2lh;
+    padding-inline: 1.6666667cqw;
+    box-sizing: border-box;
+  }
 }
 
 /* Only the PC layout replaces the scroll hint with the existing retained-error bar. */
