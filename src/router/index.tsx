@@ -16,6 +16,20 @@ const router = createBrowserRouter([
     path: "/home",
     element: <HomePage />,
   },
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: "/__dev/xiao-yi-sign-in",
+          hydrateFallbackElement: <p>正在加载签到预览…</p>,
+          lazy: async () => {
+            const { default: Component } = await import(
+              "../pages/SignInPreviewPage"
+            );
+            return { Component };
+          },
+        },
+      ]
+    : []),
 ]);
 
 export default router;

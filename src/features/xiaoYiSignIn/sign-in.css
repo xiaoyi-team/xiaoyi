@@ -1,0 +1,74 @@
+.xiao-yi-sign-in-preview {
+  display: grid;
+  min-height: 100dvh;
+  place-content: center;
+  justify-items: start;
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  background: #f3f4f6;
+  color: #1f2937;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.xiao-yi-sign-in-preview__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.xiao-yi-sign-in-dialog {
+  box-sizing: border-box;
+  width: min(32rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #9ca3af;
+  border-radius: 0.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: #fff;
+  color: #1f2937;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.xiao-yi-sign-in-dialog::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+
+.xiao-yi-sign-in-dialog__title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.xiao-yi-sign-in-dialog__description {
+  margin: 0 0 1.5rem;
+}
+
+.xiao-yi-sign-in-button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.xiao-yi-sign-in-button:hover {
+  background: #e5e7eb;
+}
+
+.xiao-yi-sign-in-button:active {
+  background: #d1d5db;
+}
+
+.xiao-yi-sign-in-button:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 3px;
+}
