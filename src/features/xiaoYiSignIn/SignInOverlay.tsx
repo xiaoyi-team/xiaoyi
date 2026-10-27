@@ -1,31 +1,12 @@
-import { useEffect, useId, useRef, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
 import SignInBoard from "./SignInBoard";
+import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
 import "./sign-in.css";
-
-const BOARD_WIDTH = 1765;
-const BOARD_HEIGHT = 909;
-const VIEWPORT_MARGIN = 16;
-
-function subscribeToViewport(onResize: () => void) {
-  window.addEventListener("resize", onResize);
-  return () => window.removeEventListener("resize", onResize);
-}
-
-function readBoardScale() {
-  // Local module boundary; PC's R1 scaling remains unchanged.
-  if (window.innerWidth <= 1024) return null;
-
-  return Math.min(
-    1,
-    Math.max(0, document.documentElement.clientWidth - VIEWPORT_MARGIN * 2) /
-      BOARD_WIDTH,
-    Math.max(0, window.innerHeight - VIEWPORT_MARGIN * 2) / BOARD_HEIGHT,
-  );
-}
 
 type SignInOverlayProps = {
   open: boolean;
   onClose: () => void;
+  children?: ReactNode;
 };
 
 function isOutsidePanel(
@@ -43,7 +24,7 @@ function isOutsidePanel(
   );
 }
 
-function SignInOverlay({ open, onClose }: SignInOverlayProps) {
+function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const backdropPressRef = useRef(false);
@@ -150,6 +131,7 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
             <SignInBoard titleId={titleId} mobile={boardScale === null} />
           </div>
         </div>
+        {children}
       </div>
     </dialog>
   );
