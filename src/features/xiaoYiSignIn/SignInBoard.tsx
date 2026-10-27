@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { DEMO_MONTH, DEMO_TODAY, DEMO_YEAR, getDemoDay } from "./sign-in-demo";
+import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay } from "./sign-in-demo";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -86,10 +86,25 @@ function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
   );
 }
 
+type SignInDemoState = {
+  todaySigned: boolean;
+  totalDays: number;
+};
+
 function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) {
   const [selectedDay, setSelectedDay] = useState(DEMO_TODAY);
+  const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14 });
   const quoteRef = useRef<HTMLDivElement>(null);
-  const selected = getDemoDay(selectedDay);
+  const selected = getDemoDay(selectedDay, demo.todaySigned);
+  const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
+  const signInLabel = demo.todaySigned ? "已签到" : "点击签到";
+
+  function handleSignIn() {
+    setDemo((previous) => previous.todaySigned
+      ? previous
+      : { todaySigned: true, totalDays: previous.totalDays + 1 });
+    setSelectedDay(DEMO_TODAY);
+  }
 
   // Closing the always-mounted dialog preserves the selection. Only a date
   // change resets this local reading position; opening/closing does not.
@@ -179,7 +194,7 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
                         <button
                           type="button"
                           className="sign-in-board__date-button"
-                          aria-label={`${DEMO_MONTH}月${day}日，${getDemoDay(day).status}（演示）`}
+                          aria-label={`${DEMO_MONTH}月${day}日，${getDemoDay(day, demo.todaySigned).status}（演示）`}
                           aria-pressed={selectedDay === day}
                           aria-current={day === DEMO_TODAY ? "date" : undefined}
                           onClick={() => setSelectedDay(day)}
@@ -187,7 +202,7 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
                           <span className={day === DEMO_TODAY ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
                             {day}
                           </span>
-                          {getDemoDay(day).signed && (
+                          {day !== DEMO_TODAY && getDemoDay(day, demo.todaySigned).signed && (
                             <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
                           )}
                           {selectedDay === day && (
@@ -208,9 +223,18 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
             </div>
           </div>
           <div className="sign-in-board__today-copy" aria-hidden="true">
+            {demo.todaySigned && (
+              <img className="sign-in-board__today-stamp" src={signInStamp} alt="" draggable={false} />
+            )}
             <span className="sign-in-board__today-number">24</span>
-            <span className="sign-in-board__sign-in-label">点击签到</span>
+            <span className="sign-in-board__sign-in-label">{signInLabel}</span>
           </div>
+          <button
+            type="button"
+            className="sign-in-board__sign-in-button"
+            aria-label={`${DEMO_MONTH}月${DEMO_TODAY}日，${signInLabel}（本地演示）`}
+            onClick={handleSignIn}
+          />
         </div>
         {/* These decorations are exported in the parent's rotated coordinates. */}
         <div className="sign-in-board__today-art" aria-hidden="true">
@@ -245,17 +269,17 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
         <Artwork src={rewardRivet} x={17} y={12} width={19} height={19} />
         <Artwork src={rewardRivet} x={824} y={11} width={19} height={19} />
         <p className="sign-in-board__total">
-          <span>已累计签到</span><strong>14</strong><span>天</span>
+          <span>已累计签到</span><strong>{demo.totalDays}</strong><span>天</span>
         </p>
         <Artwork src={starGoldRewards} x={338} y={33} width={26} height={26} />
-        <div className="sign-in-board__progress" role="progressbar" aria-label="距离30天奖励的累计签到进度（设计样本）" aria-valuemin={0} aria-valuemax={30} aria-valuenow={14}>
-          <span />
+        <div className="sign-in-board__progress" role="progressbar" aria-label="距离30天奖励的累计签到进度（设计样本）" aria-valuemin={0} aria-valuemax={DEMO_REWARD_TARGET} aria-valuenow={demo.totalDays}>
+          <span style={{ width: `${demo.totalDays / DEMO_REWARD_TARGET * 100}%` }} />
         </div>
         {[56, 125, 194, 263, 332, 401].map((x) => (
           <Artwork key={x} src={progressDot} x={x} y={100} width={8} height={8} />
         ))}
         <p className="sign-in-board__next-reward">
-          <span>{mobile ? "距下一奖励还差" : "距离下一个奖励还有"}</span><strong>16</strong><span>天  ›</span>
+          <span>{mobile ? "距下一奖励还差" : "距离下一个奖励还有"}</span><strong>{remainingDays}</strong><span>天  ›</span>
         </p>
         <Artwork className="sign-in-board__gift-icon" src={giftIcon} x={52} y={174} width={33} height={34} />
         <p className="sign-in-board__reward-hint">

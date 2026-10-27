@@ -2,7 +2,8 @@
 export const DEMO_YEAR = 2026;
 export const DEMO_MONTH = 9;
 export const DEMO_TODAY = 24;
-const todaySigned = false;
+// Only the target for the current 14 → 15 day demonstration.
+export const DEMO_REWARD_TARGET = 30;
 
 const signedQuotes: Record<number, string> = {
   7: "两个世界又有什么关系。",
@@ -28,12 +29,12 @@ const pcQuoteTypography: Partial<Record<number, { fontSize: number; lineHeight: 
   17: { fontSize: 26, lineHeight: 41 },
 };
 
-export function getDemoDay(day: number) {
+export function getDemoDay(day: number, todaySigned: boolean) {
   const { fontSize: quoteFontSize, lineHeight: quoteLineHeight } =
     pcQuoteTypography[day] ?? { fontSize: 30, lineHeight: 45 };
   const signed = day === DEMO_TODAY ? todaySigned : day in signedQuotes;
   const status = day === DEMO_TODAY
-    ? "待签到"
+    ? todaySigned ? "已签到" : "待签到"
     : day > DEMO_TODAY ? "未来日期" : signed ? "已签到" : "未签到";
   const quote = day === DEMO_TODAY
     ? "签到获取今日语录"
