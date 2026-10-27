@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -24,6 +25,7 @@ import reward111 from "../../assets/xiao-yi-sign-in/reward-111-preview.png";
 import reward365 from "../../assets/xiao-yi-sign-in/reward-365-preview.png";
 import rewardRivet from "../../assets/xiao-yi-sign-in/reward-rivet.svg";
 import rewardsPaper from "../../assets/xiao-yi-sign-in/rewards-paper.png";
+import rewardsPaperMobile from "../../assets/xiao-yi-sign-in/rewards-paper-mobile.png";
 import seal from "../../assets/xiao-yi-sign-in/seal.svg";
 import selectedDateRing from "../../assets/xiao-yi-sign-in/selected-date-ring.svg";
 import signInStamp from "../../assets/xiao-yi-sign-in/sign-in-stamp.svg";
@@ -40,6 +42,7 @@ import titleStar from "../../assets/xiao-yi-sign-in/title-star.svg";
 import todayBlueCircle from "../../assets/xiao-yi-sign-in/today-blue-circle.svg";
 import todayGoldRing from "../../assets/xiao-yi-sign-in/today-gold-ring.svg";
 import todayTagPaper from "../../assets/xiao-yi-sign-in/today-tag-paper.png";
+import todayTagPaperMobile from "../../assets/xiao-yi-sign-in/today-tag-paper-mobile.png";
 
 // September 2026 and all displayed values are Figma fixtures, not business data.
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -56,6 +59,7 @@ const rewards = [
 ];
 
 type ArtworkProps = {
+  className?: string;
   src: string;
   x: number;
   y: number;
@@ -63,20 +67,25 @@ type ArtworkProps = {
   height: number;
 };
 
-function Artwork({ src, x, y, width, height }: ArtworkProps) {
+function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
   return (
     <img
-      className="sign-in-board__art"
+      className={`sign-in-board__art ${className}`.trim()}
       src={src}
       alt=""
       aria-hidden="true"
       draggable={false}
-      style={{ left: x, top: y, width, height }}
+      style={{
+        "--art-x": `${x}px`,
+        "--art-y": `${y}px`,
+        "--art-width": `${width}px`,
+        "--art-height": `${height}px`,
+      } as CSSProperties}
     />
   );
 }
 
-function SignInBoard({ titleId }: { titleId: string }) {
+function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) {
   return (
     <div className="sign-in-board">
       {/* Final-render assets already contain their Figma rotation and shadow. */}
@@ -95,7 +104,12 @@ function SignInBoard({ titleId }: { titleId: string }) {
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
-        <div className="sign-in-board__quote-content">
+        <div
+          className="sign-in-board__quote-content"
+          role={mobile ? "region" : undefined}
+          aria-label={mobile ? "今日寄语，可纵向滚动查看" : undefined}
+          tabIndex={mobile ? 0 : undefined}
+        >
           <p>签到获取今日语录</p>
         </div>
         <p className="sign-in-board__quote-footer">
@@ -156,11 +170,17 @@ function SignInBoard({ titleId }: { titleId: string }) {
         </div>
         {/* These decorations are exported in the parent's rotated coordinates. */}
         <div className="sign-in-board__today-art" aria-hidden="true">
-          <Artwork src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />
-          <Artwork src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />
-          <Artwork src={selectedDateRing} x={331.036} y={331.983} width={45.001} height={45.001} />
-          <Artwork src={todayTagPaper} x={308.004} y={384.563} width={144.922} height={64.487} />
-          <Artwork src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />
+          <Artwork className="sign-in-board__today-gold" src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />
+          <Artwork className="sign-in-board__today-blue" src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />
+          {mobile ? (
+            <svg className="sign-in-board__selected-ring" width="31.49" height="31.49" viewBox="0 0 31.49 31.49" fill="none">
+              <circle cx="15.745" cy="15.745" r="15.369" stroke="#ad7e37" strokeWidth="0.752" />
+            </svg>
+          ) : (
+            <Artwork src={selectedDateRing} x={331.036} y={331.983} width={45.001} height={45.001} />
+          )}
+          <Artwork className="sign-in-board__today-paper" src={mobile ? todayTagPaperMobile : todayTagPaper} x={308.004} y={384.563} width={144.922} height={64.487} />
+          <Artwork className="sign-in-board__today-star" src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />
         </div>
       </section>
 
@@ -183,7 +203,7 @@ function SignInBoard({ titleId }: { titleId: string }) {
       </header>
 
       <section className="sign-in-board__rewards" aria-label="累计签到与奖励（设计样本）">
-        <Artwork src={rewardsPaper} x={-6} y={-2} width={873} height={253} />
+        <Artwork className="sign-in-board__rewards-paper" src={mobile ? rewardsPaperMobile : rewardsPaper} x={-6} y={-2} width={873} height={253} />
         <div className="sign-in-board__rewards-border" aria-hidden="true" />
         <Artwork src={rewardRivet} x={17} y={12} width={19} height={19} />
         <Artwork src={rewardRivet} x={824} y={11} width={19} height={19} />
@@ -198,10 +218,12 @@ function SignInBoard({ titleId }: { titleId: string }) {
           <Artwork key={x} src={progressDot} x={x} y={100} width={8} height={8} />
         ))}
         <p className="sign-in-board__next-reward">
-          <span>距离下一个奖励还有</span><strong>16</strong><span>天  ›</span>
+          <span>{mobile ? "距下一奖励还差" : "距离下一个奖励还有"}</span><strong>16</strong><span>天  ›</span>
         </p>
-        <Artwork src={giftIcon} x={52} y={174} width={33} height={34} />
-        <p className="sign-in-board__reward-hint">达到30天可获得「星光花语」头像框</p>
+        <Artwork className="sign-in-board__gift-icon" src={giftIcon} x={52} y={174} width={33} height={34} />
+        <p className="sign-in-board__reward-hint">
+          {mobile ? <>达到30天可获得<br />「星光花语」头像框</> : "达到30天可获得「星光花语」头像框"}
+        </p>
         <ul className="sign-in-board__reward-list">
           {rewards.map((reward) => (
             <li className="sign-in-board__reward" key={reward.days}>

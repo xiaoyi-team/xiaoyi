@@ -12,7 +12,7 @@ function subscribeToViewport(onResize: () => void) {
 }
 
 function readBoardScale() {
-  // This local boundary preserves B2's scrolling layout on smaller viewports.
+  // Local module boundary; PC's R1 scaling remains unchanged.
   if (window.innerWidth <= 1024) return null;
 
   return Math.min(
@@ -28,12 +28,12 @@ type SignInOverlayProps = {
   onClose: () => void;
 };
 
-function isOutsideDialog(
-  dialog: HTMLDialogElement,
+function isOutsidePanel(
+  panel: HTMLElement,
   clientX: number,
   clientY: number,
 ) {
-  const bounds = dialog.getBoundingClientRect();
+  const bounds = panel.getBoundingClientRect();
 
   return (
     clientX < bounds.left ||
@@ -45,6 +45,7 @@ function isOutsideDialog(
 
 function SignInOverlay({ open, onClose }: SignInOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
   const backdropPressRef = useRef(false);
   const closeRequestedRef = useRef(false);
   const titleId = useId();
@@ -82,6 +83,7 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
       ref={dialogRef}
       className="xiao-yi-sign-in-dialog"
       data-pc-fit={boardScale !== null ? true : undefined}
+      data-mobile={boardScale === null ? true : undefined}
       style={boardScale !== null ? { width: BOARD_WIDTH * boardScale } : undefined}
       aria-labelledby={titleId}
       onCancel={(event) => {
@@ -93,18 +95,22 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
         if (!event.currentTarget.open) requestClose();
       }}
       onPointerDownCapture={(event) => {
+        const panel = boardScale === null ? boardRef.current : event.currentTarget;
         backdropPressRef.current =
+          panel !== null &&
           event.isPrimary &&
           event.button === 0 &&
-          isOutsideDialog(event.currentTarget, event.clientX, event.clientY);
+          isOutsidePanel(panel, event.clientX, event.clientY);
       }}
       onPointerCancel={() => {
         backdropPressRef.current = false;
       }}
       onClick={(event) => {
+        const panel = boardScale === null ? boardRef.current : event.currentTarget;
         const clickedBackdrop =
+          panel !== null &&
           backdropPressRef.current &&
-          isOutsideDialog(event.currentTarget, event.clientX, event.clientY);
+          isOutsidePanel(panel, event.clientX, event.clientY);
 
         backdropPressRef.current = false;
         if (clickedBackdrop) requestClose();
@@ -116,7 +122,10 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
           className="xiao-yi-sign-in-button xiao-yi-sign-in-close"
           onClick={requestClose}
         >
-          关闭
+          <span className="xiao-yi-sign-in-close__label">关闭</span>
+          <svg className="xiao-yi-sign-in-close__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </svg>
         </button>
         <div
           className="xiao-yi-sign-in-viewport"
@@ -126,6 +135,7 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
           tabIndex={0}
         >
           <div
+            ref={boardRef}
             className="xiao-yi-sign-in-scale-layer"
             style={
               boardScale !== null
@@ -137,7 +147,7 @@ function SignInOverlay({ open, onClose }: SignInOverlayProps) {
                 : undefined
             }
           >
-            <SignInBoard titleId={titleId} />
+            <SignInBoard titleId={titleId} mobile={boardScale === null} />
           </div>
         </div>
       </div>
