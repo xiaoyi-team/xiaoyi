@@ -1,6 +1,7 @@
 @import "../../fonts/noto-serif-sc.css";
 @import "../../fonts/dancing-script.css";
 @import "../../fonts/cormorant-garamond.css";
+@import "../../fonts/playfair-display.css";
 
 .xiao-yi-sign-in-preview {
   display: grid;
@@ -165,9 +166,37 @@
 
 .sign-in-board__return-today {
   position: absolute;
-  top: 85px;
-  left: 477px;
+  top: 79px;
+  left: 447px;
+  width: 163px;
+  height: 46px;
   font-size: 24px;
+}
+
+.sign-in-board__return-today > span {
+  position: absolute;
+  top: 6px;
+  left: 30px;
+  white-space: nowrap;
+}
+
+.sign-in-board__return-today,
+.sign-in-board__date-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+.sign-in-board__return-today:focus-visible,
+.sign-in-board__date-button:focus-visible,
+.sign-in-board__quote-content:focus-visible {
+  outline: 2px solid #304bcc;
+  outline-offset: 2px;
 }
 
 .sign-in-board__month-rule {
@@ -216,6 +245,27 @@
   height: 1px;
   background: rgb(194 167 126 / 15%);
   content: "";
+  pointer-events: none;
+}
+
+.sign-in-board__date-button {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  font-size: inherit;
+}
+
+.sign-in-board__selection-ring {
+  position: absolute;
+  top: 4px;
+  left: 21px;
+  width: 45px;
+  height: 45px;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
 }
 
 .sign-in-board__day-number--hidden {
@@ -247,6 +297,7 @@
   left: 287px;
   width: 140px;
   height: 104px;
+  pointer-events: none;
 }
 
 .sign-in-board__today-number {
@@ -352,22 +403,62 @@
   font-weight: 400;
 }
 
+.sign-in-board__review-date-number,
+.sign-in-board__review-weekday {
+  position: absolute;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.sign-in-board__review-date-number {
+  top: 302px;
+  left: 70px;
+  width: 176px;
+  height: 96px;
+  font-family: "Playfair Display", serif;
+  font-size: 72px;
+}
+
+.sign-in-board__review-weekday {
+  top: 350px;
+  left: 290px;
+  width: 52px;
+  height: 35px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 29px;
+}
+
 .sign-in-board__quote-content {
   position: absolute;
+  /* Long text stays readable where decorative artwork overlaps this region. */
+  z-index: 1;
   top: 409px;
   left: 115px;
   display: flex;
+  flex-direction: column;
   width: 490px;
   height: 190px;
   align-items: center;
-  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
   text-align: center;
+}
+
+.sign-in-board__quote-content::-webkit-scrollbar {
+  display: none;
 }
 
 .sign-in-board__quote-content p {
   width: 486px;
+  max-width: 100%;
+  flex-shrink: 0;
+  margin-block: auto;
   font-size: 30px;
   line-height: 45px;
+  white-space: pre-line;
 }
 
 .sign-in-board__quote-footer {
@@ -636,10 +727,17 @@
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today {
-  top: 36.97px;
-  left: 219.22px;
+  top: 37.13px;
+  left: 210.09px;
+  width: 76.61px;
+  height: 21.62px;
   font-size: 14px;
   line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today > span {
+  top: -0.16px;
+  left: 9.13px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month-rule {
@@ -709,11 +807,24 @@
   line-height: 21px;
 }
 
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-gold,
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selected-ring {
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-gold {
   position: absolute;
   top: 153.988px;
   left: 153.641px;
+  width: 31.49px;
+  height: 31.49px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring {
+  top: 2.1155px;
+  left: 9.8705px;
+  width: 21.15px;
+  height: 21.15px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring--today {
+  top: 0;
+  left: 7.7545px;
   width: 31.49px;
   height: 31.49px;
 }
@@ -796,6 +907,22 @@
   line-height: normal;
 }
 
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-date-number {
+  top: 141.94px;
+  left: 32.9007px;
+  width: 83px;
+  height: 45px;
+  font-size: 33.84px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-weekday {
+  top: 164.5px;
+  left: 136.3007px;
+  width: 24px;
+  height: 17px;
+  font-size: 13.63px;
+}
+
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content {
   top: 192px;
   left: 54px;
@@ -805,7 +932,6 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content p {

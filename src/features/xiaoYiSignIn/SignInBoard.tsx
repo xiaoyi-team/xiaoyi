@@ -1,4 +1,5 @@
-import type { CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { DEMO_MONTH, DEMO_TODAY, DEMO_YEAR, getDemoDay } from "./sign-in-demo";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -86,6 +87,16 @@ function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
 }
 
 function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) {
+  const [selectedDay, setSelectedDay] = useState(DEMO_TODAY);
+  const quoteRef = useRef<HTMLDivElement>(null);
+  const selected = getDemoDay(selectedDay);
+
+  // Closing the always-mounted dialog preserves the selection. Only a date
+  // change resets this local reading position; opening/closing does not.
+  useLayoutEffect(() => {
+    if (quoteRef.current) quoteRef.current.scrollTop = 0;
+  }, [selectedDay]);
+
   return (
     <div className="sign-in-board">
       {/* Final-render assets already contain their Figma rotation and shadow. */}
@@ -104,16 +115,28 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
+        {selectedDay !== DEMO_TODAY && (
+          <div className="sign-in-board__review-date" aria-label={`${DEMO_YEAR}年${DEMO_MONTH}月${selectedDay}日 ${selected.weekday}`}>
+            <span className="sign-in-board__review-date-number">{DEMO_MONTH} / {selectedDay}</span>
+            <span className="sign-in-board__review-weekday">{selected.weekday}</span>
+          </div>
+        )}
         <div
           className="sign-in-board__quote-content"
-          role={mobile ? "region" : undefined}
-          aria-label={mobile ? "今日寄语，可纵向滚动查看" : undefined}
-          tabIndex={mobile ? 0 : undefined}
+          ref={quoteRef}
+          role="region"
+          aria-label={`${DEMO_MONTH}月${selectedDay}日寄语，可纵向滚动查看`}
+          tabIndex={0}
         >
-          <p>签到获取今日语录</p>
+          <p style={mobile ? undefined : {
+            fontSize: selected.quoteFontSize,
+            lineHeight: `${selected.quoteLineHeight}px`,
+          }}>
+            {selected.quote}
+          </p>
         </div>
-        <p className="sign-in-board__quote-footer">
-          与你相伴，收藏每一天的心动。
+        <p className="sign-in-board__quote-footer" aria-live="polite" aria-atomic="true">
+          {selected.footer}
         </p>
         <Artwork src={iris} x={472} y={-37} width={290} height={495} />
         <Artwork src={quoteLabelPaper} x={385} y={223.734} width={266.127} height={97.045} />
@@ -132,7 +155,9 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
         <Artwork src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
           <h3 className="sign-in-board__month">2026 · 09</h3>
-          <span className="sign-in-board__return-today">返回今日</span>
+          <button type="button" className="sign-in-board__return-today" onClick={() => setSelectedDay(DEMO_TODAY)}>
+            <span>返回今日</span>
+          </button>
           <Artwork src={calendarArrows} x={447} y={89} width={158} height={24} />
           <div className="sign-in-board__month-rule" aria-hidden="true" />
           <div className="sign-in-board__calendar-table" role="table" aria-label="2026年9月签到记录（设计样本）">
@@ -149,13 +174,32 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
                       className="sign-in-board__day"
                       role="cell"
                       key={column}
-                      aria-label={day ? `9月${day}日${day >= 7 && day <= 20 ? "，已签到" : day === 24 ? "，待签到" : ""}` : "空白"}
                     >
-                      <span className={day === 24 ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
-                        {day}
-                      </span>
-                      {day !== null && day >= 7 && day <= 20 && (
-                        <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
+                      {day !== null && (
+                        <button
+                          type="button"
+                          className="sign-in-board__date-button"
+                          aria-label={`${DEMO_MONTH}月${day}日，${getDemoDay(day).status}（演示）`}
+                          aria-pressed={selectedDay === day}
+                          aria-current={day === DEMO_TODAY ? "date" : undefined}
+                          onClick={() => setSelectedDay(day)}
+                        >
+                          <span className={day === DEMO_TODAY ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
+                            {day}
+                          </span>
+                          {getDemoDay(day).signed && (
+                            <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
+                          )}
+                          {selectedDay === day && (
+                            mobile && day === DEMO_TODAY ? (
+                              <svg className="sign-in-board__selection-ring sign-in-board__selection-ring--today" width="31.49" height="31.49" viewBox="0 0 31.49 31.49" fill="none" aria-hidden="true">
+                                <circle cx="15.745" cy="15.745" r="15.369" stroke="#ad7e37" strokeWidth="0.752" />
+                              </svg>
+                            ) : (
+                              <img className="sign-in-board__selection-ring" src={selectedDateRing} alt="" aria-hidden="true" draggable={false} />
+                            )
+                          )}
+                        </button>
                       )}
                     </div>
                   ))}
@@ -172,13 +216,6 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
         <div className="sign-in-board__today-art" aria-hidden="true">
           <Artwork className="sign-in-board__today-gold" src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />
           <Artwork className="sign-in-board__today-blue" src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />
-          {mobile ? (
-            <svg className="sign-in-board__selected-ring" width="31.49" height="31.49" viewBox="0 0 31.49 31.49" fill="none">
-              <circle cx="15.745" cy="15.745" r="15.369" stroke="#ad7e37" strokeWidth="0.752" />
-            </svg>
-          ) : (
-            <Artwork src={selectedDateRing} x={331.036} y={331.983} width={45.001} height={45.001} />
-          )}
           <Artwork className="sign-in-board__today-paper" src={mobile ? todayTagPaperMobile : todayTagPaper} x={308.004} y={384.563} width={144.922} height={64.487} />
           <Artwork className="sign-in-board__today-star" src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />
         </div>
