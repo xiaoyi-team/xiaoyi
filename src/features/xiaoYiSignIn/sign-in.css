@@ -1,3 +1,7 @@
+@import "../../fonts/noto-serif-sc.css";
+@import "../../fonts/dancing-script.css";
+@import "../../fonts/cormorant-garamond.css";
+
 .xiao-yi-sign-in-preview {
   display: grid;
   min-height: 100dvh;
@@ -19,15 +23,14 @@
 
 .xiao-yi-sign-in-dialog {
   box-sizing: border-box;
-  width: min(32rem, calc(100% - 2rem));
-  max-height: calc(100dvh - 2rem);
+  width: min(1765px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: none;
   margin: auto;
-  overflow: auto;
-  overscroll-behavior: contain;
-  border: 1px solid #9ca3af;
-  border-radius: 0.5rem;
-  padding: clamp(1rem, 3vw, 1.5rem);
-  background: #fff;
+  overflow: visible;
+  border: 0;
+  padding: 0;
+  background: transparent;
   color: #1f2937;
   font-family: system-ui, sans-serif;
   font-size: 1rem;
@@ -38,14 +41,33 @@
   background: rgb(0 0 0 / 50%);
 }
 
-.xiao-yi-sign-in-dialog__title {
-  margin: 0 0 1rem;
-  font-size: 1.25rem;
-  font-weight: 600;
+.xiao-yi-sign-in-shell {
+  position: relative;
 }
 
-.xiao-yi-sign-in-dialog__description {
-  margin: 0 0 1.5rem;
+.xiao-yi-sign-in-viewport {
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* The slot owns scaled layout dimensions; only its canvas is transformed. */
+.xiao-yi-sign-in-dialog[data-pc-fit] .xiao-yi-sign-in-viewport {
+  position: relative;
+  max-height: none;
+  overflow: visible;
+}
+
+.xiao-yi-sign-in-dialog[data-pc-fit] .xiao-yi-sign-in-scale-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.xiao-yi-sign-in-viewport:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 3px;
 }
 
 .xiao-yi-sign-in-button {
@@ -71,4 +93,450 @@
 .xiao-yi-sign-in-button:focus-visible {
   outline: 2px solid #1d4ed8;
   outline-offset: 3px;
+}
+
+.xiao-yi-sign-in-close {
+  position: absolute;
+  z-index: 10;
+  top: 8px;
+  right: 8px;
+}
+
+/* PC Figma fixture: 1765 × 909. Small screens scroll until Phase 1-B3. */
+.sign-in-board {
+  position: relative;
+  width: 1765px;
+  min-width: 1765px;
+  height: 909px;
+  overflow: hidden;
+  color: #101d49;
+  font-family: "Noto Serif SC", serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.sign-in-board p,
+.sign-in-board h2,
+.sign-in-board h3 {
+  margin: 0;
+}
+
+.sign-in-board__art {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sign-in-board__calendar {
+  position: absolute;
+  top: 141px;
+  left: 225px;
+  width: 672px;
+  height: 470px;
+}
+
+.sign-in-board__calendar-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-3deg);
+  transform-origin: 0 0;
+}
+
+.sign-in-board__month {
+  position: absolute;
+  top: 91px;
+  left: 36px;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.sign-in-board__return-today {
+  position: absolute;
+  top: 85px;
+  left: 477px;
+  font-size: 24px;
+}
+
+.sign-in-board__month-rule {
+  position: absolute;
+  top: 142px;
+  left: 30px;
+  width: 610px;
+  height: 1px;
+  background: rgb(194 167 126 / 40%);
+}
+
+.sign-in-board__calendar-table {
+  position: absolute;
+  top: 150px;
+  left: 30px;
+  width: 610px;
+}
+
+.sign-in-board__weekdays,
+.sign-in-board__week {
+  display: grid;
+  grid-template-columns: repeat(7, 87px);
+}
+
+.sign-in-board__weekdays {
+  height: 34px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.sign-in-board__day {
+  position: relative;
+  display: grid;
+  height: 54px;
+  place-items: center;
+  font-size: 25px;
+}
+
+.sign-in-board__day::after {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgb(194 167 126 / 15%);
+  content: "";
+}
+
+.sign-in-board__day-number--hidden {
+  visibility: hidden;
+}
+
+.sign-in-board__stamp {
+  position: absolute;
+  top: -2px;
+  left: 11px;
+  width: 66px;
+  height: 61px;
+  max-width: none;
+  opacity: 0.52;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sign-in-board__today-art {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sign-in-board__today-copy {
+  position: absolute;
+  top: 346px;
+  left: 287px;
+  width: 140px;
+  height: 104px;
+}
+
+.sign-in-board__today-number {
+  position: absolute;
+  top: 9px;
+  left: 36px;
+  color: #fffaf0;
+  font-size: 30px;
+}
+
+.sign-in-board__sign-in-label {
+  position: absolute;
+  top: 67.281px;
+  left: 11px;
+  width: 115px;
+  height: 32px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.sign-in-board__title {
+  position: absolute;
+  top: 70px;
+  left: 228px;
+  width: 369px;
+  height: 158px;
+}
+
+.sign-in-board__title-copy {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-5deg);
+  transform-origin: 0 0;
+  white-space: nowrap;
+}
+
+.sign-in-board__daily {
+  position: absolute;
+  top: -44.093px;
+  left: 17.911px;
+  font-family: "Dancing Script", cursive;
+  font-size: 91px;
+  font-weight: 400;
+}
+
+.sign-in-board__check-in {
+  position: absolute;
+  top: 38.59px;
+  left: 39.79px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 69px;
+  font-weight: 700;
+}
+
+.sign-in-board__heading {
+  position: absolute;
+  top: 102.907px;
+  left: 60.911px;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.sign-in-board__quote {
+  position: absolute;
+  top: 118px;
+  left: 899px;
+  width: 653px;
+  height: 655px;
+}
+
+.sign-in-board__quote-border,
+.sign-in-board__rewards-border {
+  position: absolute;
+  border: 1px solid #c2a77e;
+  pointer-events: none;
+}
+
+.sign-in-board__quote-border {
+  top: 12px;
+  left: 12px;
+  width: 629px;
+  height: 626px;
+  opacity: 0.25;
+}
+
+.sign-in-board__photo-shade {
+  position: absolute;
+  top: 249px;
+  left: 26px;
+  width: 490px;
+  height: 46px;
+  background: rgb(41 54 80 / 35%);
+}
+
+.sign-in-board__photo-caption {
+  position: absolute;
+  top: 249px;
+  left: 39px;
+  color: #fffaf0;
+  font-family: "Dancing Script", cursive;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.sign-in-board__quote-content {
+  position: absolute;
+  top: 409px;
+  left: 115px;
+  display: flex;
+  width: 490px;
+  height: 190px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.sign-in-board__quote-content p {
+  width: 486px;
+  font-size: 30px;
+  line-height: 45px;
+}
+
+.sign-in-board__quote-footer {
+  position: absolute;
+  top: 609px;
+  left: 117px;
+  width: 490px;
+  color: #8d7758;
+  font-size: 18px;
+  text-align: center;
+}
+
+.sign-in-board__quote-label {
+  position: absolute;
+  top: 247px;
+  left: 391px;
+  width: 244px;
+  height: 58px;
+  transform: rotate(-5deg);
+  transform-origin: 0 0;
+}
+
+.sign-in-board__quote-label h3 {
+  position: absolute;
+  top: 8px;
+  left: 75px;
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sign-in-board__rewards {
+  position: absolute;
+  top: 613px;
+  left: 147px;
+  width: 855px;
+  height: 235px;
+}
+
+.sign-in-board__rewards-border {
+  top: 9px;
+  left: 9px;
+  width: 837px;
+  height: 217px;
+  opacity: 0.35;
+}
+
+.sign-in-board__total,
+.sign-in-board__next-reward {
+  position: absolute;
+  inset: 0;
+  white-space: pre;
+}
+
+.sign-in-board__total > *,
+.sign-in-board__next-reward > * {
+  position: absolute;
+}
+
+.sign-in-board__total > :first-child {
+  top: 49px;
+  left: 51px;
+  font-size: 28px;
+}
+
+.sign-in-board__total strong {
+  top: 29px;
+  left: 192px;
+  width: 100px;
+  height: 66px;
+  color: #304bcc;
+  font-size: 46px;
+  text-align: center;
+}
+
+.sign-in-board__total > :last-child {
+  top: 50px;
+  left: 300px;
+  font-size: 28px;
+}
+
+.sign-in-board__progress {
+  position: absolute;
+  top: 101px;
+  left: 65px;
+  width: 348px;
+  height: 7px;
+  background: #97979b;
+}
+
+.sign-in-board__progress > span {
+  display: block;
+  width: 162.4px;
+  height: 100%;
+  border-radius: 4px;
+  background: #304bcc;
+}
+
+.sign-in-board__next-reward {
+  font-weight: 400;
+}
+
+.sign-in-board__next-reward > :first-child {
+  top: 132px;
+  left: 52px;
+  font-size: 23px;
+}
+
+.sign-in-board__next-reward strong {
+  top: 123px;
+  left: 262px;
+  width: 66px;
+  height: 44px;
+  color: #304bcc;
+  font-size: 29px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sign-in-board__next-reward > :last-child {
+  top: 133px;
+  left: 335px;
+  font-size: 24px;
+}
+
+.sign-in-board__reward-hint {
+  position: absolute;
+  top: 178px;
+  left: 94px;
+  font-size: 19px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.sign-in-board__reward-list {
+  position: absolute;
+  top: 12px;
+  left: 431px;
+  display: grid;
+  grid-template-columns: repeat(3, 124px);
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sign-in-board__reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.sign-in-board__gift {
+  width: 108px;
+  height: 76px;
+}
+
+.sign-in-board__reward-days {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.sign-in-board__reward-preview {
+  width: 91px;
+  height: 65px;
+  border-radius: 10px;
+}
+
+.sign-in-board__locked {
+  width: 98px;
+  height: 28px;
+  margin-top: 2px;
+  border-radius: 5px;
+  background: #e7dac2;
+  color: #867761;
+  font-size: 15px;
+  line-height: 28px;
+  text-align: center;
 }
