@@ -36,6 +36,16 @@ const router = createBrowserRouter([
             return { Component };
           },
         },
+        {
+          path: "/__dev/xiao-yi-guest-login",
+          hydrateFallbackElement: <p>正在加载游客提示预览…</p>,
+          lazy: async () => {
+            const { default: Component } = await import(
+              "../pages/GuestLoginPreviewPage"
+            );
+            return { Component };
+          },
+        },
       ]
     : []),
 ]);
