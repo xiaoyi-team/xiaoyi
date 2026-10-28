@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay } from "./sign-in-demo";
+import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay, type SignInDemoState } from "./sign-in-demo";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -86,31 +86,29 @@ function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
   );
 }
 
-type SignInDemoState = {
-  todaySigned: boolean;
-  totalDays: number;
+type SignInBoardProps = {
+  titleId: string;
+  mobile: boolean;
+  demo: SignInDemoState;
+  onSignIn: () => void;
 };
 
-function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) {
+function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
   const [selectedDay, setSelectedDay] = useState(DEMO_TODAY);
-  const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14 });
   const quoteRef = useRef<HTMLDivElement>(null);
-  const selected = getDemoDay(selectedDay, demo.todaySigned);
+  const selected = getDemoDay(selectedDay, demo.todaySigned, demo.todayQuote);
   const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
   const signInLabel = demo.todaySigned ? "已签到" : "点击签到";
 
   function handleSignIn() {
-    setDemo((previous) => previous.todaySigned
-      ? previous
-      : { todaySigned: true, totalDays: previous.totalDays + 1 });
     setSelectedDay(DEMO_TODAY);
+    onSignIn();
   }
 
-  // Closing the always-mounted dialog preserves the selection. Only a date
-  // change resets this local reading position; opening/closing does not.
+  // Date or content changes restart reading; closing the mounted board does not.
   useLayoutEffect(() => {
     if (quoteRef.current) quoteRef.current.scrollTop = 0;
-  }, [selectedDay]);
+  }, [selectedDay, selected.quote]);
 
   return (
     <div className="sign-in-board">
@@ -130,7 +128,7 @@ function SignInBoard({ titleId, mobile }: { titleId: string; mobile: boolean }) 
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
-        {selectedDay !== DEMO_TODAY && (
+        {(selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
           <div className="sign-in-board__review-date" aria-label={`${DEMO_YEAR}年${DEMO_MONTH}月${selectedDay}日 ${selected.weekday}`}>
             <span className="sign-in-board__review-date-number">{DEMO_MONTH} / {selectedDay}</span>
             <span className="sign-in-board__review-weekday">{selected.weekday}</span>

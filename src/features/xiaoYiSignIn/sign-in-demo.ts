@@ -5,6 +5,13 @@ export const DEMO_TODAY = 24;
 // Only the target for the current 14 → 15 day demonstration.
 export const DEMO_REWARD_TARGET = 30;
 
+export type SignInDemoState = {
+  todaySigned: boolean;
+  totalDays: number;
+  // A collected result for the fixed demo date, independent of the browsing date.
+  todayQuote: string | null;
+};
+
 const signedQuotes: Record<number, string> = {
   7: "两个世界又有什么关系。",
   8: "未来还那么长，我们一定会再见的。",
@@ -22,6 +29,9 @@ const signedQuotes: Record<number, string> = {
   20: "我虽然一直往前走，心却留在了身后。",
 };
 
+// The existing draw-card copy matches the September 11 history fixture.
+export const DEMO_DRAW_QUOTE = signedQuotes[11];
+
 // Explicit PC prototype assignments, independent of quote length. All other
 // dates and both Return Today branches restore 30px / 45px.
 const pcQuoteTypography: Partial<Record<number, { fontSize: number; lineHeight: number }>> = {
@@ -29,7 +39,7 @@ const pcQuoteTypography: Partial<Record<number, { fontSize: number; lineHeight: 
   17: { fontSize: 26, lineHeight: 41 },
 };
 
-export function getDemoDay(day: number, todaySigned: boolean) {
+export function getDemoDay(day: number, todaySigned: boolean, todayQuote: string | null = null) {
   const { fontSize: quoteFontSize, lineHeight: quoteLineHeight } =
     pcQuoteTypography[day] ?? { fontSize: 30, lineHeight: 45 };
   const signed = day === DEMO_TODAY ? todaySigned : day in signedQuotes;
@@ -37,12 +47,12 @@ export function getDemoDay(day: number, todaySigned: boolean) {
     ? todaySigned ? "已签到" : "待签到"
     : day > DEMO_TODAY ? "未来日期" : signed ? "已签到" : "未签到";
   const quote = day === DEMO_TODAY
-    ? "签到获取今日语录"
+    ? todayQuote ?? "签到获取今日语录"
     : day > DEMO_TODAY
       ? "这一天还未到来，\n期待与你一起解锁新的语录。"
       : signed ? signedQuotes[day] : "这一天没有签到，\n未获得当日语录。";
   const footer = day === DEMO_TODAY
-    ? "与你相伴，收藏每一天的心动。"
+    ? todayQuote !== null ? "已珍藏 · 萧逸的每日心意" : "与你相伴，收藏每一天的心动。"
     : day > DEMO_TODAY
       ? "未来的心意，留给未来的我们。"
       : signed ? "已珍藏 · 萧逸的每日心意" : "未签到 · 暂无语录";

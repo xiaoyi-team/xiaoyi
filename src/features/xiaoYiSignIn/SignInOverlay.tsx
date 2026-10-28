@@ -1,5 +1,7 @@
-import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import SignInBoard from "./SignInBoard";
+import DrawCardOverlay from "./DrawCardOverlay";
+import { DEMO_DRAW_QUOTE, type SignInDemoState } from "./sign-in-demo";
 import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
 import "./sign-in.css";
 
@@ -25,6 +27,8 @@ function isOutsidePanel(
 }
 
 function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
+  const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14, todayQuote: null });
+  const [drawOpen, setDrawOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const backdropPressRef = useRef(false);
@@ -59,7 +63,25 @@ function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
     onClose();
   }
 
-  return (
+  function handleSignIn() {
+    if (!open || drawOpen) return;
+
+    setDemo((previous) => previous.todaySigned
+      ? previous
+      : { ...previous, todaySigned: true, totalDays: previous.totalDays + 1 });
+    setDrawOpen(true);
+  }
+
+  function handleCollect() {
+    if (!open || !drawOpen) return;
+
+    setDemo((previous) => previous.todayQuote === DEMO_DRAW_QUOTE
+      ? previous
+      : { ...previous, todayQuote: DEMO_DRAW_QUOTE });
+    setDrawOpen(false);
+  }
+
+  const signInDialog = (
     <dialog
       ref={dialogRef}
       className="xiao-yi-sign-in-dialog"
@@ -73,7 +95,10 @@ function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
       }}
       onClose={(event) => {
         // close events are queued: an earlier cleanup may have already reopened.
-        if (!event.currentTarget.open) requestClose();
+        if (!event.currentTarget.open) {
+          setDrawOpen(false);
+          requestClose();
+        }
       }}
       onPointerDownCapture={(event) => {
         const panel = boardScale === null ? boardRef.current : event.currentTarget;
@@ -128,12 +153,19 @@ function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
                 : undefined
             }
           >
-            <SignInBoard titleId={titleId} mobile={boardScale === null} />
+            <SignInBoard titleId={titleId} mobile={boardScale === null} demo={demo} onSignIn={handleSignIn} />
           </div>
         </div>
         {children}
       </div>
     </dialog>
+  );
+
+  return (
+    <>
+      {signInDialog}
+      <DrawCardOverlay open={open && drawOpen} autoPlay onCollect={handleCollect} />
+    </>
   );
 }
 
