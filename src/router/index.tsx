@@ -16,6 +16,14 @@ const router = createBrowserRouter([
     path: "/home",
     element: <HomePage />,
   },
+  {
+    path: "/xiaoyi",
+    hydrateFallbackElement: <p>正在加载萧逸家…</p>,
+    lazy: async () => {
+      const { default: Component } = await import("../pages/XiaoYiPage");
+      return { Component };
+    },
+  },
   ...(import.meta.env.DEV
     ? [
         {

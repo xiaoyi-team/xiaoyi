@@ -1,0 +1,130 @@
+.xiao-yi-page {
+  min-height: 100dvh;
+  background: #000;
+}
+
+.xiao-yi-page__viewport {
+  display: grid;
+  width: 100%;
+  height: 100dvh;
+  place-items: center;
+}
+
+.xiao-yi-page__slot {
+  position: relative;
+  overflow: clip;
+}
+
+.xiao-yi-page__scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  isolation: isolate;
+  width: 1920px;
+  height: 1080px;
+  overflow: clip;
+  transform-origin: top left;
+}
+
+.xiao-yi-page__background {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 0;
+  display: block;
+  width: 1920px;
+  max-width: none;
+  height: 1081px;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.xiao-yi-page__back {
+  position: absolute;
+  top: 25px;
+  left: 76px;
+  z-index: 1;
+  width: 170px;
+  height: 74px;
+  overflow: hidden;
+  border-radius: 22px;
+  color: #fff;
+  font-family: "Noto Serif SC", serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: normal;
+  text-decoration: none;
+  filter: drop-shadow(0 4px 3.75px #000);
+}
+
+.xiao-yi-page__back img {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  display: block;
+  width: 74px;
+  height: 64px;
+  pointer-events: none;
+}
+
+.xiao-yi-page__back span {
+  position: absolute;
+  top: 15px;
+  left: 89px;
+  white-space: nowrap;
+  text-shadow: 0 0 2px #000;
+}
+
+.xiao-yi-page__sign-in {
+  position: absolute;
+  top: 793px;
+  left: 703px;
+  z-index: 1;
+  width: 354px;
+  height: 115px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.xiao-yi-page__sign-in img {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.xiao-yi-page__calendar {
+  top: 11px;
+  left: 0;
+  width: 83px;
+  height: 104px;
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+
+.xiao-yi-page__wordmark {
+  top: 0;
+  left: 92px;
+  width: 262px;
+  height: 108px;
+}
+
+.xiao-yi-page__sign-in[aria-expanded="false"]:hover .xiao-yi-page__calendar,
+.xiao-yi-page__sign-in:focus-visible .xiao-yi-page__calendar {
+  transform: scale(1.06);
+}
+
+.xiao-yi-page__back:focus-visible,
+.xiao-yi-page__sign-in:focus-visible {
+  outline: 3px solid #f5dda0;
+  outline-offset: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xiao-yi-page__calendar {
+    transition: none;
+  }
+}
