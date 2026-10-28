@@ -1,11 +1,14 @@
 import { useState } from "react";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import DrawCardOverlay, { type DrawCardStage } from "../features/xiaoYiSignIn/DrawCardOverlay";
+import RewardNotice, { type RewardMilestone } from "../features/xiaoYiSignIn/RewardNotice";
 
 function SignInPreviewPage() {
   const [open, setOpen] = useState(false);
   const [drawOpen, setDrawOpen] = useState(false);
   const [mode, setMode] = useState<DrawCardStage | "auto">("waiting");
+  const [rewardMilestone, setRewardMilestone] = useState<RewardMilestone>(30);
+  const [reward, setReward] = useState<RewardMilestone | null>(null);
 
   return (
     <main className="xiao-yi-sign-in-preview">
@@ -25,6 +28,12 @@ function SignInPreviewPage() {
         <div className="sign-in-dev-controls" onClick={(event) => event.stopPropagation()}>
           <span>DEV</span>
           <button type="button" onClick={() => setDrawOpen(true)}>预览抽卡</button>
+          <select aria-label="奖励通知预览类型" value={rewardMilestone} onChange={(event) => setRewardMilestone(Number(event.target.value) as RewardMilestone)}>
+            <option value={30}>30天奖励</option>
+            <option value={111}>111天奖励</option>
+            <option value={365}>365天奖励</option>
+          </select>
+          <button type="button" onClick={() => setReward(rewardMilestone)}>预览奖励通知</button>
         </div>
       </SignInOverlay>
       <DrawCardOverlay open={drawOpen} stage={mode === "auto" ? "waiting" : mode} autoPlay={mode === "auto"}>
@@ -39,6 +48,7 @@ function SignInPreviewPage() {
           <button type="button" onClick={() => setDrawOpen(false)}>关闭抽卡预览</button>
         </div>
       </DrawCardOverlay>
+      {reward !== null && <RewardNotice milestone={reward} onClose={() => setReward(null)} />}
     </main>
   );
 }

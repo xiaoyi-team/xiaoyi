@@ -1,0 +1,127 @@
+@import "../../fonts/noto-serif-sc.css";
+
+.reward-notice {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  color: #152347;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+}
+
+.reward-notice[open] { display: grid; place-items: center; }
+.reward-notice::backdrop { background: transparent; }
+.reward-notice__slot { position: relative; }
+.reward-notice__canvas { position: absolute; inset: 0 auto auto 0; width: 1765px; height: 909px; transform-origin: top left; }
+
+/* Smart Animate exposes the endpoints and timing, not its intermediate render.
+ * Reveal the whole notification downward without moving/scaling its final art. */
+.reward-notice__reveal {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0);
+  animation: reward-notice-open 320ms ease-out both;
+}
+
+.reward-notice[data-closing] .reward-notice__reveal {
+  animation: reward-notice-close 250ms ease-out both;
+}
+
+.reward-notice__shade { position: absolute; inset: 0; background: rgb(12 21 48 / 62%); }
+
+.reward-notice__card {
+  position: absolute;
+  left: 562.5px;
+  top: 179.5px;
+  box-sizing: border-box;
+  width: 640px;
+  height: 550px;
+  border: 2px solid #bd9452;
+  border-radius: 15px;
+  background: #fcf2df;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 32%);
+}
+
+.reward-notice__card p,
+.reward-notice__card h2 { margin: 0; }
+.reward-notice__inner-border { position: absolute; left: 10px; top: 10px; box-sizing: border-box; width: 616px; height: 526px; border: 1px solid #dec796; border-radius: 9px; pointer-events: none; }
+
+.reward-notice__title,
+.reward-notice__english,
+.reward-notice__name,
+.reward-notice__description {
+  position: absolute;
+  line-height: normal;
+  text-align: center;
+}
+
+.reward-notice__title { left: -2px; top: 32px; width: 640px; height: 55px; font-size: 36px; }
+.reward-notice__english { left: -2px; top: 92px; width: 640px; height: 26px; color: #aa8242; font-size: 14px; }
+.reward-notice__gift-slot { position: absolute; left: 240px; top: 125px; width: 156px; height: 156px; }
+/* Placed Figma instances are all 156px; fill the slot rather than using
+ * the 120px sizing hint from the hidden backing components. */
+.reward-notice__gift { display: block; width: 100%; height: 100%; max-width: none; object-fit: contain; pointer-events: none; user-select: none; }
+.reward-notice__name { left: 28px; top: 301px; width: 580px; height: 50px; font-size: 30px; }
+.reward-notice__description { left: 28px; top: 363px; width: 580px; height: 35px; color: #8a7459; font-size: 20px; }
+
+.reward-notice__confirm {
+  position: absolute;
+  left: 157px;
+  top: 441px;
+  display: grid;
+  box-sizing: border-box;
+  width: 322px;
+  height: 60px;
+  place-items: center;
+  border: 1px solid #cda95f;
+  border-radius: 6px;
+  padding: 0;
+  background: #283f86;
+  color: #fff4d8;
+  font: inherit;
+  font-size: 23px;
+  line-height: normal;
+  cursor: pointer;
+}
+
+/* Expand the 34px design frame by 5px per side, leaving the glyph in place. */
+.reward-notice__close {
+  position: absolute;
+  left: 580px;
+  top: 13px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #94723d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.reward-notice__close span { position: absolute; left: 9px; top: 0; font-size: 31px; line-height: normal; }
+.reward-notice button:focus-visible { outline: 3px solid #4867ba; outline-offset: 4px; }
+
+@keyframes reward-notice-open {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}
+
+@keyframes reward-notice-close {
+  from { clip-path: var(--reward-close-clip, inset(0)); }
+  to { clip-path: inset(0 0 100% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reward-notice__reveal,
+  .reward-notice[data-closing] .reward-notice__reveal { animation: none; }
+}
