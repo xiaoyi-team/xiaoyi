@@ -256,6 +256,25 @@
 
 .draw-card-scene[data-stage="settled"] .draw-card-scene__hint { visibility: visible; }
 
+.draw-card-scene[data-collectable] { cursor: pointer; }
+
+.draw-card-scene__collect {
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: inherit;
+}
+
+.draw-card-scene__collect:focus-visible {
+  outline: 2px solid #fffaf0;
+  outline-offset: 4px;
+}
+
 /* One clock, with Figma's waits represented by identical endpoint values.
  * Changes: 10–490, 630–790 (hold), 791–1491, 1492–1732,
  * 1733–1734 (face swap), 1735–2065, 2066–2426 milliseconds.

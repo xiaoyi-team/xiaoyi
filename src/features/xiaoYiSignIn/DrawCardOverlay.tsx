@@ -17,6 +17,7 @@ type DrawCardOverlayProps = {
   open: boolean;
   stage?: DrawCardStage;
   autoPlay?: boolean;
+  onCollect?: () => void;
   children?: ReactNode;
 };
 
@@ -46,14 +47,16 @@ type DrawCardSceneProps = {
   autoPlay: boolean;
   mobile: boolean;
   scale: number | null;
+  onCollect?: () => void;
 };
 
-function DrawCardScene({ stage, autoPlay, mobile, scale }: DrawCardSceneProps) {
+function DrawCardScene({ stage, autoPlay, mobile, scale, onCollect }: DrawCardSceneProps) {
   const [isSettled, setIsSettled] = useState(
     () => autoPlay && window.matchMedia(REDUCED_MOTION).matches,
   );
   const hidden = useSyncExternalStore(subscribeToVisibility, readPageHidden);
   const currentStage = autoPlay ? (isSettled ? "settled" : "waiting") : stage;
+  const canCollect = currentStage === "settled" && onCollect !== undefined;
 
   useEffect(() => {
     if (!autoPlay) return;
@@ -87,6 +90,8 @@ function DrawCardScene({ stage, autoPlay, mobile, scale }: DrawCardSceneProps) {
       data-playing={autoPlay && !isSettled ? true : undefined}
       data-settled={autoPlay ? isSettled : stage === "settled"}
       data-paused={autoPlay && hidden ? true : undefined}
+      data-collectable={canCollect || undefined}
+      onClick={canCollect ? onCollect : undefined}
       style={scale === null ? undefined : { transform: `scale(${scale})` }}
     >
       <div className="draw-card-scene__shade" aria-hidden="true" />
@@ -127,14 +132,19 @@ function DrawCardScene({ stage, autoPlay, mobile, scale }: DrawCardSceneProps) {
         aria-hidden={autoPlay ? !isSettled : stage !== "settled"}
         onAnimationEnd={finishPlayback}
       >
-        点击周围空白处，收下今日寄语
+        {canCollect ? (
+          <button type="button" className="draw-card-scene__collect">
+            点击周围空白处，收下今日寄语
+          </button>
+        ) : "点击周围空白处，收下今日寄语"}
       </p>
     </div>
   );
 }
 
-function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, children }: DrawCardOverlayProps) {
+function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, onCollect, children }: DrawCardOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const collectedRef = useRef(false);
   const scale = useSyncExternalStore(subscribeToViewport, readBoardScale);
   const mobile = scale === null;
 
@@ -142,6 +152,7 @@ function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, children }
     const dialog = dialogRef.current;
     if (!dialog) return;
 
+    if (open) collectedRef.current = false;
     if (open && !dialog.open) dialog.showModal();
     else if (!open && dialog.open) dialog.close();
 
@@ -149,6 +160,14 @@ function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, children }
       if (dialog.open) dialog.close();
     };
   }, [open]);
+
+  function handleCollect() {
+    if (!open || !dialogRef.current?.open || !onCollect || collectedRef.current) return;
+
+    // Claim this opening synchronously, even if the host closes asynchronously.
+    collectedRef.current = true;
+    onCollect();
+  }
 
   return (
     <dialog
@@ -164,7 +183,7 @@ function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, children }
           style={mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
         >
           {/* A fresh scene owns each opening; resize never changes its key. */}
-          <DrawCardScene key={autoPlay ? "auto" : "static"} stage={stage} autoPlay={autoPlay} mobile={mobile} scale={scale} />
+          <DrawCardScene key={autoPlay ? "auto" : "static"} stage={stage} autoPlay={autoPlay} mobile={mobile} scale={scale} onCollect={onCollect ? handleCollect : undefined} />
         </div>
       )}
       {children}
