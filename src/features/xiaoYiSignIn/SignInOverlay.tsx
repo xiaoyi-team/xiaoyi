@@ -26,6 +26,31 @@ function isOutsidePanel(
   );
 }
 
+function readSignInBoardScale() {
+  const viewportScale = readBoardScale();
+  if (viewportScale === null) return null;
+
+  // A1 fills the layout viewport: 100% width and 100dvh height.
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = window.innerHeight;
+  if (
+    !Number.isFinite(viewportWidth) ||
+    !Number.isFinite(viewportHeight) ||
+    viewportWidth <= 0 ||
+    viewportHeight <= 0
+  ) return 0;
+
+  const sceneScale = Math.min(1, viewportWidth / 1920, viewportHeight / 1080);
+
+  // Both rectangles are centered. Their intersection takes the smaller span;
+  // viewportScale already includes the 16px safety margin, so do not deduct it again.
+  return Math.min(
+    viewportScale,
+    1920 * sceneScale / BOARD_WIDTH,
+    1080 * sceneScale / BOARD_HEIGHT,
+  );
+}
+
 function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
   const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14, todayQuote: null });
   const [drawOpen, setDrawOpen] = useState(false);
@@ -34,7 +59,7 @@ function SignInOverlay({ open, onClose, children }: SignInOverlayProps) {
   const backdropPressRef = useRef(false);
   const closeRequestedRef = useRef(false);
   const titleId = useId();
-  const boardScale = useSyncExternalStore(subscribeToViewport, readBoardScale);
+  const boardScale = useSyncExternalStore(subscribeToViewport, readSignInBoardScale);
 
   useEffect(() => {
     const dialog = dialogRef.current;
