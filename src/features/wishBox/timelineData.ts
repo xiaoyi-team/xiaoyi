@@ -55,6 +55,13 @@ export function mapSupportRecordsToTimeline(
 ): TimelineRecord[] {
   // Backend order is start_time DESC, id DESC; never reverse the cached array in place.
   return [...records].reverse().map((record) => {
+    if (typeof record.id !== "number" || !Number.isSafeInteger(record.id) || record.id <= 0) {
+      throw new Error("Timeline mapping error, id: expected a positive safe integer.");
+    }
+    if (typeof record.title !== "string") {
+      throw new Error(`Timeline mapping error for recordId ${record.id}, title: expected a string.`);
+    }
+
     const startDate = extractBeijingDate(record.start_time, record.id, "start_time");
     const endDate = extractBeijingDate(record.end_time, record.id, "end_time");
     try {
