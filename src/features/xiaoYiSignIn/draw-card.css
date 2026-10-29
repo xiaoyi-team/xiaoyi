@@ -2,6 +2,26 @@
 @import "../../fonts/dancing-script.css";
 @import "../../fonts/playfair-display.css";
 
+/* Paint the card and envelope consistently during playback, avoiding a switch
+ * from cached animation textures when data-playing is removed. */
+@property --draw-card-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 4deg;
+}
+
+@property --draw-card-details-opacity {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --draw-card-enter-opacity {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 .draw-card-dialog {
   position: fixed;
   inset: 0;
@@ -296,21 +316,30 @@
 }
 
 .draw-card-scene[data-playing] .draw-card-scene__shade,
-.draw-card-scene[data-playing] .draw-card-scene__assembly { animation-name: draw-card-enter; }
-.draw-card-scene[data-playing] .draw-card-scene__card { animation-name: draw-card-motion; }
+.draw-card-scene[data-playing] .draw-card-scene__assembly {
+  animation-name: draw-card-enter;
+  opacity: var(--draw-card-enter-opacity);
+}
+.draw-card-scene[data-playing] .draw-card-scene__card {
+  animation-name: draw-card-motion;
+  transform: rotate(var(--draw-card-angle));
+}
 .draw-card-scene[data-playing] .draw-card-scene__back-face { animation-name: draw-card-back; }
 .draw-card-scene[data-playing] .draw-card-scene__front-face,
 .draw-card-scene[data-playing] .draw-card-scene__card::after { animation-name: draw-card-front; }
-.draw-card-scene[data-playing] .draw-card-scene__front-content { animation-name: draw-card-details; }
+.draw-card-scene[data-playing] .draw-card-scene__front-content {
+  animation-name: draw-card-details;
+  opacity: var(--draw-card-details-opacity);
+}
 .draw-card-scene[data-playing] .draw-card-scene__hint {
   visibility: visible;
   animation-name: draw-card-finish;
 }
 
 @keyframes draw-card-enter {
-  0% { opacity: 0; }
-  0.412201% { opacity: 0; animation-timing-function: cubic-bezier(.18, .85, .25, 1); }
-  20.197857%, 100% { opacity: 1; }
+  0% { --draw-card-enter-opacity: 0; }
+  0.412201% { --draw-card-enter-opacity: 0; animation-timing-function: cubic-bezier(.18, .85, .25, 1); }
+  20.197857%, 100% { --draw-card-enter-opacity: 1; }
 }
 
 @keyframes draw-card-motion {
@@ -318,7 +347,7 @@
     left: var(--draw-initial-x);
     top: var(--draw-initial-y);
     width: var(--draw-width);
-    transform: rotate(4deg);
+    --draw-card-angle: 4deg;
     border-radius: var(--draw-back-radius);
     background-color: transparent;
     animation-timing-function: cubic-bezier(.4, 0, .8, .5);
@@ -327,7 +356,7 @@
     left: var(--draw-initial-x);
     top: var(--draw-initial-y);
     width: var(--draw-width);
-    transform: rotate(4deg);
+    --draw-card-angle: 4deg;
     border-radius: var(--draw-back-radius);
     background-color: transparent;
     animation-timing-function: cubic-bezier(.16, .85, .25, 1);
@@ -336,7 +365,7 @@
     left: var(--draw-out-x);
     top: var(--draw-out-y);
     width: var(--draw-width);
-    transform: rotate(11.7deg);
+    --draw-card-angle: 11.7deg;
     border-radius: var(--draw-back-radius);
     background-color: transparent;
     animation-timing-function: cubic-bezier(.45, 0, .85, .6);
@@ -345,7 +374,7 @@
     left: var(--draw-side-x);
     top: var(--draw-side-y);
     width: var(--draw-side-width);
-    transform: rotate(0deg);
+    --draw-card-angle: 0deg;
     border-radius: var(--draw-back-radius);
     background-color: transparent;
   }
@@ -353,7 +382,7 @@
     left: var(--draw-side-x);
     top: var(--draw-side-y);
     width: var(--draw-side-width);
-    transform: rotate(0deg);
+    --draw-card-angle: 0deg;
     border-radius: var(--draw-front-radius);
     background-color: #fff8e8;
     animation-timing-function: cubic-bezier(.12, .5, .25, 1);
@@ -362,7 +391,7 @@
     left: var(--draw-out-x);
     top: var(--draw-out-y);
     width: var(--draw-width);
-    transform: rotate(11.7deg);
+    --draw-card-angle: 11.7deg;
     border-radius: var(--draw-front-radius);
     background-color: #fff8e8;
   }
@@ -379,9 +408,9 @@
 }
 
 @keyframes draw-card-details {
-  0% { opacity: 0; }
-  71.516900% { opacity: 0; animation-timing-function: cubic-bezier(.12, .5, .25, 1); }
-  85.119538%, 100% { opacity: 1; }
+  0% { --draw-card-details-opacity: 0; }
+  71.516900% { --draw-card-details-opacity: 0; animation-timing-function: cubic-bezier(.12, .5, .25, 1); }
+  85.119538%, 100% { --draw-card-details-opacity: 1; }
 }
 
 @keyframes draw-card-finish {
@@ -390,48 +419,86 @@
   100% { opacity: 1; }
 }
 
-.draw-card-dialog[data-mobile] .draw-card-slot { width: 956px; height: 440px; }
+.draw-card-dialog[data-mobile] .draw-card-slot { width: 100%; height: 100%; }
 .draw-card-dialog[data-mobile] .draw-card-scene {
-  /* Tuck the wider mobile waiting card into the envelope; extraction stays unchanged. */
-  --draw-initial-x: 95px;
-  --draw-initial-y: 20px;
-  --draw-out-x: 126px;
-  --draw-out-y: -22px;
-  --draw-side-x: 209px;
-  --draw-side-y: -6px;
-  --draw-width: 195.054px;
-  --draw-height: 252.225px;
-  --draw-side-width: 1.3452px;
-  --draw-back-radius: 9.69px;
-  --draw-front-radius: 8.0712px;
-  width: 956px;
-  height: 440px;
+  /* Figma 5486:15923: static stages and the existing timeline share these values. */
+  --draw-initial-x: 92.4px;
+  --draw-initial-y: 16.8px;
+  --draw-out-x: 105.84px;
+  --draw-out-y: -18.48px;
+  --draw-side-x: 175.56px;
+  --draw-side-y: -5.04px;
+  --draw-width: 163.845367px;
+  --draw-height: 211.868988px;
+  --draw-side-width: 1.129972px;
+  --draw-back-radius: 8.1396px;
+  --draw-front-radius: 6.7798076px;
+  /* The 324.20574px art span leaves 50.79426px for top clearance and the hint.
+   * Taller viewports center the 375px composition; compact ones shrink only art. */
+  --draw-mobile-fit: min(1, calc((100dvh - 50.79426px) / 324.20574px));
+  --draw-mobile-offset-y: max(0px, calc((100dvh - 375px) / 2));
+  width: 100%;
+  height: 100%;
 }
-.draw-card-dialog[data-mobile] .draw-card-scene__assembly { left: 332.3644px; top: 28px; width: 291.27118px; height: 363.9592px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__shade { background: rgb(41 54 80 / 44%); }
+.draw-card-dialog[data-mobile] .draw-card-scene__assembly {
+  left: calc(50% - 122.333893px);
+  top: calc(var(--draw-mobile-offset-y) + 3.52px + 18.48px * var(--draw-mobile-fit));
+  width: 244.667786px;
+  height: 305.725739px;
+  transform: scale(var(--draw-mobile-fit));
+  transform-origin: center top;
+}
 .draw-card-dialog[data-mobile] .draw-card-scene__foreground {
-  /* Figma 3711:7711: the mobile opening includes its own curved contour. */
+  /* The existing mobile contour scales with the envelope, in the same coordinates. */
   mask-image: url("../../assets/xiao-yi-sign-in/draw-envelope-mask-mobile.svg");
 }
-.draw-card-dialog[data-mobile] .draw-card-scene__card { left: var(--draw-initial-x); top: 20px; width: 195.054px; height: 252.225px; border-radius: 9.69px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__card {
+  left: var(--draw-initial-x);
+  top: var(--draw-initial-y);
+  width: var(--draw-width);
+  height: var(--draw-height);
+  border-radius: var(--draw-back-radius);
+}
 .draw-card-dialog[data-mobile] .draw-card-scene[data-stage="drawn"] .draw-card-scene__card,
-.draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { left: 126px; top: -22px; }
-.draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { border-radius: 8.0712px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__card::after { border-width: 0.6726px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__inner-border { left: 3.6993px; top: 3.6993px; width: 187.6554px; height: 244.8264px; border-width: 0.3363px; border-radius: 5.3808px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration { transform: scale(0.57); }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-left { left: 5.716px; top: 6.726px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-right { left: 174.205px; top: 6.726px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--bottom-left { left: 5.719px; top: 230.366px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-line { left: 26.905px; top: 80.7126px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-line { left: 26.905px; top: 125.1046px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-star { left: 93.491px; top: 74.995px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-star { left: 93.491px; top: 119.387px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__title { left: 56.541px; top: 36.993px; width: 80px; font-size: 20px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__date-row { left: 28.249px; top: 87.438px; height: 30.94px; gap: 5.3808px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__date { width: 73.986px; font-size: 21.5232px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__weekday { width: 52.1265px; font-size: 17.1513px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__quote { left: 16.143px; top: 132px; width: 166px; font-size: 16px; line-height: 22px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__hint { left: 228px; top: 390px; width: 500px; height: 24px; font-size: 14px; line-height: 1.45; }
+.draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { left: var(--draw-out-x); top: var(--draw-out-y); }
+.draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { border-radius: var(--draw-front-radius); }
+.draw-card-dialog[data-mobile] .draw-card-scene__card::after { border-width: 0.564984px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__inner-border { left: 3.107005px; top: 3.107622px; width: 157.630539px; height: 205.654175px; border-width: 0.282492px; border-radius: 4.519872px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration { transform: scale(0.4788); }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-left { left: 4.80119px; top: 5.64994px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-right { left: 146.33188px; top: 5.64958px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--bottom-left { left: 4.80362px; top: 193.50746px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-line { left: 22.60049px; top: 68.08076px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-line { left: 22.59808px; top: 105.37008px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-star { left: 78.53268px; top: 62.99605px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-star { left: 78.5324px; top: 100.28502px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__title {
+  left: calc((var(--draw-width) - 72px / var(--draw-mobile-fit)) / 2);
+  top: 31.074223px;
+  width: calc(72px / var(--draw-mobile-fit));
+  font-size: calc(18px / var(--draw-mobile-fit));
+  line-height: calc(26px / var(--draw-mobile-fit));
+}
+.draw-card-dialog[data-mobile] .draw-card-scene__date-row { left: 32.769619px; top: 73.447769px; width: 98.30613px; height: 29px; gap: 4.519872px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__date { width: 50px; font-size: 21px; line-height: 29px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__weekday { width: 43.786259px; font-size: calc(14.407093px / var(--draw-mobile-fit)); }
+.draw-card-dialog[data-mobile] .draw-card-scene__quote {
+  left: 13.5px;
+  top: 104px;
+  width: 139.5px;
+  /* Counter the art transform: even at 568×320 the four lines render at 15/21px. */
+  font-size: calc(15px / var(--draw-mobile-fit));
+  line-height: calc(21px / var(--draw-mobile-fit));
+}
+.draw-card-dialog[data-mobile] .draw-card-scene__hint {
+  left: max(16px, calc(50% - 220px));
+  top: calc(100% - 28px - var(--draw-mobile-offset-y));
+  width: min(440px, calc(100% - 32px));
+  height: 18px;
+  font-size: 12px;
+  line-height: 18px;
+}
 
 /* Only supplied by the DEV preview host, outside the artwork's scale layer. */
 .sign-in-dev-controls {
