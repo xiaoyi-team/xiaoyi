@@ -125,3 +125,149 @@
   .reward-notice__reveal,
   .reward-notice[data-closing] .reward-notice__reveal { animation: none; }
 }
+
+/* Keep the PC absolute children anchored to the card. */
+.reward-notice__body { display: contents; }
+
+/* The shared viewport snapshot selects mobile mode; no second breakpoint.
+ * Temporary Figma type baseline, pending UI readability confirmation. */
+.reward-notice[data-mobile] {
+  --reward-title-font: 700 12.6px / 18.2px "Noto Serif SC", serif;
+  --reward-english-font: 700 7.35px / 10.29px "Noto Serif SC", serif;
+  --reward-name-font: 700 11.2px / 16.8px "Noto Serif SC", serif;
+  --reward-description-font: 700 9.1px / 13.3px "Noto Serif SC", serif;
+  --reward-confirm-font: 700 10.5px / 15.4px "Noto Serif SC", serif;
+}
+
+.reward-notice[data-mobile] .reward-notice__slot,
+.reward-notice[data-mobile] .reward-notice__canvas { width: 448px; height: 248.5px; }
+
+.reward-notice[data-mobile] .reward-notice__card {
+  left: 113.456px;
+  top: 29.251px;
+  width: 221.088px;
+  height: 189.997px;
+  border: 0;
+  border-radius: 5.182px;
+  box-shadow: 0 6.909px 20.727px rgb(0 0 0 / 32%);
+}
+
+/* Paint the fractional border without shifting the mobile design coordinates. */
+.reward-notice[data-mobile] .reward-notice__card::before {
+  position: absolute;
+  inset: 0;
+  border: 0.691px solid #bd9452;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.reward-notice[data-mobile] .reward-notice__inner-border {
+  left: 4.145px;
+  top: 4.145px;
+  width: 212.797px;
+  height: 181.707px;
+  border-width: 0.345px;
+  border-radius: 3.109px;
+}
+
+.reward-notice[data-mobile] .reward-notice__body {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  box-sizing: border-box;
+  height: 142px;
+  padding: 11.745px 0 1.9px;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.reward-notice[data-mobile] .reward-notice__body > * {
+  position: static;
+  flex-shrink: 0;
+}
+
+.reward-notice[data-mobile] .reward-notice__title {
+  width: 100%;
+  height: auto;
+  min-height: 19px;
+  font: var(--reward-title-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__english {
+  width: 100%;
+  height: 8.982px;
+  margin-top: 1.727px;
+  font: var(--reward-english-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__gift-slot {
+  width: 53.89px;
+  height: 53.89px;
+  margin-top: 2.418px;
+}
+
+.reward-notice[data-mobile] .reward-notice__name,
+.reward-notice[data-mobile] .reward-notice__description {
+  width: 200.361px;
+  height: auto;
+  overflow-wrap: anywhere;
+}
+
+.reward-notice[data-mobile] .reward-notice__name {
+  min-height: 17px;
+  margin-top: 6.909px;
+  font: var(--reward-name-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__description {
+  min-height: 14px;
+  margin-top: 4.418px;
+  font: var(--reward-description-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__confirm {
+  left: 54.927px;
+  top: 153.034px;
+  width: 111.235px;
+  height: 20.727px;
+  border-width: 0.345px;
+  border-radius: 2.073px;
+  font: var(--reward-confirm-font);
+}
+
+/* The 44px target stays below the content and inside the card. */
+.reward-notice[data-mobile] .reward-notice__confirm::before {
+  position: absolute;
+  top: calc(50% + 2px);
+  left: -0.345px;
+  right: -0.345px;
+  height: 44px;
+  transform: translateY(-50%);
+  content: "";
+}
+
+.reward-notice[data-mobile] .reward-notice__close {
+  left: 170.179px;
+  top: 0;
+}
+
+.reward-notice[data-mobile] .reward-notice__close span {
+  left: 33.981px;
+  top: 5.182px;
+  font-size: 10.709px;
+  line-height: 15px;
+}
+
+.reward-notice[data-mobile] button:focus-visible {
+  outline-width: 1.5px;
+  outline-offset: 2px;
+}
+
+.reward-notice[data-mobile] .reward-notice__body:focus-visible {
+  outline: 1.5px solid #4867ba;
+  outline-offset: -3px;
+}

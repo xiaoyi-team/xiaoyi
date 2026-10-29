@@ -20,15 +20,6 @@ const rewards = {
 };
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
-function readNoticeScale() {
-  // Match the PC board's canvas; smaller windows only get a basic fit fallback.
-  return readBoardScale() ?? Math.min(
-    1,
-    Math.max(0, document.documentElement.clientWidth - 32) / BOARD_WIDTH,
-    Math.max(0, window.innerHeight - 32) / BOARD_HEIGHT,
-  );
-}
-
 function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
@@ -37,7 +28,8 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
   const [closingClip, setClosingClip] = useState<string | null>(null);
   const titleId = useId();
   const descriptionId = useId();
-  const scale = useSyncExternalStore(subscribeToViewport, readNoticeScale);
+  const scale = useSyncExternalStore(subscribeToViewport, readBoardScale);
+  const mobile = scale === null;
   const reward = rewards[milestone];
 
   const finishClose = useCallback(() => {
@@ -82,6 +74,7 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
     <dialog
       ref={dialogRef}
       className="reward-notice"
+      data-mobile={mobile ? true : undefined}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       data-closing={closingClip !== null ? true : undefined}
@@ -105,8 +98,8 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
         if (closeBackdrop) requestClose();
       }}
     >
-      <div className="reward-notice__slot" style={{ width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
-        <div className="reward-notice__canvas" style={{ transform: `scale(${scale})` }}>
+      <div className="reward-notice__slot" style={mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
+        <div className="reward-notice__canvas" style={mobile ? undefined : { transform: `scale(${scale})` }}>
           <div
             ref={revealRef}
             className="reward-notice__reveal"
@@ -118,13 +111,20 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
             <div className="reward-notice__shade" aria-hidden="true" />
             <div className="reward-notice__card">
               <div className="reward-notice__inner-border" aria-hidden="true" />
-              <h2 className="reward-notice__title" id={titleId}>心意已抵达</h2>
-              <p className="reward-notice__english">A GIFT FOR OUR DAYS</p>
-              <div className="reward-notice__gift-slot">
-                <img className="reward-notice__gift" src={reward.gift} width={reward.imageSize} height={reward.imageSize} alt={`${milestone}天奖励礼盒`} draggable={false} />
+              <div
+                className="reward-notice__body"
+                role={mobile ? "region" : undefined}
+                aria-label={mobile ? "奖励内容，可滚动查看" : undefined}
+                tabIndex={mobile ? 0 : undefined}
+              >
+                <h2 className="reward-notice__title" id={titleId}>心意已抵达</h2>
+                <p className="reward-notice__english">A GIFT FOR OUR DAYS</p>
+                <div className="reward-notice__gift-slot">
+                  <img className="reward-notice__gift" src={reward.gift} width={reward.imageSize} height={reward.imageSize} alt={`${milestone}天奖励礼盒`} draggable={false} />
+                </div>
+                <p className="reward-notice__name">{reward.title}</p>
+                <p className="reward-notice__description" id={descriptionId}>累计签到 {milestone} 天奖励已收入珍藏</p>
               </div>
-              <p className="reward-notice__name">{reward.title}</p>
-              <p className="reward-notice__description" id={descriptionId}>累计签到 {milestone} 天奖励已收入珍藏</p>
               <button type="button" className="reward-notice__confirm" onClick={requestClose}>收下这份心意</button>
               <button type="button" className="reward-notice__close" aria-label="关闭奖励通知" onClick={requestClose}>
                 <span aria-hidden="true">×</span>
