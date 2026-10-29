@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import atticBackground from "../assets/xiao-yi-scene/attic-background.png";
 import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
@@ -14,6 +14,8 @@ function XiaoYiPage() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
+  // A touch hold does not consistently retain the native :active pseudo-class.
+  const [signInPressed, setSignInPressed] = useState(false);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -40,15 +42,13 @@ function XiaoYiPage() {
         <div
           className="xiao-yi-page__slot"
           style={{
-            width: SCENE_WIDTH * sceneScale,
-            height: SCENE_HEIGHT * sceneScale,
+            "--scene-width": `${SCENE_WIDTH * sceneScale}px`,
+            "--scene-height": `${SCENE_HEIGHT * sceneScale}px`,
+            "--scene-scale": sceneScale,
             visibility: sceneScale > 0 ? "visible" : "hidden",
-          }}
+          } as CSSProperties}
         >
-          <div
-            className="xiao-yi-page__scene"
-            style={{ transform: `scale(${sceneScale})` }}
-          >
+          <div className="xiao-yi-page__scene">
             {/* Figma 1510:2868 extends 1px below the 1920 × 1080 scene. */}
             <img
               className="xiao-yi-page__background"
@@ -68,6 +68,13 @@ function XiaoYiPage() {
               aria-label="打开每日逸签"
               aria-haspopup="dialog"
               aria-expanded={signInOpen}
+              data-pressed={signInPressed || undefined}
+              onPointerDown={(event) => {
+                if (event.isPrimary && event.pointerType === "touch") setSignInPressed(true);
+              }}
+              onPointerUp={() => setSignInPressed(false)}
+              onPointerCancel={() => setSignInPressed(false)}
+              onPointerLeave={() => setSignInPressed(false)}
               onClick={() => setSignInOpen(true)}
             >
               <img className="xiao-yi-page__calendar" src={signInCalendar} width={83} height={104} alt="" draggable={false} />
