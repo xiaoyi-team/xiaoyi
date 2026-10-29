@@ -208,6 +208,116 @@
   }
 }
 
+/* M1-E-L1: 667 landscape layout. Typography is a temporary Figma baseline,
+ * pending UI readability review; normal mobile viewports never scale the card. */
+@media (max-width: 1024px) {
+  .guest-login-prompt {
+    --guest-mobile-english-font: 400 17.5px / 22.4px "Dancing Script", cursive;
+    --guest-mobile-title-font: 700 18.2px / 26.6px "Noto Serif SC", serif;
+    --guest-mobile-body-font: 400 11.2px / 18.2px "Noto Serif SC", serif;
+    --guest-mobile-button-font: 700 11.2px / 16.8px "Noto Serif SC", serif;
+    --guest-mobile-helper-font: 400 8.4px / 12.6px "Noto Serif SC", serif;
+    width: 350px;
+    border-radius: 8.4px;
+    box-shadow: 0 7px 21px rgb(0 0 0 / 28%);
+  }
+
+  .guest-login-prompt__surface::after {
+    border-width: 0.875px;
+  }
+
+  .guest-login-prompt__inner-border {
+    inset: 6.3px;
+    border-width: 0.525px;
+    border-radius: 4.9px;
+  }
+
+  .guest-login-prompt__seal {
+    top: 19.6px;
+    left: 17.5px;
+    width: 24.99px;
+    height: 24.99px;
+  }
+
+  .guest-login-prompt__iris {
+    top: 115.255px;
+    right: -9.8px;
+    width: 66.99px;
+    height: 114.345px;
+  }
+
+  .guest-login-prompt__scroll {
+    padding: 15.4px 22.4px 19px;
+  }
+
+  .guest-login-prompt__content {
+    gap: 7px;
+  }
+
+  /* Match Figma's text frames without fixing their heights or clipping copy. */
+  .guest-login-prompt__english {
+    min-height: 23px;
+    font: var(--guest-mobile-english-font);
+  }
+
+  .guest-login-prompt__title {
+    min-height: 27px;
+    font: var(--guest-mobile-title-font);
+  }
+
+  .guest-login-prompt__description {
+    min-height: 37px;
+    font: var(--guest-mobile-body-font);
+  }
+
+  .guest-login-prompt__actions {
+    /* Keep a clear gap: Chrome Touch otherwise retargets gap taps to a button. */
+    gap: 20px;
+    padding-top: 14px;
+  }
+
+  .guest-login-prompt__button {
+    position: relative;
+    flex-basis: 120.4px;
+    height: 30.8px;
+    overflow: visible;
+    border-width: 0.7px;
+    border-radius: 4.2px;
+    padding: 0 11.2px;
+    font: var(--guest-mobile-button-font);
+  }
+
+  /* Expand only the hit area; preserve the painted button and row geometry.
+   * Favor the space above the row to clear helper glyphs and the button gap. */
+  .guest-login-prompt__button::after {
+    position: absolute;
+    top: calc(50% - 2px);
+    right: -0.7px;
+    left: -0.7px;
+    height: 44px;
+    transform: translateY(-50%);
+    content: "";
+  }
+
+  .guest-login-prompt__helper {
+    min-height: 13px;
+    font: var(--guest-mobile-helper-font);
+  }
+
+  .guest-login-prompt__close {
+    top: 5.6px;
+    right: 8.4px;
+  }
+
+  /* Keep the full 44px target inside the rounded card, with the glyph in its
+   * Figma slot rather than enlarging the visible cross with the hit area. */
+  .guest-login-prompt__close svg {
+    width: 12.6px;
+    height: 12.6px;
+    transform: translate(9.4px, -6.6px);
+  }
+}
+
 .guest-login-preview {
   min-height: 100dvh;
   background: #101d49;
