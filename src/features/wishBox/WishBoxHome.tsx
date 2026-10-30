@@ -125,11 +125,9 @@ function WishBoxHome({
                 width: "var(--wish-box-home-return-text-width, 35.29412%)",
                 height: "var(--wish-box-home-return-content-height, 58.10811%)",
                 fontFamily: '"Noto Serif SC", serif',
-                fontWeight: 500,
                 fontSize: "var(--wish-box-home-return-font-size, 1.5625cqw)",
                 lineHeight: "var(--wish-box-home-return-line-height, 1.43333)",
                 letterSpacing: 0,
-                textShadow: "0 0 0.10417cqw #000",
               }}
             >
               返回

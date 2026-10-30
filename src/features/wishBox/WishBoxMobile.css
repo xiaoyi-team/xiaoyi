@@ -2,6 +2,11 @@
   display: none;
 }
 
+.wish-box-home-return > span {
+  font-weight: 500;
+  text-shadow: 0 0 0.10417cqw #000;
+}
+
 .wish-box-announcement-dismiss,
 .announcement-decoration-cap {
   display: none;
@@ -74,17 +79,13 @@
     container-type: inline-size;
   }
 
-  .wish-box-home-sign {
-    /* Keep the lettering and hit target readable while its anchor follows the garden. */
-    --wish-box-home-sign-width: max(180.6958px, 18.901234cqw);
-    --wish-box-home-sign-height: max(73.7832px, 7.717908cqw);
-  }
-
   .wish-box-home-sign-image {
     display: none;
   }
 
   .wish-box-home-wordmark {
+    /* Child cqw values follow the wordmark, not the garden plane. */
+    --wish-box-home-wordmark-unit: calc(100cqw / 104.5660858154);
     display: block;
     position: absolute;
     inset: 0;
@@ -92,94 +93,100 @@
     pointer-events: none;
     font-family: "Noto Serif SC", serif;
     text-align: left;
-    text-shadow: 0.498px 0.996px 3.635px rgb(0 0 0 / 39%);
   }
 
   .wish-box-home-wordmark > img {
     position: absolute;
-    height: auto;
     max-width: none;
   }
 
   .wish-box-home-wordmark-hatch-left {
     left: 0;
-    top: 37.79095%;
-    width: 35.418643%;
+    top: 38.88896218%;
+    width: 42.52494184%;
+    height: 13.19451302%;
   }
 
   .wish-box-home-wordmark-hatch-right {
-    left: 31.964294%;
-    top: 53.312211%;
-    width: 35.418643%;
+    left: 38.53816584%;
+    top: 54.86152824%;
+    width: 42.52494184%;
+    height: 13.19451302%;
   }
 
   .wish-box-home-wordmark-script {
-    left: 34.168736%;
-    top: 28.343227%;
-    width: 34.31181%;
+    left: 41.19609920%;
+    top: 29.16623359%;
+    width: 40.86381010%;
+    height: 48.61136668%;
   }
 
   .wish-box-home-wordmark-chinese {
     position: absolute;
-    left: 4.408775%;
+    left: 5.31586671%;
     top: 0;
-    width: 66.133247%;
+    width: 79.73426503%;
+    height: 58.33363772%;
     color: #fff;
-    font-size: 31.867px;
+    font-size: calc(22.2333335876 * var(--wish-box-home-wordmark-unit));
     font-weight: 700;
-    line-height: 41.825px;
+    line-height: calc(29.1812496185 * var(--wish-box-home-wordmark-unit));
+    text-shadow: calc(0.3473958373 * var(--wish-box-home-wordmark-unit)) calc(0.6947916746 * var(--wish-box-home-wordmark-unit)) calc(2.5359897614 * var(--wish-box-home-wordmark-unit)) rgb(0 0 0 / 39%);
     white-space: nowrap;
   }
 
   .wish-box-home-wordmark-rule {
     position: absolute;
-    left: 6.062106%;
-    top: 58.710911%;
-    width: 57.866591%;
-    height: 0.497917px;
+    left: 7.30884977%;
+    top: 60.41639707%;
+    width: 69.76748190%;
+    height: calc(0.3473958373 * var(--wish-box-home-wordmark-unit));
     background: #fff;
-    box-shadow: 0.498px 0.996px 3.635px rgb(0 0 0 / 39%);
+    box-shadow: calc(0.3473958373 * var(--wish-box-home-wordmark-unit)) calc(0.6947916746 * var(--wish-box-home-wordmark-unit)) calc(2.5359897614 * var(--wish-box-home-wordmark-unit)) rgb(0 0 0 / 39%);
   }
 
   .wish-box-home-wordmark-english {
     position: absolute;
-    left: 40.230952%;
-    top: 70.183148%;
-    width: 59.76896%;
-    height: 22px;
+    left: 48.50494897%;
+    top: 72.22207945%;
+    width: 51.49504738%;
+    height: 27.77792245%;
     color: #f4f4f4;
-    font-size: 14px;
+    font-size: calc(6.9479169846 * var(--wish-box-home-wordmark-unit));
     font-weight: 400;
-    line-height: 18px;
+    line-height: calc(12.5062503815 * var(--wish-box-home-wordmark-unit));
     white-space: nowrap;
-    text-shadow: 0 1px 2px rgb(76 57 43 / 85%), 0 0 1px rgb(76 57 43 / 70%);
+    text-shadow: calc(0.3473958373 * var(--wish-box-home-wordmark-unit)) calc(0.6947916746 * var(--wish-box-home-wordmark-unit)) calc(2.5359897614 * var(--wish-box-home-wordmark-unit)) rgb(0 0 0 / 39%);
   }
 
   .wish-box-home-return {
     /* Undo the plane's crop offset for the viewport-pinned, safe-area-aware Link. */
     --wish-box-home-return-left: calc((100cqw - 100dvw) / 2 + max(12px, env(safe-area-inset-left, 0px) + 12px));
     --wish-box-home-return-top: calc((56.25cqw - 100dvh) * 0.50637 + max(19px, env(safe-area-inset-top, 0px) + 12px));
-    --wish-box-home-return-width: 104px;
-    --wish-box-home-return-height: 44px;
-    --wish-box-home-return-radius: 6px;
-    --wish-box-home-return-icon-left: 4px;
-    --wish-box-home-return-icon-width: 30px;
-    --wish-box-home-return-content-top: 9px;
-    --wish-box-home-return-content-height: 26px;
-    --wish-box-home-return-text-left: 42px;
-    --wish-box-home-return-text-width: 62px;
-    --wish-box-home-return-font-size: 18px;
-    --wish-box-home-return-line-height: 26px;
+    --wish-box-home-return-width: 86px;
+    --wish-box-home-return-height: 40px;
+    --wish-box-home-return-radius: 10px;
+    --wish-box-home-return-icon-left: 14.5px;
+    --wish-box-home-return-icon-width: 22px;
+    --wish-box-home-return-content-top: 10px;
+    --wish-box-home-return-content-height: 20px;
+    --wish-box-home-return-text-left: 43.5px;
+    --wish-box-home-return-text-width: 28px;
+    --wish-box-home-return-font-size: 14px;
+    --wish-box-home-return-line-height: 20px;
+    filter: drop-shadow(0 4px 10.9px #000);
     z-index: 1;
   }
 
   .wish-box-home-return > img {
-    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+    --wish-box-home-return-content-top: 10.486486px;
+    --wish-box-home-return-content-height: 19.027027px;
+    filter: drop-shadow(0 0.6px 1.5px rgb(46 31 18 / 88%)) drop-shadow(0 1px 4px rgb(46 31 18 / 40%));
   }
 
   .wish-box-home-return > span {
-    -webkit-text-stroke: 0.25px rgb(76 57 43 / 55%);
-    filter: drop-shadow(0 1px 1px rgb(76 57 43 / 75%));
+    font-weight: 600;
+    text-shadow: 0 0.6px 1.5px rgb(46 31 18 / 88%), 0 1px 4px rgb(46 31 18 / 40%);
   }
 
   .wish-box-announcement-legacy {
