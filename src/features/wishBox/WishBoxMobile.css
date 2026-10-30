@@ -2050,37 +2050,45 @@
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   .wish-box-scene [data-photo-viewer-return] {
     display: block;
-    left: calc(var(--viewer-mobile-unit) * 60);
-    top: calc(var(--viewer-mobile-unit) * 8);
-    width: calc(var(--viewer-mobile-unit) * 110.5);
-    min-width: 72px;
-    height: calc(var(--viewer-mobile-unit) * 48.1);
-    min-height: 44px;
-    border-radius: calc(var(--viewer-mobile-unit) * 14.3);
-    filter: drop-shadow(0 2.6px 2.438px #000);
+    left: 12px;
+    top: 19px;
+    width: 86px;
+    height: 40px;
+    border-radius: 10px;
+    filter: drop-shadow(0 4px 10.9px #000);
+    overflow: visible;
+  }
+
+  .wish-box-scene [data-photo-viewer-return]::after {
+    /* Own the full 86x40 rectangle, including its transparent rounded corners. */
+    content: "";
+    position: absolute;
+    inset: 0;
   }
 
   .wish-box-scene [data-photo-viewer-return] > img {
     position: absolute;
-    left: calc(var(--viewer-mobile-unit) * 4.55);
-    top: calc(var(--viewer-mobile-unit) * 3.25);
-    width: calc(var(--viewer-mobile-unit) * 48.1);
-    height: calc(var(--viewer-mobile-unit) * 41.6);
+    left: 14.5px;
+    top: 10.486486px;
+    width: 22px;
+    height: 19.027027px;
+    filter: drop-shadow(0 0.6px 1.5px rgb(46 31 18 / 88%)) drop-shadow(0 1px 4px rgb(46 31 18 / 40%));
   }
 
   .wish-box-scene [data-photo-viewer-return] > span {
     position: absolute;
-    left: calc(var(--viewer-mobile-unit) * 55.25);
-    top: calc(var(--viewer-mobile-unit) * 24.05 - 13px);
-    height: 26px;
+    left: 43.5px;
+    top: 10px;
+    width: 28px;
+    height: 20px;
     color: #fff;
     font-family: "Noto Serif SC", serif;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 26px;
+    line-height: 20px;
     text-align: left;
     white-space: nowrap;
-    text-shadow: 0 0 1.3px #000;
+    text-shadow: 0 0.6px 1.5px rgb(46 31 18 / 88%), 0 1px 4px rgb(46 31 18 / 40%);
   }
 
   /* Composite the existing 32%-opacity Review over Figma's cream, not white. */
@@ -2095,19 +2103,22 @@
 
   /* Match Review's full-width visual layer without changing its Scene host. */
   .wish-box-scene > [role="dialog"]:has(> [data-photo-viewer-background]) {
-    --viewer-mobile-unit: calc(100cqw / 956);
+    --viewer-mobile-unit: min(calc(100cqw / 667), calc(100cqh / 375));
+    --viewer-mobile-image-max-width: calc(var(--viewer-mobile-unit) * 500);
+    --viewer-mobile-image-max-height: calc(var(--viewer-mobile-unit) * 313.888885);
     left: calc((100% - 100dvw) / 2);
     right: auto;
     width: 100dvw;
-    container-type: inline-size;
+    /* Inset defines the height; query both Viewer axes without resizing its Scene. */
+    container-type: size;
   }
 
-  /* The sample is 360px tall; reuse its 40px vertical inset as a wide-photo guard. */
+  /* Fit the 667 sample's bounds, retaining each photo's intrinsic aspect ratio. */
   .wish-box-scene [data-photo-viewer-placeholder] {
     left: 50% !important;
     top: 50% !important;
-    max-width: calc(100cqw - var(--viewer-mobile-unit) * 80);
-    max-height: min(calc(var(--viewer-mobile-unit) * 360), calc(100dvh - var(--viewer-mobile-unit) * 80));
+    max-width: var(--viewer-mobile-image-max-width);
+    max-height: var(--viewer-mobile-image-max-height);
     box-shadow: calc(var(--viewer-mobile-unit) * 3.139) calc(var(--viewer-mobile-unit) * 2.69) calc(var(--viewer-mobile-unit) * 4.439) rgb(0 0 0 / 32%) !important;
     transform: translate(-50%, -50%) rotate(-0.735704deg) !important;
   }
@@ -2127,8 +2138,8 @@
   .wish-box-scene [data-photo-viewer-placeholder] > img {
     width: auto;
     height: auto;
-    max-width: calc(100cqw - var(--viewer-mobile-unit) * 80);
-    max-height: min(calc(var(--viewer-mobile-unit) * 360), calc(100dvh - var(--viewer-mobile-unit) * 80));
+    max-width: var(--viewer-mobile-image-max-width);
+    max-height: var(--viewer-mobile-image-max-height);
   }
 
   /* Match Timeline's letterbox fallback without changing normal mobile layouts. */
