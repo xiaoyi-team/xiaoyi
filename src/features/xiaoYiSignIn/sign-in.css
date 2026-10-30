@@ -662,9 +662,9 @@
   text-align: center;
 }
 
-/* 956 × 440 mounted mobile Browse A. The existing JS boundary owns this mode.
-   Only decoration geometry uses 0.47; HTML text and controls use mobile sizes.
-   Smaller layouts remain scroll-accessible until B3-B. */
+/* 667 × 375 Browse A: independent 448 × 248.5 canvas.
+   The existing dialog data attribute owns the PC/mobile mode boundary.
+   Only reusable artwork uses a unit conversion; text and controls have native sizes. */
 .xiao-yi-sign-in-dialog[data-mobile] {
   position: fixed;
   inset: 0;
@@ -679,21 +679,25 @@
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-viewport {
+  display: flex;
   width: 100%;
   height: 100%;
   max-height: none;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
 }
 
+/* Auto margins center when space permits, and keep the start reachable on overflow. */
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-scale-layer {
   position: relative;
-  width: 829.55px;
-  height: 427.23px;
-  margin: 0 auto;
+  flex: none;
+  width: 448px;
+  height: 248.5px;
+  margin: auto;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close {
-  top: max(5px, env(safe-area-inset-top));
-  right: max(8px, env(safe-area-inset-right), calc((100% - 956px) / 2 + 48px));
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
   display: grid;
   width: 44px;
   height: 44px;
@@ -718,13 +722,13 @@
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board {
-  --art-scale: 0.47;
-  width: 829.55px;
-  min-width: 829.55px;
-  height: 427.23px;
+  --art-scale: 0.24675;
+  width: 448px;
+  min-width: 448px;
+  height: 248.5px;
   overflow: visible;
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 9.1px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__art {
@@ -734,409 +738,435 @@
   height: calc(var(--art-height) * var(--art-scale));
 }
 
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__root-art {
+  left: calc(var(--art-x) * var(--art-scale) + 6.243px);
+}
+
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar {
-  top: 66.27px;
-  left: 105.75px;
-  width: 315.84px;
-  height: 220.9px;
+  top: 34.792px;
+  left: 61.762px;
+  width: 165.816px;
+  height: 131.6px;
+}
+
+/* Existing final-render paper includes rotation and shadow padding. */
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-paper {
+  width: 176.918px;
+  height: 144.56px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month {
-  top: 42.77px;
-  left: 16.92px;
-  font-size: 16.92px;
-  line-height: normal;
+  top: 21.001px;
+  left: 8.883px;
+  font-size: 11.2px;
+  line-height: 16.8px;
 }
 
+/* Extend upward, leaving the text at its design position and the dates unobstructed. */
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today {
-  top: 37.13px;
-  left: 210.09px;
-  width: 76.61px;
-  height: 21.62px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 1.8px;
+  left: 110.297px;
+  width: 44px;
+  height: 36px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today > span {
-  top: -0.16px;
-  left: 9.13px;
+  top: 17.262px;
+  left: 2.694px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month-rule {
-  top: 66.74px;
-  left: 14.1px;
-  width: 286.7px;
-  height: 0.47px;
+  top: 35.039px;
+  left: 7.403px;
+  width: 150.518px;
+  height: 0.247px;
+  pointer-events: none;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-table {
-  top: 70.5px;
-  left: 14.1px;
-  width: 286.7px;
+  top: 37.8px;
+  left: 7.403px;
+  width: 150.518px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays,
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__week {
-  grid-template-columns: repeat(7, 40.89px);
+  grid-template-columns: repeat(7, 21.5px);
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays {
-  height: 15.98px;
-  font-size: 12px;
-  line-height: 17px;
+  height: 11.9px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day {
-  height: 25.38px;
-  font-size: 14px;
-  line-height: 21px;
+  height: 15.4px;
+  font-size: 9.1px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day::after {
-  top: 20.68px;
-  height: 0.47px;
+  top: 12.6px;
+  height: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__stamp {
-  top: -0.94px;
-  left: 5.17px;
-  width: 31.02px;
-  height: 28.67px;
+  top: 0.174px;
+  left: 2.607px;
+  width: 16.285px;
+  height: 15.052px;
 }
 
-/* Date controls keep priority where the mobile paper overlaps their hit areas. */
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__date-button:not([aria-current="date"]) {
-  z-index: 1;
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring {
+  top: 2.148px;
+  left: 5.198px;
+  width: 11.104px;
+  height: 11.104px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring--today {
+  top: -1.4px;
+  left: 1.65px;
+  width: 18.2px;
+  height: 18.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-copy {
-  top: 162.62px;
-  left: 134.89px;
-  width: 61.1px;
-  height: 52.64px;
+  top: 94.5px;
+  left: 58.153px;
+  width: 49px;
+  height: 35px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-number {
-  top: 2.245px;
-  left: 14.38px;
-  width: 22px;
-  height: 27px;
-  font-size: 18px;
-  line-height: 27px;
+  top: 1.05px;
+  left: 17.85px;
+  width: 14px;
+  height: 16.1px;
+  font-size: 11.2px;
+  line-height: 16.1px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-stamp {
   z-index: auto;
-  top: -0.47px;
-  left: 10.34px;
-  width: 31.02px;
-  height: 28.67px;
+  top: 0.174px;
+  left: 15.607px;
+  width: 16.285px;
+  height: 15.052px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-label {
-  top: 34.5px;
-  left: -2.62px;
-  width: 56px;
-  height: 21px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 19px;
+  left: 17px;
+  width: 29px;
+  height: 10.4px;
+  font-size: 7.2px;
+  line-height: 10.4px;
 }
 
+/* Right/down expansion avoids the adjacent 30th and the 24th above the label. */
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-button {
-  top: 189.62px;
-  left: 124.27px;
-  width: 72px;
-  height: 36px;
+  top: 111.301px;
+  left: 73.553px;
+  width: 44px;
+  height: 20px;
 }
 
+/* Today's artwork is already in the calendar's rotated coordinate system. */
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-gold {
-  position: absolute;
-  top: 153.988px;
-  left: 153.641px;
-  width: 31.49px;
-  height: 31.49px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring {
-  top: 2.1155px;
-  left: 9.8705px;
-  width: 21.15px;
-  height: 21.15px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring--today {
-  top: 0;
-  left: 7.7545px;
-  width: 31.49px;
-  height: 31.49px;
+  top: 90.032px;
+  left: 78.862px;
+  width: 18.2px;
+  height: 18.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-blue {
-  top: 155.868px;
-  left: 155.521px;
-  width: 27.73px;
-  height: 27.73px;
+  top: 91.082px;
+  left: 79.912px;
+  width: 16.1px;
+  height: 16.1px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-paper {
-  top: 182.144px;
-  left: 131.414px;
-  width: 81.827px;
-  height: 40.19px;
+  top: 106.518px;
+  left: 77.87px;
+  width: 37.257px;
+  height: 18.29px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-star {
-  top: 155.663px;
-  left: 138.572px;
-  width: 17.289px;
-  height: 17.289px;
+  top: 93.378px;
+  left: 68.758px;
+  width: 9.076px;
+  height: 9.076px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__title {
-  top: 32.9px;
-  left: 107.16px;
-  width: 173.43px;
-  height: 74.26px;
+  top: 17.272px;
+  left: 62.502px;
+  width: 91.051px;
+  height: 38.987px;
+  pointer-events: none;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__daily {
-  top: -20.724px;
-  left: 8.418px;
-  font-size: 42.77px;
+  top: -10.88px;
+  left: 4.42px;
+  font-size: 22.454px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__check-in {
-  top: 18.137px;
-  left: 18.7px;
-  font-size: 32.43px;
+  top: 9.522px;
+  left: 9.818px;
+  font-size: 17.026px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__heading {
-  top: 48.366px;
-  left: 28.628px;
-  font-size: 12.69px;
+  top: 25.392px;
+  left: 15.03px;
+  font-size: 6.662px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote {
-  top: 55.46px;
-  left: 422.53px;
-  width: 306.91px;
-  height: 307.85px;
+  top: 29.116px;
+  left: 228.071px;
+  width: 161.128px;
+  height: 193.2px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-paper {
+  height: 197.642px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-border {
-  top: 5.64px;
-  left: 5.64px;
-  width: 295.63px;
-  height: 294.22px;
-  border-width: 0.47px;
+  top: 2.961px;
+  left: 2.962px;
+  width: 155.206px;
+  height: 186.2px;
+  border-width: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-shade {
-  top: 117.03px;
-  left: 12.22px;
-  width: 230.3px;
-  height: 21.62px;
+  top: 61.441px;
+  left: 6.416px;
+  width: 120.908px;
+  height: 11.351px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-caption {
-  top: 117.03px;
-  left: 18.331px;
-  font-size: 14.1px;
+  top: 61.441px;
+  left: 9.624px;
+  font-size: 7.403px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-date-number {
-  top: 141.94px;
-  left: 32.9007px;
-  width: 83px;
-  height: 45px;
-  font-size: 33.84px;
+  top: 78.4px;
+  left: 17.5px;
+  width: 43px;
+  height: 24px;
+  font-size: 17.5px;
+  line-height: 23.8px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-weekday {
-  top: 164.5px;
-  left: 136.3007px;
-  width: 24px;
-  height: 17px;
-  font-size: 13.63px;
+  top: 89.6px;
+  left: 78.4px;
+  width: 18px;
+  height: 14px;
+  font-size: 9.8px;
+  line-height: 14px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content {
-  top: 192px;
-  left: 54px;
+  top: 113.4px;
+  left: 30.8px;
   display: block;
-  width: 230px;
-  height: 81px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  width: 99.4px;
+  height: 42px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content p {
-  width: 228px;
+  width: 98px;
   max-width: 100%;
   margin: 0 auto;
   overflow-wrap: anywhere;
-  font-size: 18px;
-  line-height: 27px;
+  font-size: 9.8px;
+  line-height: 14px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-footer {
-  top: 284px;
-  left: 54.99px;
-  width: 230px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 172.9px;
+  left: 19.6px;
+  width: 121.8px;
+  font-size: 7.35px;
+  line-height: 11.2px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label-paper,
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label-star {
+  top: calc(var(--art-y) * var(--art-scale) + 4.063px);
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label {
-  top: 116.09px;
-  left: 183.77px;
-  width: 114.68px;
-  height: 27.26px;
+  top: 65.009px;
+  left: 96.479px;
+  width: 60.207px;
+  height: 14.312px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label h3 {
-  top: 1.63px;
-  left: 35.248px;
-  font-size: 16px;
-  line-height: 24px;
+  top: 0.656px;
+  left: 17.405px;
+  font-size: 9.1px;
+  line-height: 12.6px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-star-large {
+  top: 102.2px;
+  left: 145.728px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-star-small {
+  top: 95.2px;
+  left: 134.528px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards {
-  top: 288.11px;
-  left: 69.09px;
-  width: 401.85px;
-  height: 134px;
+  top: 167.3px;
+  left: 42.515px;
+  width: 210.971px;
+  height: 79.8px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-paper {
-  top: -0.94px;
-  left: -2.82px;
-  width: 410.31px;
-  height: 142.46px;
+  height: 84.242px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-border {
-  top: 4.23px;
-  left: 4.23px;
-  width: 393.39px;
-  height: 124px;
-  border-width: 0.47px;
+  top: 2.221px;
+  left: 2.221px;
+  width: 205.371px;
+  height: 74.2px;
+  border-width: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :first-child {
-  top: 21px;
-  left: 24px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 10.5px;
+  left: 12.6px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total strong {
-  top: 8px;
-  left: 102px;
-  width: 46px;
-  height: 35px;
-  font-size: 24px;
-  line-height: 35px;
+  top: 3.5px;
+  left: 53.9px;
+  width: 24.5px;
+  height: 21px;
+  font-size: 14px;
+  line-height: 20.3px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :last-child {
-  top: 21px;
-  left: 150px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 10.5px;
+  left: 81.2px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress {
-  top: 47.47px;
-  left: 30.55px;
-  width: 163.56px;
-  height: 3.29px;
+  top: 24.922px;
+  left: 16.039px;
+  width: 85.869px;
+  height: 1.727px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress > span {
-  width: 76.328px;
+  border-radius: 0.987px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :first-child {
-  top: 61px;
-  left: 24px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 32.2px;
+  left: 12.6px;
+  width: 63px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward strong {
-  top: 57px;
-  left: 132px;
-  width: 32px;
-  height: 24px;
-  font-size: 16px;
-  line-height: 24px;
+  top: 29.4px;
+  left: 70.7px;
+  width: 18.2px;
+  height: 16px;
+  font-size: 10.5px;
+  line-height: 15.4px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :last-child {
-  top: 61px;
-  left: 169px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 32.2px;
+  left: 91px;
+  width: 16.8px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift-icon {
-  top: 89px;
-  left: 24px;
+  top: 49.7px;
+  left: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-hint {
-  top: 88px;
-  left: 43px;
-  width: 156px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 49px;
+  left: 22.4px;
+  width: 81.9px;
+  font-size: 7.35px;
+  line-height: 10.5px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-list {
-  top: 5.64px;
-  left: 202.57px;
-  grid-template-columns: repeat(3, 58.28px);
-  gap: 6.58px;
+  top: 2.961px;
+  left: 106.349px;
+  grid-template-columns: repeat(3, 30.8px);
+  gap: 3.251px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward {
   position: relative;
-  gap: 2.35px;
+  gap: 1.234px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift {
-  width: 50.76px;
-  height: 35.72px;
+  width: 26.649px;
+  height: 18.753px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-days {
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-preview {
-  width: 42.77px;
-  height: 30.55px;
-  border-radius: 4.7px;
+  width: 22.454px;
+  height: 16.039px;
+  border-radius: 2.467px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__locked {
   position: absolute;
-  top: 97.36px;
-  left: -0.36px;
+  top: 54.439px;
+  left: -1.4px;
   display: grid;
-  width: 59px;
-  height: 22px;
+  width: 33.6px;
+  height: 15.4px;
   margin: 0;
   place-items: center;
-  border-radius: 2.35px;
-  font-size: 11.5px;
-  line-height: 17px;
+  border-radius: 1.234px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }

@@ -113,13 +113,13 @@ function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
   return (
     <div className="sign-in-board">
       {/* Final-render assets already contain their Figma rotation and shadow. */}
-      <Artwork src={coverLeft} x={99} y={32.286} width={909.708} height={831.347} />
-      <Artwork src={coverRight} x={836.632} y={79.259} width={744.423} height={765.874} />
-      <Artwork src={coverFold} x={1324} y={56.707} width={424.95} height={666.78} />
-      <Artwork src={photoRace} x={22} y={164.585} width={301.712} height={282.458} />
+      <Artwork className="sign-in-board__root-art" src={coverLeft} x={99} y={32.286} width={909.708} height={831.347} />
+      <Artwork className="sign-in-board__root-art" src={coverRight} x={836.632} y={79.259} width={744.423} height={765.874} />
+      <Artwork className="sign-in-board__root-art" src={coverFold} x={1324} y={56.707} width={424.95} height={666.78} />
+      <Artwork className="sign-in-board__root-art" src={photoRace} x={22} y={164.585} width={301.712} height={282.458} />
 
       <section className="sign-in-board__quote" aria-label="今日语录">
-        <Artwork src={quotePaper} x={-6} y={-2} width={671} height={673} />
+        <Artwork className="sign-in-board__quote-paper" src={quotePaper} x={-6} y={-2} width={671} height={673} />
         <div className="sign-in-board__quote-border" aria-hidden="true" />
         <Artwork src={plantLines} x={443} y={312} width={180} height={310} />
         <Artwork src={bottomFlourish} x={20} y={552} width={200} height={95} />
@@ -152,20 +152,20 @@ function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
           {selected.footer}
         </p>
         <Artwork src={iris} x={472} y={-37} width={290} height={495} />
-        <Artwork src={quoteLabelPaper} x={385} y={223.734} width={266.127} height={97.045} />
+        <Artwork className="sign-in-board__quote-label-paper" src={quoteLabelPaper} x={385} y={223.734} width={266.127} height={97.045} />
         <div className="sign-in-board__quote-label">
           <h3>今日语录</h3>
         </div>
-        <Artwork src={starBlue} x={421.109} y={255.805} width={32.501} height={32.501} />
+        <Artwork className="sign-in-board__quote-label-star" src={starBlue} x={421.109} y={255.805} width={32.501} height={32.501} />
         <Artwork src={paperclip} x={421} y={-32} width={57} height={114} />
         <Artwork src={seal} x={617} y={284} width={105} height={105} />
-        <Artwork src={starBlueLarge} x={521} y={528} width={33} height={33} />
-        <Artwork src={starBlueSmall} x={500} y={564} width={25} height={25} />
+        <Artwork className="sign-in-board__quote-star-large" src={starBlueLarge} x={521} y={528} width={33} height={33} />
+        <Artwork className="sign-in-board__quote-star-small" src={starBlueSmall} x={500} y={564} width={25} height={25} />
         <Artwork src={photoDog} x={531.526} y={519.077} width={248.346} height={254.125} />
       </section>
 
       <section className="sign-in-board__calendar" aria-label="签到日历">
-        <Artwork src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
+        <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
           <h3 className="sign-in-board__month">2026 · 09</h3>
           <button type="button" className="sign-in-board__return-today" onClick={() => setSelectedDay(DEMO_TODAY)}>
@@ -245,8 +245,8 @@ function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
 
       {[0, 1, 2, 3, 4].map((index) => (
         <div key={index} aria-hidden="true">
-          <Artwork src={bindingHole} x={613 + index * 51} y={126} width={23} height={28} />
-          <Artwork src={bindingRing} x={610 + index * 51} y={72} width={30} height={78} />
+          <Artwork className="sign-in-board__root-art" src={bindingHole} x={613 + index * 51} y={126} width={23} height={28} />
+          <Artwork className="sign-in-board__root-art" src={bindingRing} x={610 + index * 51} y={72} width={30} height={78} />
         </div>
       ))}
 
