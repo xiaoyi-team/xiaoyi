@@ -805,7 +805,6 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           aria-hidden="true"
           viewBox="0 0 20.477 20.477"
           className="pointer-events-none absolute"
-          style={{ left: toSceneCqw(309), top: toSceneCqw(337), width: toSceneCqw(20.477), height: toSceneCqw(20.477) }}
         >
           <path d={ACTIVITY_REVIEW_SPARKLE_PATH} fill="#DBA640" />
         </svg>
@@ -1060,11 +1059,6 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           aria-label="返回时间轴"
           className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
           style={{
-            left: sceneX(74),
-            top: sceneY(23),
-            width: toSceneCqw(170),
-            height: toSceneCqw(74),
-            borderRadius: toSceneCqw(22),
             zIndex: 40,
             visibility: viewerOpen ? "hidden" : undefined,
           }}
@@ -1074,20 +1068,12 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             alt=""
             aria-hidden="true"
             className="absolute"
-            style={{ left: "4.1176471%", top: "6.7567568%", width: "43.5294118%", height: "86.4864865%" }}
           />
           <span
             className="absolute text-left text-white"
             style={{
-              left: "50%",
-              top: "22.9729730%",
-              width: toSceneCqw(56),
-              height: toSceneCqw(40),
               fontFamily: '"Noto Serif SC", serif',
               fontWeight: 600,
-              fontSize: toSceneCqw(28),
-              lineHeight: toSceneCqw(40),
-              textShadow: `0 0 ${toSceneCqw(2)} #000000`,
             }}
           >
             返回

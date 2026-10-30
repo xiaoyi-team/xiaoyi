@@ -392,57 +392,70 @@ function WishBoxTimeline({
       const viewport = timelineViewportRef.current;
       const navigation = scene.querySelector<HTMLElement>("[data-timeline-navigation]");
       if (!title || !viewport || !navigation) return;
-      const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
-      const navTop = navigation.getBoundingClientRect().top - bounds.top;
-      const viewportTop = viewport.getBoundingClientRect().top;
-      const cards = [...viewport.querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")];
-      // Measure the actual interactive cards, not the taller viewport/ornament box.
-      const cardBottom = cards.length
-        ? Math.max(...cards.map((card) => card.getBoundingClientRect().bottom - viewportTop))
-        : 299 * scale;
-      const extra = Math.max(0, bounds.height - 440 * scale);
-      const barHeight = 40 * scale;
-      let paperTop = Math.max(65 * scale, titleBottom + 4);
-      const baseTop = 110 * scale;
-      const lower = Math.max(baseTop, paperTop + barHeight + 3);
-      const upper = navTop - cardBottom - 1;
-      let bodyTop = lower + Math.min(
-        Math.max(0, (extra - (lower - baseTop)) / 2),
-        Math.max(0, navTop - 308 * scale - lower - 4),
-      );
-      let capacity = "normal";
-      if (bodyTop > upper) {
-        bodyTop = upper;
-        capacity = "body-cap";
-        if (paperTop + barHeight + 3 > upper) {
-          const availableGap = upper - titleBottom - barHeight;
-          capacity = availableGap < 0 ? "insufficient" : "compact";
-          paperTop = titleBottom + Math.max(0, Math.min(4, availableGap * 4 / 7));
+      const handset = readFilterLayout() === "handset";
+      if (handset) {
+        // Scale the whole 667 card/vine group, reserving its 106px top and 14px hint.
+        const cardEnvelope = 115.826088 + 144 * 238 / 350;
+        const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 106 - 14) / cardEnvelope));
+        scene.style.setProperty("--timeline-handset-unit", `${0.72 * cardScale}px`);
+        scene.style.setProperty("--timeline-handset-card-scale", `${1920 * 144 * cardScale / (bounds.width * 350)}`);
+        scene.dataset.timelineMobileCapacity = "handset";
+      } else {
+        const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
+        const navTop = navigation.getBoundingClientRect().top - bounds.top;
+        const viewportTop = viewport.getBoundingClientRect().top;
+        const cards = [...viewport.querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")];
+        // Measure the actual interactive cards, not the taller viewport/ornament box.
+        const cardBottom = cards.length
+          ? Math.max(...cards.map((card) => card.getBoundingClientRect().bottom - viewportTop))
+          : 299 * scale;
+        const extra = Math.max(0, bounds.height - 440 * scale);
+        const barHeight = 40 * scale;
+        let paperTop = Math.max(65 * scale, titleBottom + 4);
+        const baseTop = 110 * scale;
+        const lower = Math.max(baseTop, paperTop + barHeight + 3);
+        const upper = navTop - cardBottom - 1;
+        let bodyTop = lower + Math.min(
+          Math.max(0, (extra - (lower - baseTop)) / 2),
+          Math.max(0, navTop - 308 * scale - lower - 4),
+        );
+        let capacity = "normal";
+        if (bodyTop > upper) {
+          bodyTop = upper;
+          capacity = "body-cap";
+          if (paperTop + barHeight + 3 > upper) {
+            const availableGap = upper - titleBottom - barHeight;
+            capacity = availableGap < 0 ? "insufficient" : "compact";
+            paperTop = titleBottom + Math.max(0, Math.min(4, availableGap * 4 / 7));
+          }
         }
+        // Pure px variables cross containing blocks without re-resolving percentages.
+        const hitHeight = Math.max(0, Math.min(44, bodyTop - titleBottom - 2));
+        const visualCenter = paperTop + 20 * scale;
+        const hitCenter = Math.min(bodyTop - 1 - hitHeight / 2,
+          Math.max(titleBottom + 1 + hitHeight / 2, visualCenter));
+        const variables = {
+          "--timeline-filter-top": paperTop,
+          "--timeline-body-top": bodyTop,
+          "--timeline-card-envelope": cardBottom,
+          "--timeline-filter-hit-height": hitHeight,
+          "--timeline-filter-hit-offset": hitCenter - visualCenter,
+        };
+        for (const [name, value] of Object.entries(variables)) scene.style.setProperty(name, `${value}px`);
+        scene.dataset.timelineMobileCapacity = capacity;
       }
-      // Pure px variables cross containing blocks without re-resolving percentages.
-      const hitHeight = Math.max(0, Math.min(44, bodyTop - titleBottom - 2));
-      const visualCenter = paperTop + 20 * scale;
-      const hitCenter = Math.min(bodyTop - 1 - hitHeight / 2,
-        Math.max(titleBottom + 1 + hitHeight / 2, visualCenter));
-      const variables = {
-        "--timeline-filter-top": paperTop,
-        "--timeline-body-top": bodyTop,
-        "--timeline-card-envelope": cardBottom,
-        "--timeline-filter-hit-height": hitHeight,
-        "--timeline-filter-hit-offset": hitCenter - visualCenter,
-      };
-      for (const [name, value] of Object.entries(variables)) scene.style.setProperty(name, `${value}px`);
-      scene.dataset.timelineMobileCapacity = capacity;
       if (openMenu) {
         const owner = filterButtonRefs.current[openMenu];
         const trigger = owner?.getClientRects().length ? owner.getBoundingClientRect() : null;
         const paper = scene.querySelector("[data-timeline-filters]")?.getBoundingClientRect();
         if (trigger && paper) {
           const border = scene.querySelector<HTMLElement>("[data-timeline-filters]")!.clientLeft;
-          scene.style.setProperty("--timeline-menu-left", `${Math.max(bounds.left + 12, Math.min(trigger.left, bounds.right - 172)) - paper.left - border}px`);
-          scene.style.setProperty("--timeline-menu-top", `${trigger.bottom + 1 - paper.top - border}px`);
-          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - trigger.bottom - 13)}px`);
+          const menuWidth = handset ? 180 : 160;
+          const menuLeft = handset && openMenu === "form" ? trigger.right - menuWidth + 2 : trigger.left;
+          const menuTop = trigger.bottom + (handset ? 3 : 1);
+          scene.style.setProperty("--timeline-menu-left", `${Math.max(bounds.left + 12, Math.min(menuLeft, bounds.right - menuWidth - 12)) - paper.left - border}px`);
+          scene.style.setProperty("--timeline-menu-top", `${menuTop - paper.top - border}px`);
+          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - menuTop - (handset ? 7 : 12))}px`);
         }
       }
     };
@@ -933,35 +946,11 @@ function WishBoxTimeline({
         aria-hidden="true"
         data-timeline-title-glow
         className="pointer-events-none absolute"
-        style={{
-          left: "34.4270833%",
-          top: "0.3703704%",
-          width: "31.1458333%",
-          height: "14.4444444%",
-          boxSizing: "border-box",
-          border: `${toSceneCqw(1)} solid #000000`,
-          borderRadius: "50%",
-          backgroundColor: "rgba(255, 255, 255, 0.54)",
-          filter: `blur(${toSceneCqw(25.1)})`,
-        }}
       />
 
       <h1
         data-timeline-header-title
         className="absolute m-0 text-left"
-        style={{
-          left: "43.3333333%",
-          top: "0.7407407%",
-          width: "13.3333333%",
-          height: "7.7777778%",
-          fontFamily: '"Noto Serif SC", serif',
-          fontSize: toSceneCqw(64),
-          fontWeight: 700,
-          lineHeight: toSceneCqw(84),
-          letterSpacing: 0,
-          color: "#5B4129",
-          textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(5)} rgba(255, 250, 232, 0.9)`,
-        }}
       >
         时光花径
       </h1>
@@ -993,10 +982,6 @@ function WishBoxTimeline({
         draggable={false}
         className="pointer-events-none absolute select-none"
         style={{
-          left: "33.8541667%",
-          top: "2.5%",
-          width: "9.3229167%",
-          height: "7.037037%",
           objectFit: "contain",
           maxWidth: "none",
         }}
@@ -1010,10 +995,6 @@ function WishBoxTimeline({
         draggable={false}
         className="pointer-events-none absolute select-none"
         style={{
-          left: "56.8229167%",
-          top: "2.5%",
-          width: "9.2708333%",
-          height: "7.037037%",
           objectFit: "contain",
           maxWidth: "none",
         }}
@@ -1183,7 +1164,10 @@ function WishBoxTimeline({
             letterSpacing: 0,
           }}
         >
-          {filters[field]}
+          <span data-timeline-filter-value>{filters[field]}</span>
+          <span data-timeline-handset-value>
+            {filters[field] === "全部" ? (field === "year" ? "全部年份" : "全部形式") : filters[field]}
+          </span>
         </button>
         ))}
 
@@ -1314,33 +1298,12 @@ function WishBoxTimeline({
       <div
         data-timeline-navigation
         className="absolute overflow-hidden"
-        style={{
-          left: "4.1666667%",
-          top: "91.6666667%",
-          width: "91.6666667%",
-          height: "4.8148148%",
-        }}
       >
         <button
           type="button"
           data-timeline-nav="earlier"
           onClick={() => scrollToEnd("left")}
           className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
-          style={{
-            left: 0,
-            top: 0,
-            width: toSceneCqw(190),
-            height: toSceneCqw(44),
-            borderRadius: toSceneCqw(22),
-            color: "#FFF5DD",
-            fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
-            fontWeight: 500,
-            lineHeight: toSceneCqw(24),
-            letterSpacing: 0,
-            textShadow: `0 0 ${toSceneCqw(2)} #000000`,
-            whiteSpace: "pre",
-          }}
         >
           {"←  更早的回忆"}
         </button>
@@ -1349,40 +1312,11 @@ function WishBoxTimeline({
           data-timeline-nav="latest"
           onClick={() => scrollToEnd("right")}
           className="absolute flex items-center justify-center overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#FFF5DD]"
-          style={{
-            left: toSceneCqw(1570),
-            top: 0,
-            width: toSceneCqw(190),
-            height: toSceneCqw(44),
-            borderRadius: toSceneCqw(22),
-            color: "#FFF5DD",
-            fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
-            fontWeight: 500,
-            lineHeight: toSceneCqw(24),
-            letterSpacing: 0,
-            textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(2)} #594229`,
-            whiteSpace: "pre",
-          }}
         >
           {"最近的盛放  →"}
         </button>
         <p
           className="pointer-events-none absolute m-0"
-          style={{
-            left: toSceneCqw(717),
-            top: toSceneCqw(7),
-            width: toSceneCqw(249),
-            height: toSceneCqw(24),
-            color: "#FFF5DD",
-            fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
-            fontWeight: 500,
-            lineHeight: toSceneCqw(24),
-            letterSpacing: 0,
-            textShadow: `0 ${toSceneCqw(1)} ${toSceneCqw(2)} #594229`,
-            whiteSpace: "pre",
-          }}
         >
           {"←     左右滑动，探索更多活动     →"}
         </p>
@@ -1395,39 +1329,19 @@ function WishBoxTimeline({
         aria-label="返回心愿盒主页"
         data-timeline-return
         className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
-        style={{
-          left: "3.8541667%",
-          top: "2.1296296%",
-          width: "8.8541667%",
-          height: "6.8518519%",
-          borderRadius: "1.1458333cqw",
-        }}
       >
         <img
           src={backDoubleChevron}
           alt=""
           aria-hidden="true"
           className="absolute"
-          style={{
-            left: "4.1176471%",
-            top: "6.7567568%",
-            width: "43.5294118%",
-            height: "86.4864865%",
-          }}
         />
         <span
           className="absolute text-left text-white"
           style={{
-            left: "47.6470588%",
-            top: "22.972973%",
-            width: "32.9411765%",
-            height: "54.0540541%",
             fontFamily: '"Noto Serif SC", serif',
             fontWeight: 600,
-            fontSize: toSceneCqw(28),
-            lineHeight: toSceneCqw(40),
             letterSpacing: 0,
-            textShadow: "0 0 0.1041667cqw #000",
           }}
         >
           返回
