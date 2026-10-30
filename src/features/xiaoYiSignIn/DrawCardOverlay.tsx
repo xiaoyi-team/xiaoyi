@@ -173,7 +173,7 @@ function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, onCollect,
     <dialog
       ref={dialogRef}
       className="draw-card-dialog"
-      aria-label="今日寄语抽卡静态预览"
+      aria-label="今日寄语抽卡"
       data-mobile={mobile ? true : undefined}
       onCancel={(event) => event.preventDefault()}
     >
