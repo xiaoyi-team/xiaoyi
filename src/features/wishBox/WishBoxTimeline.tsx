@@ -329,10 +329,6 @@ function WishBoxTimeline({
   const presentation = currentPresentation ?? previousPresentation;
   const showingPreviousResults = currentPresentation === null && previousPresentation !== null;
   const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
-  // Mobile geometry is a view of the same ordered records, not a second data model.
-  const mobileContentWidth = presentation && presentation.cards.length > 0
-    ? (presentation.cards.length - 1) * 120 + 200
-    : 0;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
   const isInitialError = hasError && presentation === null;
@@ -366,71 +362,18 @@ function WishBoxTimeline({
     const readFilterLayout = () => media.matches && filterBar
       ? getComputedStyle(filterBar).getPropertyValue("--timeline-filter-layout").trim()
       : "desktop";
-    const readTrackLayout = () => getComputedStyle(scene).getPropertyValue("--timeline-track-layout").trim();
     if (filterLayoutRef.current === null) filterLayoutRef.current = readFilterLayout();
     const updateLayout = () => {
       if (!media.matches) return;
       const bounds = scene.getBoundingClientRect();
-      const title = scene.querySelector<HTMLElement>("[data-timeline-header-title]");
-      const viewport = timelineViewportRef.current;
-      const navigation = scene.querySelector<HTMLElement>("[data-timeline-navigation]");
-      if (!title || !viewport || !navigation) return;
-      const compactTrack = readTrackLayout() === "compact";
-      if (compactTrack) {
-        // Scale the whole 667 card/vine group, reserving its 106px top and 14px hint.
-        const cardEnvelope = 115.826172 + 97.92;
-        const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 106 - 14) / cardEnvelope));
-        scene.style.setProperty("--timeline-667-scale", `${cardScale}`);
-        // Keep the unmodified header's legacy unit; track geometry no longer reads it.
-        scene.style.setProperty("--timeline-handset-unit", `${0.72 * cardScale}px`);
-        scene.style.setProperty("--timeline-handset-card-scale", `${1920 * 144 * cardScale / (bounds.width * 350)}`);
-        scene.dataset.timelineMobileCapacity = "handset";
-      } else {
-        // Legacy vertical reservations still serve the track until D1-B.
-        const scale = bounds.width / 956;
-        const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
-        const navTop = navigation.getBoundingClientRect().top - bounds.top;
-        const viewportTop = viewport.getBoundingClientRect().top;
-        const cards = [...viewport.querySelectorAll<HTMLButtonElement>("button[data-timeline-record-id]")];
-        // Measure the actual interactive cards, not the taller viewport/ornament box.
-        const cardBottom = cards.length
-          ? Math.max(...cards.map((card) => card.getBoundingClientRect().bottom - viewportTop))
-          : 299 * scale;
-        const extra = Math.max(0, bounds.height - 440 * scale);
-        const barHeight = 40 * scale;
-        let paperTop = Math.max(65 * scale, titleBottom + 4);
-        const baseTop = 110 * scale;
-        const lower = Math.max(baseTop, paperTop + barHeight + 3);
-        const upper = navTop - cardBottom - 1;
-        let bodyTop = lower + Math.min(
-          Math.max(0, (extra - (lower - baseTop)) / 2),
-          Math.max(0, navTop - 308 * scale - lower - 4),
-        );
-        let capacity = "normal";
-        if (bodyTop > upper) {
-          bodyTop = upper;
-          capacity = "body-cap";
-          if (paperTop + barHeight + 3 > upper) {
-            const availableGap = upper - titleBottom - barHeight;
-            capacity = availableGap < 0 ? "insufficient" : "compact";
-            paperTop = titleBottom + Math.max(0, Math.min(4, availableGap * 4 / 7));
-          }
-        }
-        // Pure px variables cross containing blocks without re-resolving percentages.
-        const hitHeight = Math.max(0, Math.min(44, bodyTop - titleBottom - 2));
-        const visualCenter = paperTop + 20 * scale;
-        const hitCenter = Math.min(bodyTop - 1 - hitHeight / 2,
-          Math.max(titleBottom + 1 + hitHeight / 2, visualCenter));
-        const variables = {
-          "--timeline-filter-top": paperTop,
-          "--timeline-body-top": bodyTop,
-          "--timeline-card-envelope": cardBottom,
-          "--timeline-filter-hit-height": hitHeight,
-          "--timeline-filter-hit-offset": hitCenter - visualCenter,
-        };
-        for (const [name, value] of Object.entries(variables)) scene.style.setProperty(name, `${value}px`);
-        scene.dataset.timelineMobileCapacity = capacity;
-      }
+      // Fit the shared 350x238 prototype to the 667 track, leaving 106px above and 14px below.
+      const cardEnvelope = 115.826172 + 97.92;
+      const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 120) / cardEnvelope));
+      const cardFit = bounds.width > 0 ? 1920 * 144 * cardScale / (bounds.width * 350) : 0;
+      scene.style.setProperty("--timeline-667-scale", `${cardScale}`);
+      scene.style.setProperty("--timeline-handset-card-scale", `${cardFit}`);
+      // The existing compact header/return rules still consume this separate legacy input.
+      scene.style.setProperty("--timeline-handset-unit", `${0.72 * cardScale}px`);
       if (openMenu) {
         const handsetFilters = readFilterLayout() === "handset";
         const owner = filterButtonRefs.current[openMenu];
@@ -766,10 +709,6 @@ function WishBoxTimeline({
         }}
         className="absolute cursor-grab [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-[#4c392b]"
         style={{
-          left: "5.2604167%",
-          top: "23.7962963%",
-          width: "91.6666667%",
-          height: "65.7407407%",
           overflowX: "auto",
           overflowY: "hidden",
           scrollbarWidth: "none",
@@ -783,8 +722,6 @@ function WishBoxTimeline({
             "--timeline-pc-path-width": toSceneCqw(presentation.pathWidth + pathEndPadding),
             "--timeline-pc-content-width": toSceneCqw(presentation.pathWidth),
             "--timeline-pc-end-padding": toSceneCqw(pathEndPadding),
-            "--timeline-mobile-content-width": mobileContentWidth,
-            "--timeline-mobile-end-padding": pathEndPadding * 200 / 350,
             minWidth: presentation.cards.length > 0 || showEmpty ? "100%" : undefined,
           } as CSSProperties}
         >

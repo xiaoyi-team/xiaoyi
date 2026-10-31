@@ -1366,6 +1366,13 @@
 }
 
 /* Shared PC prototype; mobile modes below own their final track geometry. */
+.wish-box-timeline [data-timeline-viewport] {
+  left: 5.2604167%;
+  top: 23.7962963%;
+  width: 91.6666667%;
+  height: 65.7407407%;
+}
+
 .wish-box-timeline [data-timeline-path] {
   width: var(--timeline-pc-path-width);
   height: 34.8958333cqw;
@@ -1462,8 +1469,11 @@
 
   .wish-box-timeline {
     --timeline-mobile-unit: calc(100cqw / 956);
-    /* Reuse the accepted 350-wide Card and both frames at 200 mobile Scene px. */
-    --timeline-mobile-card-scale: calc(1920 * 200 / 956 / 350);
+    /* Track units are independent of the legacy header/return/navigation unit. */
+    --timeline-667-unit: calc(var(--timeline-667-scale, 1) * 1px);
+    --timeline-card-fit: var(--timeline-handset-card-scale, 1.184322);
+    /* Keep title compensation finite when an unmeasurable Scene has zero scale. */
+    --timeline-card-fit-divisor: max(0.000001, var(--timeline-card-fit));
   }
 
   .wish-box-timeline [data-timeline-background],
@@ -1658,27 +1668,12 @@
   .wish-box-timeline [data-timeline-filter-menu] > button[aria-pressed="true"] { background: #F3EDE1 !important; }
 
   .wish-box-timeline [data-timeline-viewport] {
-    left: calc(var(--timeline-mobile-unit) * 64) !important;
-    top: var(--timeline-body-top, calc(var(--timeline-mobile-unit) * 110)) !important;
-    width: calc(var(--timeline-mobile-unit) * 828) !important;
-    height: calc(var(--timeline-mobile-unit) * 308) !important;
+    left: 24px;
+    top: 82px;
+    width: max(0px, calc(100% - 48px));
+    height: max(0px, calc(100% - 95px));
     touch-action: pan-x;
     overscroll-behavior-x: contain;
-  }
-
-  /* Keep T1-B's header/hit variables and non-normal capacity fallback intact.
-     Split net extra space between F = paperTop + 40s and N = H - 28px,
-     preserving the 956 baseline: V = (N + F - 297s) / 2.
-     Clamp against filter hits and T1-B's measured card hit envelope. */
-  .wish-box-timeline[data-timeline-mobile-capacity="normal"]:has([data-timeline-card]) [data-timeline-viewport] {
-    top: min(
-      calc(100% - 29px - var(--timeline-card-envelope)),
-      max(
-        calc(var(--timeline-filter-top) + var(--timeline-mobile-unit) * 40 + 3px),
-        calc(var(--timeline-filter-top) + var(--timeline-mobile-unit) * 20 + var(--timeline-filter-hit-offset) + var(--timeline-filter-hit-height) / 2 + 1px),
-        calc((100% - 28px + var(--timeline-filter-top) - var(--timeline-mobile-unit) * 257) / 2)
-      )
-    ) !important;
   }
 
   /* 819px Scene width provides less than the Empty stack's 264px padded height. */
@@ -1708,115 +1703,68 @@
     }
   }
 
-  /* Keep the legacy wide track isolated from the native 667 geometry below. */
-  @container (min-width: 928px) {
-    .wish-box-timeline { --timeline-track-layout: wide; }
+  /* All Touch capacities use the same 667 track geometry. */
+  .wish-box-timeline [data-timeline-path] {
+    top: 24px;
+    width: calc(var(--timeline-667-unit) * (max(0, var(--timeline-record-count) - 1) * 86.4 + min(1, var(--timeline-record-count)) * 158.4));
+    height: max(0px, calc(100% - 24px));
+  }
+  .wish-box-timeline [data-timeline-activity-group] {
+    right: calc(var(--timeline-667-unit) * min(1, var(--timeline-record-count)) * 14.4);
+    width: calc(var(--timeline-667-unit) * (max(0, var(--timeline-record-count) - 1) * 86.4 + min(1, var(--timeline-record-count)) * 144));
+  }
+  .wish-box-timeline [data-timeline-vine] {
+    top: calc(var(--timeline-667-unit) * 48.96);
+    height: calc(var(--timeline-667-unit) * 112.32);
+    background-size: calc(var(--timeline-667-unit) * 336.96) calc(var(--timeline-667-unit) * 112.32);
+  }
+  .wish-box-timeline [data-timeline-card] {
+    left: calc(var(--timeline-667-unit) * var(--timeline-mobile-slot) * 86.4);
+    top: 0;
+    /* Fit the shared 350x238 prototype once, using the measured Scene width. */
+    transform: scale(var(--timeline-card-fit));
+    transform-origin: top left;
+  }
+  .wish-box-timeline [data-timeline-direction="down"] [data-timeline-card] {
+    top: calc(var(--timeline-667-unit) * 115.826172);
+  }
+  .wish-box-timeline [data-timeline-card-title] {
+    left: calc(var(--timeline-667-unit) * 10 / var(--timeline-card-fit-divisor));
+    top: calc(var(--timeline-667-unit) * 75.728516 / var(--timeline-card-fit-divisor));
+    width: calc(var(--timeline-667-unit) * 124 / var(--timeline-card-fit-divisor));
+    height: auto;
+    font-size: calc(12px / var(--timeline-card-fit-divisor));
+    line-height: calc(18px / var(--timeline-card-fit-divisor));
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
+  }
+  @supports (text-box-trim: trim-both) and (text-box-edge: cap alphabetic) {
+    .wish-box-timeline [data-timeline-card-title] { overflow: clip visible; }
+  }
+  .wish-box-timeline [data-timeline-card-date] { display: none; }
 
-    .wish-box-timeline [data-timeline-path] {
-      width: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-content-width) + var(--timeline-mobile-end-padding))) !important;
-      height: calc(var(--timeline-mobile-unit) * 308) !important;
-    }
-
-    .wish-box-timeline [data-timeline-vine] {
-      top: calc(var(--timeline-mobile-unit) * 68) !important;
-      height: calc(var(--timeline-mobile-unit) * 156) !important;
-      background-size: calc(var(--timeline-mobile-unit) * 468) calc(var(--timeline-mobile-unit) * 156) !important;
-    }
-
-    .wish-box-timeline [data-timeline-activity-group] {
-      right: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-end-padding)) !important;
-      width: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-content-width)) !important;
-    }
-
-    .wish-box-timeline [data-timeline-card] {
-      left: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-slot) * 120) !important;
-      top: 0 !important;
-      transform: scale(var(--timeline-mobile-card-scale));
-      transform-origin: top left;
-    }
-
-    .wish-box-timeline [data-timeline-direction="down"] [data-timeline-card] { top: calc(var(--timeline-mobile-unit) * 163) !important; }
-
-    .wish-box-timeline [data-timeline-card-visual] > .truncate {
-      left: calc(var(--timeline-mobile-unit) * 16 / var(--timeline-mobile-card-scale)) !important;
-      top: calc(var(--timeline-mobile-unit) * 97 / var(--timeline-mobile-card-scale)) !important;
-      width: calc(var(--timeline-mobile-unit) * 168 / var(--timeline-mobile-card-scale)) !important;
-      height: calc(var(--timeline-mobile-unit) * 18 / var(--timeline-mobile-card-scale)) !important;
-      font-size: calc(var(--timeline-mobile-unit) * 13 / var(--timeline-mobile-card-scale)) !important;
-      line-height: calc(var(--timeline-mobile-unit) * 18 / var(--timeline-mobile-card-scale)) !important;
-    }
-
-    .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
-      left: calc(var(--timeline-mobile-unit) * 14 / var(--timeline-mobile-card-scale)) !important;
-      top: calc(var(--timeline-mobile-unit) * 112 / var(--timeline-mobile-card-scale)) !important;
-      width: calc(var(--timeline-mobile-unit) * 172 / var(--timeline-mobile-card-scale)) !important;
-      height: calc(var(--timeline-mobile-unit) * 17 / var(--timeline-mobile-card-scale)) !important;
-      font-size: calc(var(--timeline-mobile-unit) * 12 / var(--timeline-mobile-card-scale)) !important;
-      line-height: calc(var(--timeline-mobile-unit) * 17 / var(--timeline-mobile-card-scale)) !important;
-    }
-
-    @supports (text-box-trim: trim-both) and (text-box-edge: cap alphabetic) {
-      /* Figma positions the trimmed text box, not the full CSS line box. */
-      .wish-box-timeline [data-timeline-card-visual] > .truncate,
-      .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
-        height: auto !important;
-        text-box-trim: trim-both;
-        text-box-edge: cap alphabetic;
-      }
-
-      .wish-box-timeline [data-timeline-card-visual] > .truncate {
-        /* Keep horizontal ellipsis without clipping Chinese glyph overhangs. */
-        overflow: clip visible !important;
-      }
-
-      .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
-        display: block !important;
-      }
-    }
-
-    @container (max-width: 882px) {
-      .wish-box-timeline [data-timeline-card-visual] > .text-center:not(.truncate) {
-        display: none !important;
-      }
-
-      /* Keep the approved B1 center while compensating the nested Card scale. */
-      .wish-box-timeline [data-timeline-card-visual] > .truncate {
-        font-size: calc(13px / var(--timeline-mobile-card-scale)) !important;
-        line-height: calc(18px / var(--timeline-mobile-card-scale)) !important;
-        height: calc(18px / var(--timeline-mobile-card-scale)) !important;
-        top: calc((var(--timeline-mobile-unit) * 108.4 - 9px) / var(--timeline-mobile-card-scale)) !important;
-        text-box-trim: none !important;
-        white-space: nowrap !important;
-        text-overflow: ellipsis !important;
-      }
-    }
-
-    .wish-box-timeline [data-timeline-marker] {
-      left: calc(var(--timeline-mobile-unit) * var(--timeline-mobile-slot) * 120) !important;
-      top: calc(var(--timeline-mobile-unit) * 136) !important;
-      width: calc(var(--timeline-mobile-unit) * 82) !important;
-      height: calc(var(--timeline-mobile-unit) * 20) !important;
-      padding: 0 !important;
-      border-width: 0.5px !important;
-      border-radius: calc(var(--timeline-mobile-unit) * 7.967) !important;
-      font-size: calc(var(--timeline-mobile-unit) * 14) !important;
-      line-height: calc(var(--timeline-mobile-unit) * 18) !important;
-    }
-
-    .wish-box-timeline [data-timeline-marker-direction="down"] { top: calc(var(--timeline-mobile-unit) * 143) !important; }
-
-    .wish-box-timeline [data-timeline-marker] > span {
-      width: auto !important;
-      height: auto !important;
-      line-height: inherit !important;
-    }
-
-    .wish-box-timeline [data-timeline-gold-glow] {
-      left: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-slot) * 120 + 91.3)) !important;
-      top: calc(var(--timeline-mobile-unit) * 116.7) !important;
-      width: calc(var(--timeline-mobile-unit) * 17.371429) !important;
-      height: calc(var(--timeline-mobile-unit) * 52.114286) !important;
-    }
+  .wish-box-timeline [data-timeline-marker] {
+    left: calc(var(--timeline-667-unit) * var(--timeline-mobile-slot) * 86.4);
+    top: calc(var(--timeline-667-unit) * 97.92);
+    width: calc(var(--timeline-667-unit) * 59.04);
+    height: calc(var(--timeline-667-unit) * 14.4);
+    padding: 0;
+    border-width: 0.5px;
+    border-radius: calc(var(--timeline-667-unit) * 5.736);
+    font-size: calc(var(--timeline-667-unit) * 10.08);
+    line-height: calc(var(--timeline-667-unit) * 12.96);
+  }
+  .wish-box-timeline [data-timeline-marker-direction="down"] { top: calc(var(--timeline-667-unit) * 102.96); }
+  .wish-box-timeline [data-timeline-marker] > span {
+    width: auto;
+    height: auto;
+    line-height: inherit;
+  }
+  .wish-box-timeline [data-timeline-gold-glow] {
+    left: calc(var(--timeline-667-unit) * (var(--timeline-mobile-slot) * 86.4 + 65.736));
+    top: calc(var(--timeline-667-unit) * 84.024);
+    width: calc(var(--timeline-667-unit) * 12.507429);
+    height: calc(var(--timeline-667-unit) * 37.522286);
   }
 
   /* Shorten only the PC SVG stems to Figma's mobile 9px / 9.4px lengths. */
@@ -1904,14 +1852,10 @@
     line-height: 20px !important;
   }
 
-  /* Keep the existing compact page/track geometry; filters above are shared. */
+  /* Retain the existing compact header, return and navigation until D1-C. */
   @container (width < 928px) {
     .wish-box-timeline {
-      --timeline-track-layout: compact;
       --timeline-mobile-unit: var(--timeline-handset-unit, 0.72px);
-      --timeline-mobile-card-scale: var(--timeline-handset-card-scale, 1.184322);
-      --timeline-667-unit: calc(var(--timeline-667-scale, 1) * 1px);
-      --timeline-card-fit: var(--timeline-handset-card-scale, 1.184322);
     }
 
     .wish-box-timeline [data-timeline-title-glow] { display: none; }
@@ -1931,75 +1875,6 @@
     }
     .wish-box-timeline [data-timeline-title-ornament="left"] { left: calc(50% - 145.5px); }
     .wish-box-timeline [data-timeline-title-ornament="right"] { left: calc(50% + 80.5px); }
-
-    .wish-box-timeline [data-timeline-viewport] {
-      left: 24px !important;
-      top: 82px !important;
-      width: calc(100% - 48px) !important;
-      height: calc(100% - 95px) !important;
-    }
-    .wish-box-timeline [data-timeline-path] {
-      top: 24px;
-      width: calc(var(--timeline-667-unit) * (max(0, var(--timeline-record-count) - 1) * 86.4 + min(1, var(--timeline-record-count)) * 158.4));
-      height: calc(100% - 24px);
-    }
-    .wish-box-timeline [data-timeline-activity-group] {
-      right: calc(var(--timeline-667-unit) * min(1, var(--timeline-record-count)) * 14.4);
-      width: calc(var(--timeline-667-unit) * (max(0, var(--timeline-record-count) - 1) * 86.4 + min(1, var(--timeline-record-count)) * 144));
-    }
-    .wish-box-timeline [data-timeline-vine] {
-      top: calc(var(--timeline-667-unit) * 48.96);
-      height: calc(var(--timeline-667-unit) * 112.32);
-      background-size: calc(var(--timeline-667-unit) * 336.96) calc(var(--timeline-667-unit) * 112.32);
-    }
-    .wish-box-timeline [data-timeline-card] {
-      left: calc(var(--timeline-667-unit) * var(--timeline-mobile-slot) * 86.4);
-      top: 0;
-      /* Fit the shared 350x238 prototype once, using the measured Scene width. */
-      transform: scale(var(--timeline-card-fit));
-      transform-origin: top left;
-    }
-    .wish-box-timeline [data-timeline-direction="down"] [data-timeline-card] {
-      top: calc(var(--timeline-667-unit) * 115.826172);
-    }
-    .wish-box-timeline [data-timeline-card-title] {
-      left: calc(var(--timeline-667-unit) * 10 / var(--timeline-card-fit));
-      top: calc(var(--timeline-667-unit) * 75.728516 / var(--timeline-card-fit));
-      width: calc(var(--timeline-667-unit) * 124 / var(--timeline-card-fit));
-      height: auto;
-      font-size: calc(12px / var(--timeline-card-fit));
-      line-height: calc(18px / var(--timeline-card-fit));
-      text-box-trim: trim-both;
-      text-box-edge: cap alphabetic;
-    }
-    @supports (text-box-trim: trim-both) and (text-box-edge: cap alphabetic) {
-      .wish-box-timeline [data-timeline-card-title] { overflow: clip visible; }
-    }
-    .wish-box-timeline [data-timeline-card-date] { display: none; }
-
-    .wish-box-timeline [data-timeline-marker] {
-      left: calc(var(--timeline-667-unit) * var(--timeline-mobile-slot) * 86.4);
-      top: calc(var(--timeline-667-unit) * 97.92);
-      width: calc(var(--timeline-667-unit) * 59.04);
-      height: calc(var(--timeline-667-unit) * 14.4);
-      padding: 0;
-      border-width: 0.5px;
-      border-radius: calc(var(--timeline-667-unit) * 5.736);
-      font-size: calc(var(--timeline-667-unit) * 10.08);
-      line-height: calc(var(--timeline-667-unit) * 12.96);
-    }
-    .wish-box-timeline [data-timeline-marker-direction="down"] { top: calc(var(--timeline-667-unit) * 102.96); }
-    .wish-box-timeline [data-timeline-marker] > span {
-      width: auto;
-      height: auto;
-      line-height: inherit;
-    }
-    .wish-box-timeline [data-timeline-gold-glow] {
-      left: calc(var(--timeline-667-unit) * (var(--timeline-mobile-slot) * 86.4 + 65.736));
-      top: calc(var(--timeline-667-unit) * 84.024);
-      width: calc(var(--timeline-667-unit) * 12.507429);
-      height: calc(var(--timeline-667-unit) * 37.522286);
-    }
 
     .wish-box-timeline [data-timeline-navigation] {
       left: 24px;
