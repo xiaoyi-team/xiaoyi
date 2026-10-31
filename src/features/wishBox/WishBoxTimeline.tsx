@@ -14,18 +14,14 @@ import { mapSupportRecordsToTimeline } from "./timelineData";
 import {
   deriveTimelinePresentation,
   getTimelineSlotX,
-  MONTH_LABEL_HEIGHT,
   type TimelinePresentation,
   type TimelineGlowMarkerPresentation,
   type TimelineMonthLabelPresentation,
 } from "./timelinePresentation";
 
 const DRAG_THRESHOLD_PX = 5;
-const PATH_HEIGHT = 670;
 // Web safety allowance for the final card's hover; not a frozen Figma dimension.
 const PATH_END_PADDING = 32;
-const VINE_Y = 198;
-const VINE_HEIGHT = 288;
 
 const TIMELINE_KIND_OPTIONS = [
   "全部种类",
@@ -93,20 +89,13 @@ function TimelineMarker({ marker }: { marker: TimelineMonthLabelPresentation }) 
       className="pointer-events-none absolute flex items-center justify-center"
       style={{
         "--timeline-mobile-slot": marker.slotIndex,
-        left: toSceneCqw(getTimelineSlotX(marker.slotIndex)),
-        top: toSceneCqw(marker.y),
-        width: toSceneCqw(122),
-        height: toSceneCqw(MONTH_LABEL_HEIGHT),
+        "--timeline-marker-pc-left": toSceneCqw(getTimelineSlotX(marker.slotIndex)),
+        "--timeline-marker-pc-top": toSceneCqw(marker.y),
         boxSizing: "border-box",
-        padding: `${toSceneCqw(6)} ${toSceneCqw(30)}`,
-        border: `${toSceneCqw(1)} solid #F3DDB0`,
-        borderRadius: toSceneCqw(16),
         backgroundColor: "rgba(128, 106, 77, 0.88)",
         color: "#FFF4D5",
         fontFamily: '"Noto Serif SC", serif',
-        fontSize: toSceneCqw(16),
         fontWeight: 500,
-        lineHeight: toSceneCqw(24),
         letterSpacing: 0,
         textAlign: "left",
         whiteSpace: "nowrap",
@@ -115,9 +104,6 @@ function TimelineMarker({ marker }: { marker: TimelineMonthLabelPresentation }) 
       <span
         style={{
           display: "block",
-          width: toSceneCqw(60),
-          height: toSceneCqw(24),
-          lineHeight: toSceneCqw(24),
         }}
       >
         {marker.text}
@@ -139,10 +125,7 @@ function TimelineGlowMarker({ marker }: { marker: TimelineGlowMarkerPresentation
       className="pointer-events-none absolute"
       style={{
         "--timeline-mobile-slot": marker.slotIndex,
-        left: toSceneCqw(getTimelineSlotX(marker.slotIndex) + 159),
-        top: toSceneCqw(276),
-        width: toSceneCqw(32),
-        height: toSceneCqw(96),
+        "--timeline-glow-pc-left": toSceneCqw(getTimelineSlotX(marker.slotIndex) + 159),
         overflow: "visible",
       } as CSSProperties}
     >
@@ -387,7 +370,6 @@ function WishBoxTimeline({
     const updateLayout = () => {
       if (!media.matches) return;
       const bounds = scene.getBoundingClientRect();
-      const scale = bounds.width / 956;
       const title = scene.querySelector<HTMLElement>("[data-timeline-header-title]");
       const viewport = timelineViewportRef.current;
       const navigation = scene.querySelector<HTMLElement>("[data-timeline-navigation]");
@@ -395,12 +377,15 @@ function WishBoxTimeline({
       const handset = readFilterLayout() === "handset";
       if (handset) {
         // Scale the whole 667 card/vine group, reserving its 106px top and 14px hint.
-        const cardEnvelope = 115.826088 + 144 * 238 / 350;
+        const cardEnvelope = 115.826172 + 97.92;
         const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 106 - 14) / cardEnvelope));
+        scene.style.setProperty("--timeline-667-scale", `${cardScale}`);
+        // Keep the unmodified header's legacy unit; track geometry no longer reads it.
         scene.style.setProperty("--timeline-handset-unit", `${0.72 * cardScale}px`);
         scene.style.setProperty("--timeline-handset-card-scale", `${1920 * 144 * cardScale / (bounds.width * 350)}`);
         scene.dataset.timelineMobileCapacity = "handset";
       } else {
+        const scale = bounds.width / 956;
         const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
         const navTop = navigation.getBoundingClientRect().top - bounds.top;
         const viewportTop = viewport.getBoundingClientRect().top;
@@ -787,34 +772,29 @@ function WishBoxTimeline({
           data-timeline-path
           className="pointer-events-none absolute left-0 top-0"
           style={{
+            "--timeline-record-count": presentation.cards.length,
+            "--timeline-pc-path-width": toSceneCqw(presentation.pathWidth + pathEndPadding),
+            "--timeline-pc-content-width": toSceneCqw(presentation.pathWidth),
+            "--timeline-pc-end-padding": toSceneCqw(pathEndPadding),
             "--timeline-mobile-content-width": mobileContentWidth,
             "--timeline-mobile-end-padding": pathEndPadding * 200 / 350,
-            width: toSceneCqw(presentation.pathWidth + pathEndPadding),
             minWidth: presentation.cards.length > 0 || showEmpty ? "100%" : undefined,
-            height: toSceneCqw(PATH_HEIGHT),
           } as CSSProperties}
         >
           <div
             data-timeline-vine
             className="absolute left-0"
             style={{
-              top: toSceneCqw(VINE_Y),
               width: "100%",
-              height: toSceneCqw(VINE_HEIGHT),
               backgroundImage: `url(${vineTile})`,
               backgroundRepeat: "repeat-x",
               backgroundPosition: "0 0",
-              backgroundSize: "45cqw 15cqw",
             }}
           />
           <div
             data-timeline-activity-group
             inert={showingPreviousResults}
             className="absolute top-0 h-full"
-            style={{
-              right: toSceneCqw(pathEndPadding),
-              width: toSceneCqw(presentation.pathWidth),
-            }}
           >
             {presentation.cards.map((card) => (
               <div

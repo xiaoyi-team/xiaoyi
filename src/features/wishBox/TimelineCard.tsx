@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import irisCardFrame from "../../assets/wish-box/timeline-card-frame-iris.png";
 import roseCardFrame from "../../assets/wish-box/timeline-card-frame-rose.png";
 import type { ActivityReviewSelection } from "./WishBoxActivityReview";
@@ -13,13 +14,10 @@ type TimelineCardLayout = {
     width: number;
     height: number;
   };
-  title: { x: number; y: number; width: number; height: number };
-  date: { x: number; y: number; width: number; height: number };
 };
 
 const CARD_HOVER_WIDTH = 358;
 const CARD_VISUAL_HEIGHT = 225;
-const CARD_HEIGHT = 238;
 
 const TIMELINE_CARD_LAYOUTS: Record<TimelineCardVariant, TimelineCardLayout> = {
   rose: {
@@ -31,8 +29,6 @@ const TIMELINE_CARD_LAYOUTS: Record<TimelineCardVariant, TimelineCardLayout> = {
       width: 350,
       height: 225,
     },
-    title: { x: 48, y: 162, width: 272, height: 32 },
-    date: { x: 48, y: 191, width: 272, height: 24 },
   },
   iris: {
     photo: { x: 14, y: 14, width: 322, height: 151 },
@@ -43,8 +39,6 @@ const TIMELINE_CARD_LAYOUTS: Record<TimelineCardVariant, TimelineCardLayout> = {
       width: 372.131744,
       height: 261.874115,
     },
-    title: { x: 48, y: 162, width: 272, height: 32 },
-    date: { x: 48, y: 191, width: 272, height: 24 },
   },
 };
 
@@ -78,15 +72,12 @@ function TimelineCard({
     <div
       data-timeline-card={variant}
       data-timeline-slot-index={slotIndex}
+      data-timeline-card-hovered={isHovered || undefined}
       className="pointer-events-none absolute"
       style={{
-        left: slotLeft,
-        top: toSceneCqw(cardY),
-        width: toSceneCqw(isHovered ? CARD_HOVER_WIDTH : CARD_WIDTH),
-        height: toSceneCqw(CARD_HEIGHT),
-        borderRadius: toSceneCqw(8),
-        overflow: "visible",
-      }}
+        "--timeline-card-pc-left": slotLeft,
+        "--timeline-card-pc-top": toSceneCqw(cardY),
+      } as CSSProperties}
     >
       <div
         aria-hidden="true"
@@ -155,36 +146,14 @@ function TimelineCard({
           }}
         />
         <div
+          data-timeline-card-title
           className="absolute truncate text-center"
-          style={{
-            left: toSceneCqw(layout.title.x),
-            top: toSceneCqw(layout.title.y),
-            width: toSceneCqw(layout.title.width),
-            height: toSceneCqw(layout.title.height),
-            fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(20),
-            fontWeight: 600,
-            lineHeight: toSceneCqw(32),
-            letterSpacing: 0,
-            color: "#614B35",
-          }}
         >
           {activity.title}
         </div>
         <div
+          data-timeline-card-date
           className="absolute flex items-center justify-center text-center"
-          style={{
-            left: toSceneCqw(layout.date.x),
-            top: toSceneCqw(layout.date.y),
-            width: toSceneCqw(layout.date.width),
-            height: toSceneCqw(layout.date.height),
-            fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(14),
-            fontWeight: 400,
-            lineHeight: toSceneCqw(24),
-            letterSpacing: 0,
-            color: "#614B35",
-          }}
         >
           {activity.date}
         </div>
