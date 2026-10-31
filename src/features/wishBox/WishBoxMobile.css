@@ -1516,34 +1516,41 @@
     width: calc(var(--timeline-mobile-unit) * 88.714);
   }
 
+  /* One 667 filter layout for every Touch capacity; track geometry stays separate. */
   .wish-box-timeline [data-timeline-filters] {
-    --timeline-filter-layout: compact;
-    left: calc(var(--timeline-mobile-unit) * 68) !important;
-    top: var(--timeline-filter-top, calc(var(--timeline-mobile-unit) * 65)) !important;
-    width: calc(var(--timeline-mobile-unit) * 824) !important;
-    height: calc(var(--timeline-mobile-unit) * 40) !important;
-    border-width: 0.498px !important;
-    border-radius: calc(var(--timeline-mobile-unit) * 12.448) !important;
-    /* Fixed 14px labels (42/70/70) and original label gaps (5/8/8). */
-    --timeline-filter-content-width: calc(203px + max(48px, var(--timeline-mobile-unit) * 48) + 2 * max(94px, var(--timeline-mobile-unit) * 94));
-    display: flex;
+    --timeline-filter-layout: handset;
+    --timeline-filter-u: min(calc((100cqw - 270px) / 397), calc(180px / 126));
+    --timeline-filter-extra: max(0px, calc(100cqw - 270px - 397 * var(--timeline-filter-u)));
+    left: 16px !important;
+    top: 60px !important;
+    width: calc(100% - 32px) !important;
+    height: 34px !important;
+    display: grid;
     align-items: center;
-    padding-inline: max(12px, min(var(--timeline-mobile-unit) * 28, (var(--timeline-mobile-unit) * 824 - var(--timeline-filter-content-width) - 28px) / 2));
+    grid-template-columns:
+      36px 2px calc(126 * var(--timeline-filter-u)) calc(25px + var(--timeline-filter-extra) / 2)
+      60px 3px calc(126 * var(--timeline-filter-u)) calc(22px + var(--timeline-filter-extra) / 2)
+      60px 3px calc(145 * var(--timeline-filter-u));
+    padding: 0 13px 0 14px;
+    border: 0 !important;
+    border-radius: 12.448px !important;
+    box-shadow: inset 0 0 0 0.498px rgb(255 247 222 / 70%);
   }
 
   .wish-box-timeline [data-timeline-filter-label] {
     position: static;
     flex-shrink: 0;
+    order: 0;
+    margin: 0;
     width: auto !important;
-    height: 20px !important;
-    font-size: 14px !important;
-    line-height: 20px !important;
+    height: 18px !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
   }
 
-  .wish-box-timeline [data-timeline-filter-label="year"] { order: 1; margin-right: 5px; }
-  .wish-box-timeline [data-timeline-filter-label="kind"] { order: 4; margin-right: 8px; }
-  .wish-box-timeline [data-timeline-filter-label="form"] { order: 7; margin-right: 8px; }
-
+  .wish-box-timeline [data-timeline-filter-label="year"] { grid-area: 1 / 1; }
+  .wish-box-timeline [data-timeline-filter-label="kind"] { grid-area: 1 / 5; }
+  .wish-box-timeline [data-timeline-filter-label="form"] { grid-area: 1 / 9; }
   .wish-box-timeline [data-timeline-filter-pill] { display: none; }
 
   .wish-box-timeline [data-timeline-dropdown-trigger] {
@@ -1551,23 +1558,22 @@
     position: relative;
     left: auto !important;
     top: auto !important;
-    flex-shrink: 0;
-    width: max(94px, var(--timeline-mobile-unit) * 94) !important;
-    height: calc(var(--timeline-mobile-unit) * 28) !important;
+    order: 0;
+    width: 100% !important;
+    height: 28px !important;
     border: 0 !important;
     border-radius: 12px !important;
     background: transparent !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     line-height: 20px !important;
     isolation: isolate;
     overflow: visible;
   }
 
-  .wish-box-timeline [data-timeline-dropdown-trigger="year"] { order: 2; width: max(48px, var(--timeline-mobile-unit) * 48) !important; }
-  .wish-box-timeline [data-timeline-dropdown-trigger="kind"] { order: 5; }
-  .wish-box-timeline [data-timeline-dropdown-trigger="form"] { order: 8; }
+  .wish-box-timeline [data-timeline-dropdown-trigger="year"] { grid-area: 1 / 3; }
+  .wish-box-timeline [data-timeline-dropdown-trigger="kind"] { grid-area: 1 / 7; }
+  .wish-box-timeline [data-timeline-dropdown-trigger="form"] { grid-area: 1 / 11; }
 
-  /* Visible 28s pill; the same button owns the separately constrained hit area. */
   .wish-box-timeline [data-timeline-dropdown-trigger]::before {
     content: "";
     position: absolute;
@@ -1575,46 +1581,34 @@
     inset: 0;
     box-sizing: border-box;
     border: 0.498px solid #C5B79E;
-    border-radius: calc(var(--timeline-mobile-unit) * 10.954);
+    border-radius: 10.954px;
     background: rgb(255 249 237 / 70%);
   }
 
-  .wish-box-timeline [data-timeline-dropdown-trigger]::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: calc((100% - var(--timeline-filter-hit-height, 28px)) / 2 + var(--timeline-filter-hit-offset, 0px));
-    width: 100%;
-    height: var(--timeline-filter-hit-height, 28px);
-    background: transparent;
-  }
-
-  /* Keep the closed target; yield its lower extension to an open menu. */
-  .wish-box-timeline [data-timeline-dropdown-trigger][aria-expanded="true"]::after {
-    bottom: 0;
-    height: auto;
-    max-height: var(--timeline-filter-hit-height, 28px);
-  }
+  /* The 667 design uses the visible 28px target without a transparent extension. */
+  .wish-box-timeline [data-timeline-dropdown-trigger]::after { display: none; }
+  .wish-box-timeline [data-timeline-filter-value] { display: none; }
+  .wish-box-timeline [data-timeline-handset-value] { display: inline; }
 
   .wish-box-timeline [data-timeline-filter-separator] {
     position: relative;
     left: auto !important;
     top: auto !important;
-    flex: 1;
-    min-width: 12px;
+    order: 0;
+    min-width: 0;
     width: auto !important;
-    height: calc(var(--timeline-mobile-unit) * 22) !important;
+    height: 20px !important;
     background: transparent !important;
   }
 
-  .wish-box-timeline [data-timeline-filter-separator="year"] { order: 3; }
-  .wish-box-timeline [data-timeline-filter-separator="form"] { order: 6; }
+  .wish-box-timeline [data-timeline-filter-separator="year"] { grid-area: 1 / 4; }
+  .wish-box-timeline [data-timeline-filter-separator="form"] { grid-area: 1 / 8; }
 
   .wish-box-timeline [data-timeline-filter-separator]::before {
     content: "";
     position: absolute;
     left: 50%;
-    width: 1px;
+    width: 0.7px;
     height: 100%;
     background: #A89272;
   }
@@ -1624,8 +1618,8 @@
     top: var(--timeline-menu-top) !important;
     display: flex;
     flex-direction: column;
-    row-gap: 1px;
-    width: 160px !important;
+    row-gap: 0;
+    width: 180px !important;
     height: auto !important;
     max-height: var(--timeline-menu-max-height);
     padding: 4px 0;
@@ -1647,90 +1641,21 @@
     inset: auto !important;
     flex-shrink: 0;
     width: 100% !important;
-    height: 44px !important;
+    height: 40px !important;
     border: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
     color: #614C37 !important;
     font-family: "Noto Serif SC", serif !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 500 !important;
-    line-height: 22px;
+    line-height: 20px;
+    overflow: hidden;
   }
 
-  .wish-box-timeline [data-timeline-filter-menu] > button:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 0;
-    height: 0.5px;
-    background: rgb(191 158 102 / 25%);
-    pointer-events: none;
-  }
-
+  .wish-box-timeline [data-timeline-filter-menu="kind"] > button { height: 38px !important; }
+  .wish-box-timeline [data-timeline-filter-menu] > button::after { display: none; }
   .wish-box-timeline [data-timeline-filter-menu] > button[aria-pressed="true"] { background: #F3EDE1 !important; }
-
-  /* Existing Scene container, not the 824s filter bar. Recheck capacity if options
-     or 14px text change: current minimum is ~926.4px; 928 keeps rounding room. */
-  @container (min-width: 928px) {
-    .wish-box-timeline [data-timeline-filters] {
-      --timeline-filter-layout: expanded;
-      padding-left: max(12px, calc(var(--timeline-mobile-unit) * 28 - 1px));
-      padding-right: max(12px, calc(var(--timeline-mobile-unit) * 21 - 1px));
-    }
-
-    .wish-box-timeline [data-timeline-dropdown-trigger="year"],
-    .wish-box-timeline [data-timeline-dropdown-trigger="form"] {
-      display: none;
-    }
-
-    .wish-box-timeline [data-timeline-filter-pill] {
-      display: flex;
-      position: relative;
-      left: auto !important;
-      top: auto !important;
-      flex-shrink: 0;
-      width: max(48px, var(--timeline-mobile-unit) * 48) !important;
-      height: calc(var(--timeline-mobile-unit) * 28) !important;
-      margin-right: 4px;
-      border: 0 !important;
-      border-radius: 0 !important;
-      background: transparent !important;
-      font-size: 14px !important;
-      line-height: 20px !important;
-      isolation: isolate;
-      overflow: visible;
-    }
-
-    .wish-box-timeline [data-timeline-filter-field="year"] { order: 2; }
-    .wish-box-timeline [data-timeline-filter-field="form"] { order: 8; }
-    .wish-box-timeline [data-timeline-filter-last] { margin-right: 0; }
-    .wish-box-timeline [data-timeline-filter-wide] { width: max(70px, var(--timeline-mobile-unit) * 70) !important; }
-
-    .wish-box-timeline [data-timeline-filter-pill]::before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: 0;
-      box-sizing: border-box;
-      border: 0.498px solid rgb(181 165 139 / 65%);
-      border-radius: calc(var(--timeline-mobile-unit) * 11.95);
-      background: #F3EDE1;
-    }
-
-    .wish-box-timeline [data-timeline-filter-pill][aria-pressed="true"]::before { background: #927A54; }
-
-    .wish-box-timeline [data-timeline-filter-pill]::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: calc((100% - var(--timeline-filter-hit-height)) / 2 + var(--timeline-filter-hit-offset));
-      width: 100%;
-      height: var(--timeline-filter-hit-height);
-      background: transparent;
-    }
-  }
 
   .wish-box-timeline [data-timeline-viewport] {
     left: calc(var(--timeline-mobile-unit) * 64) !important;
@@ -1785,6 +1710,8 @@
 
   /* Keep the legacy wide track isolated from the native 667 geometry below. */
   @container (min-width: 928px) {
+    .wish-box-timeline { --timeline-track-layout: wide; }
+
     .wish-box-timeline [data-timeline-path] {
       width: calc(var(--timeline-mobile-unit) * (var(--timeline-mobile-content-width) + var(--timeline-mobile-end-padding))) !important;
       height: calc(var(--timeline-mobile-unit) * 308) !important;
@@ -1977,10 +1904,10 @@
     line-height: 20px !important;
   }
 
-  /* The existing compact Scene branch now uses the 667x375 design. The 928px
-     expanded branch above retains the accepted 956 layout and hit targets. */
+  /* Keep the existing compact page/track geometry; filters above are shared. */
   @container (width < 928px) {
     .wish-box-timeline {
+      --timeline-track-layout: compact;
       --timeline-mobile-unit: var(--timeline-handset-unit, 0.72px);
       --timeline-mobile-card-scale: var(--timeline-handset-card-scale, 1.184322);
       --timeline-667-unit: calc(var(--timeline-667-scale, 1) * 1px);
@@ -2004,69 +1931,6 @@
     }
     .wish-box-timeline [data-timeline-title-ornament="left"] { left: calc(50% - 145.5px); }
     .wish-box-timeline [data-timeline-title-ornament="right"] { left: calc(50% + 80.5px); }
-
-    .wish-box-timeline [data-timeline-filters] {
-      --timeline-filter-layout: handset;
-      left: 16px !important;
-      top: 60px !important;
-      width: calc(100% - 32px) !important;
-      height: 34px !important;
-      display: grid;
-      grid-template-columns: 36px 2px minmax(0, 126fr) 25px 60px 3px minmax(0, 126fr) 22px 60px 3px minmax(0, 145fr);
-      padding: 0 13px 0 14px;
-      border: 0 !important;
-      border-radius: 12.448px !important;
-      box-shadow: inset 0 0 0 0.498px rgb(255 247 222 / 70%);
-    }
-
-    .wish-box-timeline [data-timeline-filter-label] {
-      order: 0;
-      margin: 0;
-      height: 18px !important;
-      font-size: 12px !important;
-      line-height: 18px !important;
-    }
-    .wish-box-timeline [data-timeline-filter-label="year"] { grid-area: 1 / 1; }
-    .wish-box-timeline [data-timeline-filter-label="kind"] { grid-area: 1 / 5; }
-    .wish-box-timeline [data-timeline-filter-label="form"] { grid-area: 1 / 9; }
-
-    .wish-box-timeline [data-timeline-dropdown-trigger] {
-      order: 0;
-      width: 100% !important;
-      height: 28px !important;
-      font-size: 13px !important;
-      line-height: 20px !important;
-    }
-    .wish-box-timeline [data-timeline-dropdown-trigger="year"] { grid-area: 1 / 3; }
-    .wish-box-timeline [data-timeline-dropdown-trigger="kind"] { grid-area: 1 / 7; }
-    .wish-box-timeline [data-timeline-dropdown-trigger="form"] { grid-area: 1 / 11; }
-    .wish-box-timeline [data-timeline-dropdown-trigger]::before { border-radius: 10.954px; }
-    /* The new design uses the visible 28px target, without the old 44px extension. */
-    .wish-box-timeline [data-timeline-dropdown-trigger]::after { display: none; }
-    .wish-box-timeline [data-timeline-filter-value] { display: none; }
-    .wish-box-timeline [data-timeline-handset-value] { display: inline; }
-
-    .wish-box-timeline [data-timeline-filter-separator] {
-      order: 0;
-      min-width: 0;
-      height: 20px !important;
-    }
-    .wish-box-timeline [data-timeline-filter-separator="year"] { grid-area: 1 / 4; }
-    .wish-box-timeline [data-timeline-filter-separator="form"] { grid-area: 1 / 8; }
-    .wish-box-timeline [data-timeline-filter-separator]::before { width: 0.7px; }
-
-    .wish-box-timeline [data-timeline-filter-menu] {
-      row-gap: 0;
-      width: 180px !important;
-    }
-    .wish-box-timeline [data-timeline-filter-menu] > button {
-      height: 40px !important;
-      font-size: 13px !important;
-      line-height: 20px;
-      overflow: hidden;
-    }
-    .wish-box-timeline [data-timeline-filter-menu="kind"] > button { height: 38px !important; }
-    .wish-box-timeline [data-timeline-filter-menu] > button::after { display: none; }
 
     .wish-box-timeline [data-timeline-viewport] {
       left: 24px !important;

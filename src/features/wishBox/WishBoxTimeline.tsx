@@ -366,6 +366,7 @@ function WishBoxTimeline({
     const readFilterLayout = () => media.matches && filterBar
       ? getComputedStyle(filterBar).getPropertyValue("--timeline-filter-layout").trim()
       : "desktop";
+    const readTrackLayout = () => getComputedStyle(scene).getPropertyValue("--timeline-track-layout").trim();
     if (filterLayoutRef.current === null) filterLayoutRef.current = readFilterLayout();
     const updateLayout = () => {
       if (!media.matches) return;
@@ -374,8 +375,8 @@ function WishBoxTimeline({
       const viewport = timelineViewportRef.current;
       const navigation = scene.querySelector<HTMLElement>("[data-timeline-navigation]");
       if (!title || !viewport || !navigation) return;
-      const handset = readFilterLayout() === "handset";
-      if (handset) {
+      const compactTrack = readTrackLayout() === "compact";
+      if (compactTrack) {
         // Scale the whole 667 card/vine group, reserving its 106px top and 14px hint.
         const cardEnvelope = 115.826172 + 97.92;
         const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 106 - 14) / cardEnvelope));
@@ -385,6 +386,7 @@ function WishBoxTimeline({
         scene.style.setProperty("--timeline-handset-card-scale", `${1920 * 144 * cardScale / (bounds.width * 350)}`);
         scene.dataset.timelineMobileCapacity = "handset";
       } else {
+        // Legacy vertical reservations still serve the track until D1-B.
         const scale = bounds.width / 956;
         const titleBottom = title.getBoundingClientRect().bottom - bounds.top;
         const navTop = navigation.getBoundingClientRect().top - bounds.top;
@@ -430,31 +432,22 @@ function WishBoxTimeline({
         scene.dataset.timelineMobileCapacity = capacity;
       }
       if (openMenu) {
+        const handsetFilters = readFilterLayout() === "handset";
         const owner = filterButtonRefs.current[openMenu];
         const trigger = owner?.getClientRects().length ? owner.getBoundingClientRect() : null;
         const paper = scene.querySelector("[data-timeline-filters]")?.getBoundingClientRect();
         if (trigger && paper) {
           const border = scene.querySelector<HTMLElement>("[data-timeline-filters]")!.clientLeft;
-          const menuWidth = handset ? 180 : 160;
-          const menuLeft = handset && openMenu === "form" ? trigger.right - menuWidth + 2 : trigger.left;
-          const menuTop = trigger.bottom + (handset ? 3 : 1);
+          const menuWidth = handsetFilters ? 180 : 160;
+          const menuLeft = handsetFilters && openMenu === "form" ? trigger.right - menuWidth + 2 : trigger.left;
+          const menuTop = trigger.bottom + (handsetFilters ? 3 : 1);
           scene.style.setProperty("--timeline-menu-left", `${Math.max(bounds.left + 12, Math.min(menuLeft, bounds.right - menuWidth - 12)) - paper.left - border}px`);
           scene.style.setProperty("--timeline-menu-top", `${menuTop - paper.top - border}px`);
-          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - menuTop - (handset ? 7 : 12))}px`);
+          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - menuTop - (handsetFilters ? 7 : 12))}px`);
         }
       }
     };
-    const handleModeChange = () => {
-      setOpenMenu(null);
-      updateLayout();
-    };
-    updateLayout();
-    if (openMenu && menuEntryRef.current) {
-      const options = scene.querySelectorAll<HTMLButtonElement>(`#timeline-${openMenu}-options > button`);
-      options[menuEntryRef.current === "first" ? 0 : options.length - 1]?.focus();
-      menuEntryRef.current = null;
-    }
-    const observer = new ResizeObserver(() => {
+    const syncFilterLayout = () => {
       const layout = readFilterLayout();
       if (filterLayoutRef.current !== layout) {
         filterLayoutRef.current = layout;
@@ -474,6 +467,20 @@ function WishBoxTimeline({
           target?.focus({ preventScroll: true });
         }
       }
+    };
+    const handleModeChange = () => {
+      syncFilterLayout();
+      updateLayout();
+    };
+    syncFilterLayout();
+    updateLayout();
+    if (openMenu && menuEntryRef.current) {
+      const options = scene.querySelectorAll<HTMLButtonElement>(`#timeline-${openMenu}-options > button`);
+      options[menuEntryRef.current === "first" ? 0 : options.length - 1]?.focus();
+      menuEntryRef.current = null;
+    }
+    const observer = new ResizeObserver(() => {
+      syncFilterLayout();
       updateLayout();
     });
     observer.observe(scene);
