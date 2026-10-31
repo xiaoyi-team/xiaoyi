@@ -6,6 +6,7 @@ import gardenBackground from "../../assets/wish-box/timeline-garden-background.p
 import titleOrnamentLeft from "../../assets/wish-box/timeline-title-ornament-left.png";
 import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-right.png";
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
+import { HttpError } from "../../services/request";
 import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import TimelineCard from "./TimelineCard";
 import WishBoxLoading from "./WishBoxLoading";
@@ -22,6 +23,7 @@ import {
 const DRAG_THRESHOLD_PX = 5;
 // Web safety allowance for the final card's hover; not a frozen Figma dimension.
 const PATH_END_PADDING = 32;
+const SILENT_REFRESH_HTTP_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
 
 const TIMELINE_KIND_OPTIONS = [
   "全部种类",
@@ -64,6 +66,11 @@ type TimelineMappingResult =
   | { status: "pending" }
   | { status: "success"; presentation: TimelinePresentation }
   | { status: "error"; error: unknown };
+
+type FeedbackIntent = {
+  filterKey: string;
+  source: "blocked" | "retry";
+} | null;
 
 type TimelinePointerDrag = {
   pointerId: number;
@@ -301,6 +308,7 @@ function WishBoxTimeline({
   const settledScrollIntentIdRef = useRef(0);
   const { year: selectedYear, kind: selectedKind, form: selectedForm } = filters;
   const [openMenu, setOpenMenu] = useState<keyof TimelineFilters | null>(null);
+  const [feedbackIntent, setFeedbackIntent] = useState<FeedbackIntent>(null);
   const filterKey = JSON.stringify([selectedYear, selectedKind, selectedForm]);
   const query = useSupportRecords({
     plate: "timeline",
@@ -329,13 +337,35 @@ function WishBoxTimeline({
   const presentation = currentPresentation ?? previousPresentation;
   const showingPreviousResults = currentPresentation === null && previousPresentation !== null;
   const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
+  const hasCurrentData = currentPresentation !== null;
   const hasMappingError = mappingResult.status === "error";
   const hasError = hasMappingError || query.isError;
-  const isInitialError = hasError && presentation === null;
+  const feedbackRecovered = hasCurrentData && query.isSuccess && !query.isFetching;
+  const activeFeedbackIntent = feedbackIntent?.filterKey === filterKey && !feedbackRecovered
+    ? feedbackIntent : null;
+
+  // Keep only local interaction intent. Query owns the request lifecycle and data.
+  if (feedbackIntent && (feedbackIntent.filterKey !== filterKey || feedbackRecovered)) {
+    setFeedbackIntent(null);
+  } else if (!hasCurrentData && hasError && feedbackIntent === null) {
+    setFeedbackIntent({ filterKey, source: "blocked" });
+  }
+
+  const explicitRetry = activeFeedbackIntent?.source === "retry";
+  const silentRefreshError = hasCurrentData && query.isError && !explicitRetry
+    && query.error instanceof HttpError && SILENT_REFRESH_HTTP_STATUSES.has(query.error.status);
+  const blockingFeedback = !hasCurrentData && (hasError || activeFeedbackIntent !== null);
+  const lightweightFeedback = hasCurrentData
+    && (explicitRetry || (query.isError && !silentRefreshError));
+  const showActivityGroup = presentation !== null && !blockingFeedback;
   const showCenterLoading =
-    query.isLoading && presentation === null && !hasError;
-  const showCornerLoading = showingPreviousResults && query.isFetching;
-  const showEmpty = query.isSuccess && currentPresentation?.cards.length === 0;
+    query.isLoading && presentation === null && !hasError && !blockingFeedback;
+  const showCornerLoading = showingPreviousResults && query.isFetching && !blockingFeedback;
+  const showEmpty = currentPresentation?.cards.length === 0 && !blockingFeedback;
+  const showSwipeTip = !blockingFeedback;
+  const showQueryFeedback = blockingFeedback || lightweightFeedback
+    || (!showCenterLoading && query.isPending && !showCornerLoading);
+  const feedbackMode = blockingFeedback ? "blocking" : lightweightFeedback ? "light" : "pending";
   const hasActiveFilters = selectedYear !== "全部" || selectedKind !== "全部种类" || selectedForm !== "全部";
 
   const cancelPendingScrollIntent = () => {
@@ -585,7 +615,7 @@ function WishBoxTimeline({
     if (
       !scrollIntent || scrollIntent.filterKey !== filterKey ||
       scrollIntent.id <= settledScrollIntentIdRef.current ||
-      !query.isSuccess || mappingResult.status !== "success"
+      currentPresentation === null || blockingFeedback
     ) return;
 
     const viewport = timelineViewportRef.current;
@@ -593,7 +623,7 @@ function WishBoxTimeline({
 
     // Register before acknowledging; Strict Mode or stale props cannot replay this intent.
     settledScrollIntentIdRef.current = scrollIntent.id;
-    if (mappingResult.presentation.cards.length > 0) {
+    if (currentPresentation.cards.length > 0) {
       const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
       viewport.scrollLeft = scrollIntent.kind === "latest"
         ? maxScrollLeft
@@ -601,7 +631,7 @@ function WishBoxTimeline({
     }
     onScrollSnapshot({ filterKey, scrollLeft: Math.max(0, viewport.scrollLeft) });
     onScrollIntentSettled(scrollIntent.id);
-  }, [scrollIntent, filterKey, query.isSuccess, mappingResult, onScrollSnapshot, onScrollIntentSettled]);
+  }, [scrollIntent, filterKey, currentPresentation, blockingFeedback, onScrollSnapshot, onScrollIntentSettled]);
 
   useEffect(() => {
     const viewport = timelineViewportRef.current;
@@ -703,7 +733,9 @@ function WishBoxTimeline({
           }
         }}
         onScroll={(event) => {
-          if (currentPresentation) {
+          const pendingRestore = scrollIntent?.filterKey === filterKey
+            && scrollIntent.id > settledScrollIntentIdRef.current;
+          if (hasCurrentData && !blockingFeedback && !pendingRestore) {
             onScrollSnapshot({ filterKey, scrollLeft: Math.max(0, event.currentTarget.scrollLeft) });
           }
         }}
@@ -735,7 +767,7 @@ function WishBoxTimeline({
               backgroundPosition: "0 0",
             }}
           />
-          <div
+          {showActivityGroup ? <div
             data-timeline-activity-group
             inert={showingPreviousResults}
             className="absolute top-0 h-full"
@@ -767,7 +799,7 @@ function WishBoxTimeline({
             {presentation.glowMarkers.map((marker) => (
               <TimelineGlowMarker key={marker.recordId} marker={marker} />
             ))}
-          </div>
+          </div> : null}
         </div> : null}
         {showEmpty ? (
           <div
@@ -819,46 +851,44 @@ function WishBoxTimeline({
       {showCornerLoading ? (
         <WishBoxLoading variant="corner" className="z-30" />
       ) : null}
-      {!showCenterLoading && (hasError || (query.isPending && !showCornerLoading)) ? (
+      {showQueryFeedback ? (
         <div
-          role={hasError ? "alert" : "status"}
+          role={blockingFeedback || lightweightFeedback ? "alert" : "status"}
+          aria-busy={query.isFetching}
           data-timeline-query-status
-          data-timeline-retained-error={hasError && presentation !== null ? "" : undefined}
+          data-timeline-feedback={feedbackMode}
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
           style={{
             left: "5.2604167%",
-            top: presentation ? "21.6666667%" : "41.6666667%",
+            top: blockingFeedback || presentation === null ? "41.6666667%" : "21.6666667%",
             maxWidth: "91.6666667%",
-            fontSize: isInitialError ? `max(14px, ${toSceneCqw(16)})` : toSceneCqw(presentation ? 12 : 16),
-            lineHeight: isInitialError ? `max(20px, ${toSceneCqw(24)})` : toSceneCqw(presentation ? 18 : 24),
-            gap: isInitialError ? "12px" : undefined,
+            fontSize: blockingFeedback ? `max(14px, ${toSceneCqw(16)})` : toSceneCqw(presentation ? 12 : 16),
+            lineHeight: blockingFeedback ? `max(20px, ${toSceneCqw(24)})` : toSceneCqw(presentation ? 18 : 24),
+            gap: blockingFeedback ? "12px" : undefined,
           }}
         >
           <span>
-            {hasError
+            {blockingFeedback
               ? hasMappingError
-                ? showingPreviousResults
-                  ? "活动内容暂时无法显示，已保留此前结果，暂不可打开"
-                  : "活动内容暂时无法显示，请重试"
-                : showingPreviousResults
-                  ? "筛选结果加载失败，当前保留此前结果，暂不可打开活动。"
-                  : presentation
-                    ? "活动列表更新失败，已保留当前内容。"
-                    : "活动列表加载失败，请重试"
+                ? "活动内容暂时无法显示，请重试"
+                : "活动列表加载失败，请重试"
+              : lightweightFeedback
+                ? "活动列表更新失败，已保留当前内容。"
               : "正在加载活动…"}
           </span>
-          {hasError ? (
+          {blockingFeedback || lightweightFeedback ? (
             <button
               type="button"
               disabled={query.isFetching}
               onClick={() => {
                 backButtonRef.current?.focus({ preventScroll: true });
+                setFeedbackIntent({ filterKey, source: "retry" });
                 void query.refetch();
               }}
-              className={`shrink-0 cursor-pointer rounded border focus-visible:outline-2 disabled:cursor-wait ${isInitialError
+              className={`shrink-0 cursor-pointer rounded border focus-visible:outline-2 disabled:cursor-wait ${blockingFeedback
                 ? "border-[#C7944D] bg-[#FFF9E9] px-4 text-[#243D61] hover:bg-[#F3DDB0] focus-visible:outline-offset-2 focus-visible:outline-[#243D61]"
                 : "border-[#C5B79E] bg-transparent px-2 focus-visible:outline-[#614B35]"}`}
-              style={isInitialError ? { minWidth: "80px", minHeight: "44px" } : undefined}
+              style={blockingFeedback ? { minWidth: "80px", minHeight: "44px" } : undefined}
             >
               {query.isFetching ? "重试中…" : "重试"}
             </button>
@@ -1239,11 +1269,11 @@ function WishBoxTimeline({
         >
           {"最近的盛放  →"}
         </button>
-        <p
+        {showSwipeTip ? <p
           className="pointer-events-none absolute m-0"
         >
           {"←     左右滑动，探索更多活动     →"}
-        </p>
+        </p> : null}
       </div>
 
       <button
