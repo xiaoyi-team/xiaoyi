@@ -41,8 +41,13 @@
   }
 
   .wish-box-scene .wish-box-loading--corner {
-    right: calc(100% * 64 / 956);
-    bottom: calc(100% * 24 / 440);
+    --wish-box-loading-unit: 0.65px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .wish-box-review-visual .wish-box-loading--corner {
+    right: max(16px, calc((100% - var(--wish-box-scene-max-width, 177.7778dvh)) / 2 + 16px));
   }
 
   .wish-box-scene[data-wish-box-view="home"] {
