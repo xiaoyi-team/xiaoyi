@@ -35,22 +35,9 @@
   }
 
   .wish-box-scene .wish-box-loading--center {
-    left: calc(100% * 418 / 956);
-    top: calc(100% * 160 / 440);
-    /* Keep the pill's 152u top and 12u bottom inset as its height grows. */
-    min-height: calc(
-      164 * var(--wish-box-loading-unit) +
-      max(24px, 36 * var(--wish-box-loading-unit))
-    );
-  }
-
-  .wish-box-scene .wish-box-loading--center .wish-box-loading__pill {
-    font-size: max(14px, calc(22 * var(--wish-box-loading-unit)));
-    line-height: max(20px, calc(30 * var(--wish-box-loading-unit)));
-    left: 50%;
-    transform: translateX(-50%);
-    width: max(64px, calc(100 * var(--wish-box-loading-unit)));
-    height: max(24px, calc(36 * var(--wish-box-loading-unit)));
+    --wish-box-loading-unit: 0.625px;
+    left: calc(50% - 80 * var(--wish-box-loading-unit));
+    top: calc(50% - 100 * var(--wish-box-loading-unit));
   }
 
   .wish-box-scene .wish-box-loading--corner {
