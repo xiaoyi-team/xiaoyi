@@ -1065,20 +1065,11 @@ function WishBoxTimeline({
           aria-controls={`timeline-${field}-options`}
           className="absolute flex cursor-pointer items-center justify-center whitespace-nowrap p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#614B35]"
           style={{
-            left: toSceneCqw(703),
-            top: toSceneCqw(15),
-            width: toSceneCqw(196),
-            height: toSceneCqw(44),
             zIndex: openMenu === field ? 20 : undefined,
             boxSizing: "border-box",
-            border: `${toSceneCqw(1)} solid #C5B79E`,
-            borderRadius: toSceneCqw(22),
-            backgroundColor: "rgba(255, 249, 237, 0.7)",
             color: "#614C37",
             fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
             fontWeight: 500,
-            lineHeight: toSceneCqw(24),
             letterSpacing: 0,
           }}
         >
