@@ -1206,6 +1206,8 @@
 .wish-box-timeline [data-timeline-feedback="pending"] {
   left: 5.2604167%;
   max-width: 91.6666667%;
+  font-size: var(--timeline-pending-font-size);
+  line-height: var(--timeline-pending-line-height);
 }
 
 /* Error feedback stays outside the horizontally scrolling Viewport. */
@@ -1690,8 +1692,7 @@
   .wish-box-timeline [data-timeline-filter-menu]::-webkit-scrollbar { display: none; }
 
   .wish-box-timeline [data-timeline-filter-menu] > button {
-    position: relative;
-    inset: auto !important;
+    position: static;
     flex-shrink: 0;
     width: 100%;
     height: 40px;
@@ -1885,8 +1886,8 @@
     /* Keep the 667 placement continuous using the existing measured handset input. */
     left: calc(var(--timeline-handset-unit, 0.72px) * 64);
     max-width: calc(100% - var(--timeline-handset-unit, 0.72px) * 128);
-    font-size: 14px !important;
-    line-height: 20px !important;
+    font-size: 14px;
+    line-height: 20px;
   }
 
   .wish-box-timeline > [data-timeline-feedback="blocking"] {
