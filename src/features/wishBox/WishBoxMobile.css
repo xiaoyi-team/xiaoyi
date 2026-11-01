@@ -1522,6 +1522,7 @@
     line-height: 34px;
     white-space: nowrap;
     transform: translateX(-50%);
+    text-shadow: 0 0.4979167px 2.4895833px rgba(255, 250, 232, 0.9);
   }
 
   .wish-box-timeline [data-timeline-header-subtitle] {
@@ -1824,6 +1825,7 @@
     line-height: 14px;
     text-align: center;
     white-space: pre;
+    text-shadow: 0 0.4979167px 0.9958333px #594229;
   }
 
   .wish-box-timeline [data-timeline-return] {
