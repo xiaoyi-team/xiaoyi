@@ -6,7 +6,6 @@ import gardenBackground from "../../assets/wish-box/timeline-garden-background.p
 import titleOrnamentLeft from "../../assets/wish-box/timeline-title-ornament-left.png";
 import titleOrnamentRight from "../../assets/wish-box/timeline-title-ornament-right.png";
 import vineTile from "../../assets/wish-box/timeline-vine-tile.png";
-import { HttpError } from "../../services/request";
 import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import TimelineCard from "./TimelineCard";
 import WishBoxLoading from "./WishBoxLoading";
@@ -23,7 +22,6 @@ import {
 const DRAG_THRESHOLD_PX = 5;
 // Web safety allowance for the final card's hover; not a frozen Figma dimension.
 const PATH_END_PADDING = 32;
-const SILENT_REFRESH_HTTP_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
 
 const TIMELINE_KIND_OPTIONS = [
   "全部种类",
@@ -69,7 +67,6 @@ type TimelineMappingResult =
 
 type FeedbackIntent = {
   filterKey: string;
-  source: "blocked" | "retry";
 } | null;
 
 type TimelinePointerDrag = {
@@ -348,24 +345,19 @@ function WishBoxTimeline({
   if (feedbackIntent && (feedbackIntent.filterKey !== filterKey || feedbackRecovered)) {
     setFeedbackIntent(null);
   } else if (!hasCurrentData && hasError && feedbackIntent === null) {
-    setFeedbackIntent({ filterKey, source: "blocked" });
+    setFeedbackIntent({ filterKey });
   }
 
-  const explicitRetry = activeFeedbackIntent?.source === "retry";
-  const silentRefreshError = hasCurrentData && query.isError && !explicitRetry
-    && query.error instanceof HttpError && SILENT_REFRESH_HTTP_STATUSES.has(query.error.status);
   const blockingFeedback = !hasCurrentData && (hasError || activeFeedbackIntent !== null);
-  const lightweightFeedback = hasCurrentData
-    && (explicitRetry || (query.isError && !silentRefreshError));
   const showActivityGroup = presentation !== null && !blockingFeedback;
   const showCenterLoading =
     query.isLoading && presentation === null && !hasError && !blockingFeedback;
   const showCornerLoading = showingPreviousResults && query.isFetching && !blockingFeedback;
   const showEmpty = currentPresentation?.cards.length === 0 && !blockingFeedback;
   const showSwipeTip = !blockingFeedback;
-  const showQueryFeedback = blockingFeedback || lightweightFeedback
+  const showQueryFeedback = blockingFeedback
     || (!showCenterLoading && query.isPending && !showCornerLoading);
-  const feedbackMode = blockingFeedback ? "blocking" : lightweightFeedback ? "light" : "pending";
+  const feedbackMode = blockingFeedback ? "blocking" : "pending";
   const hasActiveFilters = selectedYear !== "全部" || selectedKind !== "全部种类" || selectedForm !== "全部";
 
   const cancelPendingScrollIntent = () => {
@@ -853,42 +845,37 @@ function WishBoxTimeline({
       ) : null}
       {showQueryFeedback ? (
         <div
-          role={blockingFeedback || lightweightFeedback ? "alert" : "status"}
+          role={blockingFeedback ? "alert" : "status"}
           aria-busy={query.isFetching}
+          inert={openMenu !== null}
           data-timeline-query-status
           data-timeline-feedback={feedbackMode}
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
-          style={{
+          style={feedbackMode === "pending" ? {
             left: "5.2604167%",
-            top: blockingFeedback || presentation === null ? "41.6666667%" : "21.6666667%",
+            top: presentation === null ? "41.6666667%" : "21.6666667%",
             maxWidth: "91.6666667%",
-            fontSize: blockingFeedback ? `max(14px, ${toSceneCqw(16)})` : toSceneCqw(presentation ? 12 : 16),
-            lineHeight: blockingFeedback ? `max(20px, ${toSceneCqw(24)})` : toSceneCqw(presentation ? 18 : 24),
-            gap: blockingFeedback ? "12px" : undefined,
-          }}
+            fontSize: toSceneCqw(presentation ? 12 : 16),
+            lineHeight: toSceneCqw(presentation ? 18 : 24),
+          } : undefined}
         >
           <span>
             {blockingFeedback
               ? hasMappingError
                 ? "活动内容暂时无法显示，请重试"
                 : "活动列表加载失败，请重试"
-              : lightweightFeedback
-                ? "活动列表更新失败，已保留当前内容。"
               : "正在加载活动…"}
           </span>
-          {blockingFeedback || lightweightFeedback ? (
+          {blockingFeedback ? (
             <button
               type="button"
               disabled={query.isFetching}
               onClick={() => {
                 backButtonRef.current?.focus({ preventScroll: true });
-                setFeedbackIntent({ filterKey, source: "retry" });
+                setFeedbackIntent({ filterKey });
                 void query.refetch();
               }}
-              className={`shrink-0 cursor-pointer rounded border focus-visible:outline-2 disabled:cursor-wait ${blockingFeedback
-                ? "border-[#C7944D] bg-[#FFF9E9] px-4 text-[#243D61] hover:bg-[#F3DDB0] focus-visible:outline-offset-2 focus-visible:outline-[#243D61]"
-                : "border-[#C5B79E] bg-transparent px-2 focus-visible:outline-[#614B35]"}`}
-              style={blockingFeedback ? { minWidth: "80px", minHeight: "44px" } : undefined}
+              className="shrink-0 cursor-pointer rounded border border-[#C7944D] bg-[#FFF9E9] px-4 text-[#243D61] hover:bg-[#F3DDB0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#243D61] disabled:cursor-wait"
             >
               {query.isFetching ? "重试中…" : "重试"}
             </button>
