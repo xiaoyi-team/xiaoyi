@@ -972,13 +972,7 @@ function WishBoxTimeline({
           }
         }}
         style={{
-          left: "9.8958333%",
-          top: "14.8148148%",
-          width: "80.7291667%",
-          height: "6.8518519%",
           boxSizing: "border-box",
-          border: `${toSceneCqw(1)} solid rgba(255, 247, 222, 0.7)`,
-          borderRadius: toSceneCqw(25),
           backgroundColor: "rgba(247, 242, 230, 0.86)",
         }}
       >
@@ -988,13 +982,9 @@ function WishBoxTimeline({
           style={{
             left: toSceneCqw(35),
             top: toSceneCqw(20),
-            width: toSceneCqw(48),
-            height: toSceneCqw(28),
             color: "#614B35",
             fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
             fontWeight: 500,
-            lineHeight: toSceneCqw(28),
             letterSpacing: 0,
           }}
         >
@@ -1035,13 +1025,6 @@ function WishBoxTimeline({
           aria-hidden="true"
           data-timeline-filter-separator="year"
           className="absolute"
-          style={{
-            left: toSceneCqw(565),
-            top: toSceneCqw(20),
-            width: toSceneCqw(1),
-            height: toSceneCqw(35),
-            backgroundColor: "#A89272",
-          }}
         />
 
         <div
@@ -1050,13 +1033,9 @@ function WishBoxTimeline({
           style={{
             left: toSceneCqw(592),
             top: toSceneCqw(20),
-            width: toSceneCqw(80),
-            height: toSceneCqw(28),
             color: "#614B35",
             fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
             fontWeight: 500,
-            lineHeight: toSceneCqw(28),
             letterSpacing: 0,
           }}
         >
@@ -1174,13 +1153,6 @@ function WishBoxTimeline({
           aria-hidden="true"
           data-timeline-filter-separator="form"
           className="absolute"
-          style={{
-            left: toSceneCqw(941),
-            top: toSceneCqw(20),
-            width: toSceneCqw(1),
-            height: toSceneCqw(35),
-            backgroundColor: "#A89272",
-          }}
         />
 
         <div
@@ -1189,13 +1161,9 @@ function WishBoxTimeline({
           style={{
             left: toSceneCqw(969),
             top: toSceneCqw(20),
-            width: toSceneCqw(80),
-            height: toSceneCqw(28),
             color: "#614B35",
             fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(16),
             fontWeight: 500,
-            lineHeight: toSceneCqw(28),
             letterSpacing: 0,
           }}
         >
