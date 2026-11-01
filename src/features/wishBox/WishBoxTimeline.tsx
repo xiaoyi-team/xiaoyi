@@ -799,14 +799,13 @@ function WishBoxTimeline({
             role="status"
             className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center"
             style={{
-              gap: "clamp(10px, 0.625cqw, 12px)",
               fontFamily: '"Noto Serif SC", serif',
               textShadow: "-1px -1px 1px #FFFAEF, 1px -1px 1px #FFFAEF, -1px 1px 1px #FFFAEF, 1px 1px 1px #FFFAEF, 0 1px 6px #FFFAEF",
             }}
           >
             <h2
               className="m-0 font-semibold text-[#465B49]"
-              style={{ marginBottom: "96px", fontSize: "clamp(24px, 1.6666667cqw, 32px)", lineHeight: 1.5 }}
+              style={{ fontSize: "clamp(24px, 1.6666667cqw, 32px)", lineHeight: 1.5 }}
             >
               这段花径还未盛放
             </h2>
@@ -825,7 +824,6 @@ function WishBoxTimeline({
                 }}
                 className="pointer-events-auto cursor-pointer rounded-full border border-[#9BA68F] bg-[#FAF8F0] px-7 py-2.5 text-[#465B49] transition-colors hover:bg-[#F0F2E9] active:bg-[#E5EADD] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#465B49] motion-reduce:transition-none"
                 style={{
-                  marginTop: "8px",
                   minWidth: "140px",
                   minHeight: "48px",
                   fontSize: "clamp(16px, 0.9375cqw, 18px)",
@@ -1097,15 +1095,8 @@ function WishBoxTimeline({
             }}
             className="absolute"
             style={{
-              left: toSceneCqw(703),
-              top: toSceneCqw(68),
-              width: toSceneCqw(200),
-              height: toSceneCqw(400),
               zIndex: 20,
               boxSizing: "border-box",
-              border: `${toSceneCqw(1)} solid #D9C299`,
-              borderRadius: toSceneCqw(12),
-              backgroundColor: "rgba(255, 249, 236, 0.97)",
             }}
           >
             {TIMELINE_FILTER_OPTIONS[openMenu].map((option, index) => (

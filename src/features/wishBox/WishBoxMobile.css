@@ -1203,59 +1203,6 @@
   }
 }
 
-/* Only the PC layout replaces the scroll hint with the existing retained-error bar. */
-@media not all and (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
-  .wish-box-timeline [data-timeline-retained-error] {
-    left: 50% !important;
-    top: auto !important;
-    bottom: max(8px, 1.25cqw);
-    width: max-content;
-    max-width: calc(100% - 28.125cqw - 24px) !important;
-    transform: translateX(-50%);
-    gap: 12px !important;
-    border-color: #c7944d;
-    color: #243d61;
-    font-size: max(14px, 0.8333333cqw) !important;
-    line-height: max(20px, 1.25cqw) !important;
-  }
-
-  .wish-box-timeline [data-timeline-retained-error] > span {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .wish-box-timeline [data-timeline-retained-error] > button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 44px;
-    padding-inline: 4px;
-    border-color: #c7944d;
-    background-color: #fff9e9;
-    color: #243d61;
-    white-space: nowrap;
-    outline-color: #243d61;
-    outline-offset: 2px;
-  }
-
-  .wish-box-timeline [data-timeline-retained-error] > button:hover {
-    background-color: #f3ddb0;
-  }
-
-  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-navigation] {
-    pointer-events: none;
-  }
-
-  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-nav] {
-    pointer-events: auto;
-  }
-
-  .wish-box-timeline:has(> [data-timeline-retained-error]) [data-timeline-navigation] > p {
-    display: none;
-  }
-}
-
 .wish-box-timeline [data-timeline-feedback="pending"] {
   left: 5.2604167%;
   max-width: 91.6666667%;
@@ -1518,6 +1465,16 @@
   line-height: 1.2500000cqw;
 }
 
+.wish-box-timeline [data-timeline-filter-menu] {
+  left: 36.6145833cqw;
+  top: 3.5416667cqw;
+  width: 10.4166667cqw;
+  height: 20.8333333cqw;
+  border: 0.0520833cqw solid #D9C299;
+  border-radius: 0.6250000cqw;
+  background-color: rgba(255, 249, 236, 0.97);
+}
+
 .wish-box-timeline [data-timeline-filter-menu] > button {
   width: 9.1666667cqw;
   height: 2.2916667cqw;
@@ -1528,6 +1485,18 @@
   font-family: "Noto Sans SC", sans-serif;
   font-size: 0.8854167cqw;
   font-weight: 400;
+}
+
+.wish-box-timeline [data-timeline-empty] {
+  gap: clamp(10px, 0.625cqw, 12px);
+}
+
+.wish-box-timeline [data-timeline-empty] > h2 {
+  margin-bottom: 96px;
+}
+
+.wish-box-timeline [data-timeline-empty] > button {
+  margin-top: 8px;
 }
 
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
@@ -1698,13 +1667,13 @@
   }
 
   .wish-box-timeline [data-timeline-filter-menu] {
-    left: var(--timeline-menu-left) !important;
-    top: var(--timeline-menu-top) !important;
+    left: var(--timeline-menu-left);
+    top: var(--timeline-menu-top);
     display: flex;
     flex-direction: column;
     row-gap: 0;
-    width: 180px !important;
-    height: auto !important;
+    width: 180px;
+    height: auto;
     max-height: var(--timeline-menu-max-height);
     padding: 4px 0;
     overflow-x: hidden;
@@ -1712,9 +1681,9 @@
     overscroll-behavior: contain;
     touch-action: pan-y;
     scrollbar-width: none;
-    border: 0 !important;
-    border-radius: 8px !important;
-    background: #FAF8F0 !important;
+    border: 0;
+    border-radius: 8px;
+    background: #FAF8F0;
     box-shadow: inset 0 0 0 0.75px #D9C299, 0 4px 12px rgb(77 56 36 / 16%);
   }
 
@@ -1758,13 +1727,13 @@
       justify-content: stretch;
       justify-items: center;
       align-items: center;
-      gap: 8px !important;
+      gap: 8px;
       padding-block: 4px;
     }
 
     .wish-box-timeline [data-timeline-empty] > h2 {
       grid-row: 1;
-      margin-bottom: 0 !important;
+      margin-bottom: 0;
     }
 
     .wish-box-timeline [data-timeline-empty] > p {
@@ -1773,7 +1742,7 @@
 
     .wish-box-timeline [data-timeline-empty] > button {
       grid-row: 4;
-      margin-top: 0 !important;
+      margin-top: 0;
     }
   }
 
