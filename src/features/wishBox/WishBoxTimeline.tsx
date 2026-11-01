@@ -1121,16 +1121,7 @@ function WishBoxTimeline({
                 style={{
                   left: toSceneCqw(12),
                   top: toSceneCqw(12 + index * 54),
-                  width: toSceneCqw(176),
-                  height: toSceneCqw(44),
                   boxSizing: "border-box",
-                  border: `${toSceneCqw(1)} solid #B7B49A`,
-                  borderRadius: toSceneCqw(22),
-                  backgroundColor: "#FAF8F0",
-                  color: "#465B49",
-                  fontFamily: '"Noto Sans SC", sans-serif',
-                  fontSize: toSceneCqw(17),
-                  fontWeight: 400,
                   whiteSpace: "nowrap",
                 }}
               >
