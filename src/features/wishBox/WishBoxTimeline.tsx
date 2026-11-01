@@ -852,9 +852,7 @@ function WishBoxTimeline({
           data-timeline-feedback={feedbackMode}
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
           style={feedbackMode === "pending" ? {
-            left: "5.2604167%",
             top: presentation === null ? "41.6666667%" : "21.6666667%",
-            maxWidth: "91.6666667%",
             fontSize: toSceneCqw(presentation ? 12 : 16),
             lineHeight: toSceneCqw(presentation ? 18 : 24),
           } : undefined}
