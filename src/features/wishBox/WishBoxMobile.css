@@ -703,6 +703,14 @@
   text-shadow: 0 0 0.1041667cqw #000000;
 }
 
+.wish-box-review-visual .wish-box-review-star {
+  left: calc(var(--review-star-x) * 100% / 1920);
+  top: calc(var(--review-star-y) * 100% / 1080);
+  width: calc(var(--review-star-size) * 100cqw / 1920);
+  height: calc(var(--review-star-size) * 100cqw / 1920);
+  z-index: 30;
+}
+
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   /* On normal mobile viewports Review's visual layer expands independently;
      the Scene remains Timeline and Viewer's existing coordinate container. */
@@ -731,7 +739,6 @@
 
   .wish-box-review-visual {
     /* Page Scene supplies cqw for both the board prototype and 667 content; the visual layer still covers the full viewport. */
-    --review-mobile-unit: calc(100cqw / 956);
     left: calc((100% - 100dvw) / 2);
     right: auto;
     width: 100dvw;
@@ -750,7 +757,7 @@
 
   .wish-box-review-visual .wish-box-review-star {
     /* The mobile information card covers the decorative star layer in Figma. */
-    z-index: 10 !important;
+    z-index: 10;
   }
 
   .wish-box-review-visual [data-activity-review-fixture] [data-activity-review-header] > p {
@@ -811,7 +818,6 @@
         minmax(0, 1fr);
     --review-content-offset: calc((100% - 100cqw) / 2);
     --review-667-unit: calc(100cqw / 667);
-    --review-667-decoration-scale: calc(956 * 375 / (667 * 440));
 
     & > [data-activity-review-header] {
       position: relative;
@@ -1001,11 +1007,11 @@
     }
 
     & > svg.wish-box-review-star {
-      /* Rebase the old centered 440-high decorative plane to the 375-high one. */
-      left: calc(var(--review-content-offset) + (var(--review-mobile-left) - var(--review-mobile-unit) * 86.888889) * var(--review-667-decoration-scale) + var(--review-667-unit) / 6) !important;
-      top: calc(var(--review-mobile-top) * var(--review-667-decoration-scale) - var(--review-667-unit) * 95.903) !important;
-      width: calc(var(--review-mobile-width) * var(--review-667-decoration-scale)) !important;
-      height: calc(var(--review-mobile-height) * var(--review-667-decoration-scale)) !important;
+      /* Map the original star coordinates into the 667 Grid plane. */
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * var(--review-star-x) * 25 / 72 + var(--review-667-unit) / 6);
+      top: calc(var(--review-667-unit) * var(--review-star-y) * 25 / 72 - var(--review-667-unit) * 95.903);
+      width: calc(var(--review-667-unit) * var(--review-star-size) * 25 / 72);
+      height: calc(var(--review-667-unit) * var(--review-star-size) * 25 / 72);
     }
 
     & > [data-activity-review-return] {

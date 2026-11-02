@@ -64,21 +64,6 @@ const ACTIVITY_PHOTO_PLACEHOLDER_COLOR = "#E8E1D7";
 const toSceneCqw = (designPixels: number) =>
   `${(designPixels / 19.2).toFixed(7)}cqw`;
 
-const sceneX = (designPixels: number) =>
-  `${((designPixels / 1920) * 100).toFixed(7)}%`;
-
-const sceneY = (designPixels: number) =>
-  `${((designPixels / 1080) * 100).toFixed(7)}%`;
-
-// Temporary legacy coordinates for background/decorative conversion only.
-// Core Touch layout uses the 667 geometry in WishBoxMobile.css.
-const mobileReviewGeometry = (x: number, y: number, width: number, height: number): CSSProperties => ({
-  "--review-mobile-left": `${x / 9.56}cqw`,
-  "--review-mobile-top": `${y / 9.56}cqw`,
-  "--review-mobile-width": `${width / 9.56}cqw`,
-  "--review-mobile-height": `${height / 9.56}cqw`,
-} as CSSProperties);
-
 // Six entries exercise the largest supported layout; this is not a business default count.
 const ACTIVITY_REVIEW_PHOTO_FIXTURE: readonly ActivityReviewPhotoSelectionFixture[] = [
   { fixtureId: "activity-review-photo-slot-1", placeholderColor: ACTIVITY_PHOTO_PLACEHOLDER_COLOR },
@@ -303,20 +288,17 @@ function IntroductionIcon() {
 }
 
 function SceneStar({ x, y, size }: { x: number; y: number; size: number }) {
-  // Figma retains these stars on a centered 782.222 × 440 decorative plane.
+  // CSS maps the original design coordinates into PC and Touch layouts.
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 20.477 20.477"
-      className="wish-box-review-mobile-geometry wish-box-review-star pointer-events-none absolute"
+      className="wish-box-review-star pointer-events-none absolute"
       style={{
-        ...mobileReviewGeometry(86.888889 + x * 11 / 27, y * 11 / 27, size * 11 / 27, size * 11 / 27),
-        left: sceneX(x),
-        top: sceneY(y),
-        width: toSceneCqw(size),
-        height: toSceneCqw(size),
-        zIndex: 30,
-      }}
+        "--review-star-x": x,
+        "--review-star-y": y,
+        "--review-star-size": size,
+      } as CSSProperties}
     >
       <path d={ACTIVITY_REVIEW_SPARKLE_PATH} fill="#DBA640" />
     </svg>
