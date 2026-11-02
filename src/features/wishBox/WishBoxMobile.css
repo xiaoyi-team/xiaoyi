@@ -1195,13 +1195,6 @@
   }
 }
 
-.wish-box-timeline [data-timeline-feedback="pending"] {
-  left: 5.2604167%;
-  max-width: 91.6666667%;
-  font-size: var(--timeline-pending-font-size);
-  line-height: var(--timeline-pending-line-height);
-}
-
 /* Error feedback stays outside the horizontally scrolling Viewport. */
 .wish-box-timeline > [data-timeline-feedback="blocking"] {
   left: 5.2604167%;
@@ -1872,14 +1865,6 @@
     line-height: 20px;
     white-space: nowrap;
     text-shadow: 0 0.6px 1.5px rgb(46 31 18 / 88%), 0 1px 4px rgb(46 31 18 / 40%);
-  }
-
-  .wish-box-timeline [data-timeline-feedback="pending"] {
-    /* Keep the 667 placement continuous using the existing measured handset input. */
-    left: calc(var(--timeline-handset-unit, 0.72px) * 64);
-    max-width: calc(100% - var(--timeline-handset-unit, 0.72px) * 128);
-    font-size: 14px;
-    line-height: 20px;
   }
 
   .wish-box-timeline > [data-timeline-feedback="blocking"] {

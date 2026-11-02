@@ -350,14 +350,13 @@ function WishBoxTimeline({
 
   const blockingFeedback = !hasCurrentData && (hasError || activeFeedbackIntent !== null);
   const showActivityGroup = presentation !== null && !blockingFeedback;
-  const showCenterLoading =
-    query.isLoading && presentation === null && !hasError && !blockingFeedback;
-  const showCornerLoading = showingPreviousResults && query.isFetching && !blockingFeedback;
+  const pendingWaiting = query.isPending && !hasError && !blockingFeedback;
+  const showCenterLoading = pendingWaiting && presentation === null;
+  const showCornerLoading = showingPreviousResults && !blockingFeedback
+    && (query.isFetching || pendingWaiting);
+  const loadingLabel = query.fetchStatus === "paused" ? "连接中" : "加载中";
   const showEmpty = currentPresentation?.cards.length === 0 && !blockingFeedback;
   const showSwipeTip = !blockingFeedback;
-  const showQueryFeedback = blockingFeedback
-    || (!showCenterLoading && query.isPending && !showCornerLoading);
-  const feedbackMode = blockingFeedback ? "blocking" : "pending";
   const hasActiveFilters = selectedYear !== "全部" || selectedKind !== "全部种类" || selectedForm !== "全部";
 
   const cancelPendingScrollIntent = () => {
@@ -394,8 +393,6 @@ function WishBoxTimeline({
       const cardFit = bounds.width > 0 ? 1920 * 144 * cardScale / (bounds.width * 350) : 0;
       scene.style.setProperty("--timeline-667-scale", `${cardScale}`);
       scene.style.setProperty("--timeline-handset-card-scale", `${cardFit}`);
-      // The existing compact header/return rules still consume this separate legacy input.
-      scene.style.setProperty("--timeline-handset-unit", `${0.72 * cardScale}px`);
       if (openMenu) {
         const handsetFilters = readFilterLayout() === "handset";
         const owner = filterButtonRefs.current[openMenu];
@@ -839,28 +836,21 @@ function WishBoxTimeline({
       </div>
 
       {showCornerLoading ? (
-        <WishBoxLoading variant="corner" className="z-30" />
+        <WishBoxLoading variant="corner" className="z-30" label={loadingLabel} />
       ) : null}
-      {showQueryFeedback ? (
+      {blockingFeedback ? (
         <div
-          role={blockingFeedback ? "alert" : "status"}
+          role="alert"
           aria-busy={query.isFetching}
           inert={openMenu !== null}
           data-timeline-query-status
-          data-timeline-feedback={feedbackMode}
+          data-timeline-feedback="blocking"
           className="absolute flex items-center gap-2 rounded border border-[#C5B79E] bg-[#F3EDE1] px-3 py-1 text-[#614B35]"
-          style={feedbackMode === "pending" ? {
-            top: presentation === null ? "41.6666667%" : "21.6666667%",
-            "--timeline-pending-font-size": toSceneCqw(presentation ? 12 : 16),
-            "--timeline-pending-line-height": toSceneCqw(presentation ? 18 : 24),
-          } as CSSProperties : undefined}
         >
           <span>
-            {blockingFeedback
-              ? hasMappingError
-                ? "活动内容暂时无法显示，请重试"
-                : "活动列表加载失败，请重试"
-              : "正在加载活动…"}
+            {hasMappingError
+              ? "活动内容暂时无法显示，请重试"
+              : "活动列表加载失败，请重试"}
           </span>
           {blockingFeedback ? (
             <button
@@ -1228,7 +1218,7 @@ function WishBoxTimeline({
         </span>
       </button>
     </div>
-    {showCenterLoading ? <WishBoxLoading variant="center" className="z-30" /> : null}
+    {showCenterLoading ? <WishBoxLoading variant="center" className="z-30" label={loadingLabel} /> : null}
     </>
   );
 }

@@ -5,13 +5,15 @@ import "./WishBoxLoading.css";
 export type WishBoxLoadingProps = {
   variant: "center" | "corner";
   className?: string;
+  label?: string;
   "aria-label"?: string;
 };
 
 export default function WishBoxLoading({
   variant,
   className,
-  "aria-label": ariaLabel = "加载中",
+  label = "加载中",
+  "aria-label": ariaLabel = label,
 }: WishBoxLoadingProps) {
   return (
     <div
@@ -46,7 +48,7 @@ export default function WishBoxLoading({
             />
           </div>
           <span className="wish-box-loading__pill" aria-hidden="true">
-            加载中
+            {label}
           </span>
         </>
       ) : (
@@ -60,7 +62,7 @@ export default function WishBoxLoading({
             draggable={false}
           />
           <span className="wish-box-loading__corner-label" aria-hidden="true">
-            加载中
+            {label}
           </span>
           <div className="wish-box-loading__dots" aria-hidden="true">
             <span className="wish-box-loading__dot wish-box-loading__dot--first" />
