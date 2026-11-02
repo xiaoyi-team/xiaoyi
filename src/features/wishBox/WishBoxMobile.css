@@ -507,6 +507,84 @@
   }
 }
 
+.wish-box-review-visual [data-activity-review-header] {
+  left: 25.9895833%;
+  top: 8.7962963%;
+  width: 47.2916667%;
+  height: 16.2962963%;
+  border: 0.0781250cqw solid #C7944D;
+  border-radius: 1.7708333cqw;
+}
+
+.wish-box-review-visual [data-activity-review-title] {
+  left: 7.6562500cqw;
+  top: 0.8854167cqw;
+  width: 31.9791667cqw;
+  height: 3.6458333cqw;
+  font-size: 1.8750000cqw;
+  line-height: 2.7083333cqw;
+  white-space: nowrap;
+}
+
+.wish-box-review-visual [data-activity-review-title="success"] {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wish-box-review-visual [data-activity-review-title="success"] > span {
+  max-width: 31.9791667cqw;
+}
+
+.wish-box-review-visual [data-activity-review-info-card] {
+  left: 11.9791667%;
+  top: 28.7962963%;
+  width: 19.7395833cqw;
+  height: 19.3229167cqw;
+  border: 0.0520833cqw solid #C7944D;
+  border-radius: 0.9375000cqw;
+  background-color: #FEF8EE;
+}
+
+.wish-box-review-visual [data-review-info-label] {
+  width: 6.4062500cqw;
+  height: 1.6666667cqw;
+  gap: 0.4166667cqw;
+}
+
+.wish-box-review-visual [data-review-info-label] > span:first-child {
+  width: 1.5104167cqw;
+  height: 1.5104167cqw;
+}
+
+.wish-box-review-visual [data-review-info-label] > span:last-child {
+  width: 4.4791667cqw;
+  height: 1.6666667cqw;
+  font-size: 0.9375000cqw;
+  line-height: 1.4583333cqw;
+}
+
+.wish-box-review-visual [data-review-info-content] {
+  font-size: 0.7291667cqw;
+  line-height: 1.2500000cqw;
+}
+
+.wish-box-review-visual [data-review-info-content="location"] {
+  width: 10.3645833cqw;
+  height: 3.4895833cqw;
+}
+
+.wish-box-review-visual [data-review-info-content="time"] {
+  width: 10.3645833cqw;
+  height: 1.3020833cqw;
+}
+
+.wish-box-review-visual [data-review-info-content="introduction"] {
+  width: 16.9270833cqw;
+  height: 7.7083333cqw;
+}
+
 .wish-box-review-visual [data-review-info-sparkle] {
   left: 16.0937500cqw;
   top: 17.5520833cqw;
@@ -616,24 +694,24 @@
   }
 
   .wish-box-review-visual [data-review-info-label] {
-    position: static !important;
+    position: static;
     flex-shrink: 0;
-    width: auto !important;
+    width: auto;
   }
 
   .wish-box-review-visual [data-review-info-label] > span:last-child {
-    width: auto !important;
-    height: auto !important;
+    width: auto;
+    height: auto;
   }
 
   .wish-box-review-visual [data-review-info-content] {
-    position: static !important;
-    display: block !important;
+    position: static;
+    display: block;
     flex-shrink: 0;
-    width: 100% !important;
-    height: auto !important;
+    width: 100%;
+    height: auto;
     min-width: 0;
-    overflow: visible !important;
+    overflow: visible;
     white-space: pre-wrap !important;
     overflow-wrap: anywhere;
   }
@@ -657,40 +735,40 @@
     --review-667-decoration-scale: calc(956 * 375 / (667 * 440));
 
     & > [data-activity-review-header] {
-      position: relative !important;
+      position: relative;
       grid-area: 3 / 1 / 4 / 2;
       align-self: start;
-      top: 0 !important;
-      height: auto !important;
+      top: 0;
+      height: auto;
       display: grid;
       place-items: center;
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 163.5) !important;
-      width: calc(var(--review-667-unit) * 340) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 163.5);
+      width: calc(var(--review-667-unit) * 340);
       min-height: calc(var(--review-667-unit) * 65.903);
-      border-width: calc(var(--review-667-unit) * 0.562) !important;
-      border-radius: calc(var(--review-667-unit) * 12.731) !important;
+      border-width: calc(var(--review-667-unit) * 0.562);
+      border-radius: calc(var(--review-667-unit) * 12.731);
 
       & > [data-activity-review-title] {
-        position: static !important;
-        left: auto !important;
-        top: auto !important;
-        width: 100% !important;
-        height: auto !important;
+        position: static;
+        left: auto;
+        top: auto;
+        width: 100%;
+        height: auto;
         min-width: 0;
         padding: 4px 16px;
-        white-space: normal !important;
-        font-size: 18px !important;
-        line-height: 26px !important;
+        white-space: normal;
+        font-size: 18px;
+        line-height: 26px;
 
         & > span {
-          white-space: normal !important;
-          text-overflow: clip !important;
-          overflow: hidden !important;
+          white-space: normal;
+          text-overflow: clip;
+          overflow: hidden;
           overflow-wrap: anywhere;
 
           /* A visual two-line guard, not a business title-length limit. */
           max-block-size: 2lh;
-          max-width: 100% !important;
+          max-width: 100%;
         }
       }
     }
@@ -731,12 +809,12 @@
     }
 
     & > [data-activity-review-info-card] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 70) !important;
-      width: calc(var(--review-667-unit) * 182) !important;
-      height: calc(var(--review-667-unit) * 171) !important;
-      border-width: calc(var(--review-667-unit) * 0.347) !important;
-      border-radius: calc(var(--review-667-unit) * 6.25) !important;
-      background-color: rgb(254 248 238 / 78%) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 70);
+      width: calc(var(--review-667-unit) * 182);
+      height: calc(var(--review-667-unit) * 171);
+      border-width: calc(var(--review-667-unit) * 0.347);
+      border-radius: calc(var(--review-667-unit) * 6.25);
+      background-color: rgb(254 248 238 / 78%);
     }
 
     & [data-activity-review-info-scroll] {
@@ -749,23 +827,23 @@
     }
 
     & [data-review-info-label] {
-      height: 18px !important;
-      gap: 4px !important;
+      height: 18px;
+      gap: 4px;
     }
 
     & [data-review-info-label] > span:first-child {
-      width: 13px !important;
-      height: 13px !important;
+      width: 13px;
+      height: 13px;
     }
 
     & [data-review-info-label] > span:last-child {
-      font-size: 12.5px !important;
-      line-height: 18px !important;
+      font-size: 12.5px;
+      line-height: 18px;
     }
 
     & [data-review-info-content] {
-      font-size: 11.5px !important;
-      line-height: 17px !important;
+      font-size: 11.5px;
+      line-height: 17px;
     }
 
     & [data-review-info-content="location"],

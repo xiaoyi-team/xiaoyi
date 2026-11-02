@@ -629,14 +629,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         data-activity-review-header
         className="absolute"
         style={{
-          left: sceneX(499),
-          top: sceneY(95),
-          width: sceneX(908),
-          height: sceneY(176),
           boxSizing: "border-box",
           overflow: "hidden",
-          border: `${toSceneCqw(1.5)} solid #C7944D`,
-          borderRadius: toSceneCqw(34),
           backgroundColor: "#FEF8EE",
           zIndex: 10,
         }}
@@ -645,19 +639,12 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           data-activity-review-title={centerTitle ? "success" : "status"}
           className="absolute m-0 flex items-center justify-center text-center"
           style={{
-            left: centerTitle ? 0 : toSceneCqw(147),
-            top: centerTitle ? 0 : toSceneCqw(17),
-            width: centerTitle ? "100%" : toSceneCqw(614),
-            height: centerTitle ? "100%" : toSceneCqw(70),
             color: "#1F427A",
             fontFamily: '"Noto Serif SC", serif',
-            fontSize: toSceneCqw(36),
             fontWeight: 600,
-            lineHeight: toSceneCqw(52),
-            whiteSpace: "nowrap",
           }}
         >
-          <span className="block min-w-0 max-w-full truncate" style={{ maxWidth: centerTitle ? toSceneCqw(614) : undefined }} title={reviewContent.title}>{reviewContent.title}</span>
+          <span className="block min-w-0 max-w-full truncate" title={reviewContent.title}>{reviewContent.title}</span>
         </h1>
         {isPreview ? <>
         <p
@@ -730,15 +717,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         data-activity-review-info-card
         className="absolute"
         style={{
-          left: sceneX(230),
-          top: sceneY(311),
-          width: toSceneCqw(379),
-          height: toSceneCqw(371),
           boxSizing: "border-box",
           overflow: "hidden",
-          border: `${toSceneCqw(1)} solid #C7944D`,
-          borderRadius: toSceneCqw(18),
-          backgroundColor: "#FEF8EE",
           zIndex: 20,
         }}
       >
@@ -746,10 +726,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           <div
             data-review-info-label
             className="absolute flex items-center"
-            style={{ left: toSceneCqw(22), top: toSceneCqw(26), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+            style={{ left: toSceneCqw(22), top: toSceneCqw(26) }}
           >
-            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><LocationIcon /></span>
-            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动地点</span>
+            <span className="block shrink-0"><LocationIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontWeight: 600 }}>活动地点</span>
           </div>
           <div
             data-review-info-content="location"
@@ -757,7 +737,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             aria-label={isPreview ? undefined : "活动地点详情"}
             tabIndex={isPreview ? undefined : 0}
             className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
-            style={{ left: toSceneCqw(161), top: toSceneCqw(26), width: toSceneCqw(199), height: toSceneCqw(67), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
+            style={{ left: toSceneCqw(161), top: toSceneCqw(26), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontWeight: 400, gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
           >
             {typeof reviewContent.location === "string" ? reviewContent.location : reviewContent.location.map((line) => <span key={line}>{line}</span>)}
           </div>
@@ -765,15 +745,15 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           <div
             data-review-info-label
             className="absolute flex items-center"
-            style={{ left: toSceneCqw(22), top: toSceneCqw(98), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+            style={{ left: toSceneCqw(22), top: toSceneCqw(98) }}
           >
-            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><CalendarIcon /></span>
-            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动时间</span>
+            <span className="block shrink-0"><CalendarIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontWeight: 600 }}>活动时间</span>
           </div>
           <div
             data-review-info-content="time"
             className="absolute flex items-center whitespace-nowrap"
-            style={{ left: toSceneCqw(161), top: toSceneCqw(101.5), width: toSceneCqw(199), height: toSceneCqw(25), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24) }}
+            style={{ left: toSceneCqw(161), top: toSceneCqw(101.5), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontWeight: 400 }}
           >
             <span className="block min-w-0 truncate" title={reviewContent.time}>{reviewContent.time}</span>
           </div>
@@ -781,10 +761,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           <div
             data-review-info-label
             className="absolute flex items-center"
-            style={{ left: toSceneCqw(22), top: toSceneCqw(138), width: toSceneCqw(123), height: toSceneCqw(32), gap: toSceneCqw(8) }}
+            style={{ left: toSceneCqw(22), top: toSceneCqw(138) }}
           >
-            <span className="block shrink-0" style={{ width: toSceneCqw(29), height: toSceneCqw(29) }}><IntroductionIcon /></span>
-            <span className="flex items-center justify-center whitespace-nowrap" style={{ width: toSceneCqw(86), height: toSceneCqw(32), color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(18), fontWeight: 600, lineHeight: toSceneCqw(28) }}>活动介绍</span>
+            <span className="block shrink-0"><IntroductionIcon /></span>
+            <span className="flex items-center justify-center whitespace-nowrap" style={{ color: "#C7A16B", fontFamily: '"Noto Serif SC", serif', fontWeight: 600 }}>活动介绍</span>
           </div>
           <div
             data-review-info-content="introduction"
@@ -792,7 +772,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             aria-label={isPreview ? undefined : "活动介绍正文"}
             tabIndex={isPreview ? undefined : 0}
             className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
-            style={{ left: toSceneCqw(22), top: toSceneCqw(178), width: toSceneCqw(325), height: toSceneCqw(148), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontSize: toSceneCqw(14), fontWeight: 400, lineHeight: toSceneCqw(24), whiteSpace: isPreview ? undefined : "pre-wrap", overflowWrap: "anywhere" }}
+            style={{ left: toSceneCqw(22), top: toSceneCqw(178), gap: toSceneCqw(14), color: "#243D61", fontFamily: '"Noto Serif SC", serif', fontWeight: 400, whiteSpace: isPreview ? undefined : "pre-wrap", overflowWrap: "anywhere" }}
           >
             {typeof reviewContent.introduction === "string" ? reviewContent.introduction : reviewContent.introduction.map((paragraph) => (
               <p key={paragraph} className="m-0">{paragraph}</p>
