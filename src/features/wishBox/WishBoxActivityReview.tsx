@@ -579,17 +579,17 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute left-0 top-0 h-full select-none"
+        className="pointer-events-none absolute left-0 top-0 h-full select-none"
         // Existing final-render PNGs already contain the visible Scene-edge crop.
-        style={{ ...mobileReviewGeometry(0, 0, 282.333333, 440), width: sceneX(693), maxWidth: "none", zIndex: 13 }}
+        style={{ maxWidth: "none", zIndex: 13 }}
       />
       <img
         src={floralRight}
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute top-0 h-full select-none"
-        style={{ ...mobileReviewGeometry(685.481481, 0, 270.518519, 440), left: sceneX(1256), width: sceneX(664), maxWidth: "none", zIndex: 13 }}
+        className="pointer-events-none absolute top-0 h-full select-none"
+        style={{ maxWidth: "none", zIndex: 13 }}
       />
       {showContent ? <>
       <img
@@ -597,13 +597,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(625.074074, 70.481481, 59.569426, 62.212525),
-          left: sceneX(1321),
-          top: sceneY(173),
-          width: toSceneCqw(146.215),
-          height: toSceneCqw(152.703),
           maxWidth: "none",
           zIndex: 11,
         }}
@@ -613,13 +608,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(398.148148, 0, 159.296296, 70.074074),
-          left: sceneX(764),
-          top: sceneY(0),
-          width: toSceneCqw(391),
-          height: toSceneCqw(172),
           maxWidth: "none",
           zIndex: 12,
         }}
@@ -690,7 +680,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           aria-hidden="true"
           draggable={false}
           className="pointer-events-none absolute select-none"
-          style={{ left: toSceneCqw(871), top: toSceneCqw(97), width: toSceneCqw(28), height: toSceneCqw(21), zIndex: 21 }}
+          style={{ zIndex: 21 }}
         />
         <img
           src={headerPetalLeft}
@@ -699,7 +689,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           aria-hidden="true"
           draggable={false}
           className="pointer-events-none absolute select-none"
-          style={{ left: toSceneCqw(140), top: toSceneCqw(77), width: toSceneCqw(28), height: toSceneCqw(21), zIndex: 21 }}
+          style={{ zIndex: 21 }}
         />
       </div>
 
@@ -708,8 +698,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
-        style={{ ...mobileReviewGeometry(746.074074, 86.777778, 12.62963, 9.777778), left: sceneX(1618), top: sceneY(213), width: toSceneCqw(31), height: toSceneCqw(24), zIndex: 10 }}
+        className="pointer-events-none absolute select-none"
+        style={{ zIndex: 10 }}
       />
 
       <article
@@ -794,10 +784,6 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         data-activity-review-photo-board
         className="absolute"
         style={{
-          left: sceneX(640),
-          top: sceneY(311),
-          width: toSceneCqw(1119),
-          height: toSceneCqw(630),
           boxSizing: "border-box",
           overflow: "var(--photo-board-overflow, hidden)",
           border: `${toSceneCqw(1)} solid #C7944D`,
@@ -925,13 +911,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(260.444444, 68.851852, 61.715829, 61.715829),
-          left: sceneX(426),
-          top: sceneY(169),
-          width: toSceneCqw(151.485),
-          height: toSceneCqw(151.485),
           maxWidth: "none",
           zIndex: 30,
         }}
@@ -941,13 +922,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(814.111, 189.921066, 69.34179, 69.34179),
-          left: sceneX(1640),
-          top: sceneY(396),
-          width: toSceneCqw(199.605),
-          height: toSceneCqw(199.605),
           maxWidth: "none",
           zIndex: 30,
         }}
@@ -960,13 +936,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(346.807129, 292.937, 112.19336, 112.027121),
-          left: sceneX(495),
-          top: sceneY(733),
-          width: toSceneCqw(323),
-          height: toSceneCqw(322.5),
           maxWidth: "none",
           zIndex: 30,
         }}
@@ -976,13 +947,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(358.281, 222.323502, 53.113204, 94.023204),
-          left: sceneX(532),
-          top: sceneY(470),
-          width: toSceneCqw(153),
-          height: toSceneCqw(271),
           maxWidth: "none",
           zIndex: 30,
         }}
@@ -992,13 +958,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         alt=""
         aria-hidden="true"
         draggable={false}
-        className="wish-box-review-mobile-geometry pointer-events-none absolute select-none"
+        className="pointer-events-none absolute select-none"
         style={{
-          ...mobileReviewGeometry(779.976624, 59.444, 95.349164, 95.349164),
-          left: sceneX(1577),
-          top: sceneY(163),
-          width: toSceneCqw(274.469),
-          height: toSceneCqw(274.469),
           maxWidth: "none",
           zIndex: 30,
         }}

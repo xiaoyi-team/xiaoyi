@@ -507,6 +507,92 @@
   }
 }
 
+.wish-box-review-visual img[src*="activity-review-floral-left"] {
+  width: 36.0937500%;
+}
+
+.wish-box-review-visual img[src*="activity-review-floral-right"] {
+  left: 65.4166667%;
+  width: 34.5833333%;
+}
+
+.wish-box-review-visual img[src*="activity-review-rose"] {
+  left: 68.8020833%;
+  top: 16.0185185%;
+  width: 7.6153646cqw;
+  height: 7.9532813cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-iris-divider"] {
+  left: 39.7916667%;
+  top: 0.0000000%;
+  width: 20.3645833cqw;
+  height: 8.9583333cqw;
+}
+
+.wish-box-review-visual [data-review-header-petal="center"] {
+  left: 45.3645833cqw;
+  top: 5.0520833cqw;
+  width: 1.4583333cqw;
+  height: 1.0937500cqw;
+}
+
+.wish-box-review-visual [data-review-header-petal="left"] {
+  left: 7.2916667cqw;
+  top: 4.0104167cqw;
+  width: 1.4583333cqw;
+  height: 1.0937500cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-header-petal-right"] {
+  left: 84.2708333%;
+  top: 19.7222222%;
+  width: 1.6145833cqw;
+  height: 1.2500000cqw;
+}
+
+.wish-box-review-visual [data-activity-review-photo-board] {
+  left: 33.3333333%;
+  top: 28.7962963%;
+  width: 58.2812500cqw;
+  height: 32.8125000cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-bow"] {
+  left: 22.1875000%;
+  top: 15.6481481%;
+  width: 7.8898438cqw;
+  height: 7.8898438cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-iris-purple"] {
+  left: 85.4166667%;
+  top: 36.6666667%;
+  width: 10.3960938cqw;
+  height: 10.3960938cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-bouquet-ribbon"] {
+  left: 25.7812500%;
+  top: 67.8703704%;
+  width: 16.8229167cqw;
+  height: 16.7968750cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-bouquet-vertical"] {
+  left: 27.7083333%;
+  top: 43.5185185%;
+  width: 7.9687500cqw;
+  height: 14.1145833cqw;
+}
+
+.wish-box-review-visual img[src*="activity-review-white-flowers"] {
+  left: 82.1354167%;
+  top: 15.0925926%;
+  width: 14.2952604cqw;
+  height: 14.2952604cqw;
+}
+
 .wish-box-review-visual [data-activity-review-header] {
   left: 25.9895833%;
   top: 8.7962963%;
@@ -651,21 +737,14 @@
     width: 100dvw;
   }
 
-  .wish-box-review-visual .wish-box-review-mobile-geometry {
-    left: var(--review-mobile-left) !important;
-    top: var(--review-mobile-top) !important;
-    width: var(--review-mobile-width) !important;
-    height: var(--review-mobile-height) !important;
-  }
-
   .wish-box-review-visual img[src*="activity-review-floral-"] {
     /* Keep the existing edge crops and intrinsic PNG ratios over the visual layer's full height. */
-    width: auto !important;
-    height: 100% !important;
+    width: auto;
+    height: 100%;
   }
 
   .wish-box-review-visual img[src*="activity-review-floral-right"] {
-    left: auto !important;
+    left: auto;
     right: 0;
   }
 
@@ -787,7 +866,7 @@
 
     & > [data-activity-review-photo-board] {
       grid-area: 4 / 1 / 5 / 2;
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 263) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 263);
 
       /* Change only the board's outer scale; all six layouts stay intact. */
       transform: scale(calc(355 * 1920 / (1119 * 667)));
@@ -796,16 +875,16 @@
 
     & > img[src*="activity-review-iris-divider"] {
       grid-area: 2 / 1 / 5 / 2;
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 265.44) !important;
-      top: calc(var(--review-667-unit) * -8.333) !important;
-      width: calc(var(--review-667-unit) * 135.764) !important;
-      height: calc(var(--review-667-unit) * 68.056) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 265.44);
+      top: calc(var(--review-667-unit) * -8.333);
+      width: calc(var(--review-667-unit) * 135.764);
+      height: calc(var(--review-667-unit) * 68.056);
     }
 
     & > [data-activity-review-info-card],
     & > [data-activity-review-photo-board] {
       /* Stay anchored to the actual header bottom when a title grows. */
-      top: calc(var(--review-667-unit) * 14.097) !important;
+      top: calc(var(--review-667-unit) * 14.097);
     }
 
     & > [data-activity-review-info-card] {
@@ -859,66 +938,66 @@
     }
 
     & [data-review-header-petal="center"] {
-      left: calc(var(--review-667-unit) * 312.361) !important;
-      top: calc(50% + var(--review-667-unit) * 3.7155) !important;
-      width: calc(var(--review-667-unit) * 9.722) !important;
-      height: calc(var(--review-667-unit) * 7.292) !important;
+      left: calc(var(--review-667-unit) * 312.361);
+      top: calc(50% + var(--review-667-unit) * 3.7155);
+      width: calc(var(--review-667-unit) * 9.722);
+      height: calc(var(--review-667-unit) * 7.292);
     }
 
     & [data-review-header-petal="left"] {
-      left: calc(var(--review-667-unit) * 58.542) !important;
-      top: calc(50% - var(--review-667-unit) * 3.2295) !important;
-      width: calc(var(--review-667-unit) * 9.722) !important;
-      height: calc(var(--review-667-unit) * 7.292) !important;
+      left: calc(var(--review-667-unit) * 58.542);
+      top: calc(50% - var(--review-667-unit) * 3.2295);
+      width: calc(var(--review-667-unit) * 9.722);
+      height: calc(var(--review-667-unit) * 7.292);
     }
 
     & > img[src*="activity-review-header-petal-right"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 561.97) !important;
-      top: calc(var(--review-667-unit) * -21.943) !important;
-      width: calc(var(--review-667-unit) * 10.764) !important;
-      height: calc(var(--review-667-unit) * 8.333) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 561.97);
+      top: calc(var(--review-667-unit) * -21.943);
+      width: calc(var(--review-667-unit) * 10.764);
+      height: calc(var(--review-667-unit) * 8.333);
     }
 
     & > img[src*="activity-review-rose"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 458.85) !important;
-      top: calc(var(--review-667-unit) * -35.833) !important;
-      width: calc(var(--review-667-unit) * 50.769) !important;
-      height: calc(var(--review-667-unit) * 53.022) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 458.85);
+      top: calc(var(--review-667-unit) * -35.833);
+      width: calc(var(--review-667-unit) * 50.769);
+      height: calc(var(--review-667-unit) * 53.022);
     }
 
     & > img[src*="activity-review-bow"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 148.08) !important;
-      top: calc(var(--review-667-unit) * -37.223) !important;
-      width: calc(var(--review-667-unit) * 52.599) !important;
-      height: calc(var(--review-667-unit) * 52.599) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 148.08);
+      top: calc(var(--review-667-unit) * -37.223);
+      width: calc(var(--review-667-unit) * 52.599);
+      height: calc(var(--review-667-unit) * 52.599);
     }
 
     & > img[src*="activity-review-bouquet-ribbon"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 233.75) !important;
-      top: calc(var(--review-667-unit) * 160.147) !important;
-      width: calc(var(--review-667-unit) * 86.962) !important;
-      height: calc(var(--review-667-unit) * 86.833) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 233.75);
+      top: calc(var(--review-667-unit) * 160.147);
+      width: calc(var(--review-667-unit) * 86.962);
+      height: calc(var(--review-667-unit) * 86.833);
     }
 
     & > img[src*="activity-review-bouquet-vertical"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 242.64) !important;
-      top: calc(var(--review-667-unit) * 105.407) !important;
-      width: calc(var(--review-667-unit) * 41.169) !important;
-      height: calc(var(--review-667-unit) * 72.878) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 242.64);
+      top: calc(var(--review-667-unit) * 105.407);
+      width: calc(var(--review-667-unit) * 41.169);
+      height: calc(var(--review-667-unit) * 72.878);
     }
 
     & > img[src*="activity-review-white-flowers"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 569.5) !important;
-      top: calc(var(--review-667-unit) * -20.843) !important;
-      width: calc(var(--review-667-unit) * 73.906) !important;
-      height: calc(var(--review-667-unit) * 73.906) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 569.5);
+      top: calc(var(--review-667-unit) * -20.843);
+      width: calc(var(--review-667-unit) * 73.906);
+      height: calc(var(--review-667-unit) * 73.906);
     }
 
     & > img[src*="activity-review-iris-purple"] {
-      left: calc(var(--review-content-offset) + var(--review-667-unit) * 595.96) !important;
-      top: calc(var(--review-667-unit) * 80.297) !important;
-      width: calc(var(--review-667-unit) * 53.747) !important;
-      height: calc(var(--review-667-unit) * 53.747) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 595.96);
+      top: calc(var(--review-667-unit) * 80.297);
+      width: calc(var(--review-667-unit) * 53.747);
+      height: calc(var(--review-667-unit) * 53.747);
     }
 
     & > svg.wish-box-review-star {
