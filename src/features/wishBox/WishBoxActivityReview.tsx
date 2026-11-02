@@ -70,8 +70,8 @@ const sceneX = (designPixels: number) =>
 const sceneY = (designPixels: number) =>
   `${((designPixels / 1080) * 100).toFixed(7)}%`;
 
-// Non-photo page geometry from the 956 × 440 mobile Review Frame (3610:161).
-// These variables are consumed only by Review's scoped mobile stylesheet.
+// Temporary legacy coordinates for background/decorative conversion only.
+// Core Touch layout uses the 667 geometry in WishBoxMobile.css.
 const mobileReviewGeometry = (x: number, y: number, width: number, height: number): CSSProperties => ({
   "--review-mobile-left": `${x / 9.56}cqw`,
   "--review-mobile-top": `${y / 9.56}cqw`,
@@ -568,6 +568,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     >
     <section
       aria-label="活动回顾"
+      data-activity-review-layout
       data-activity-review-record-id={data.source === "record" ? data.recordId : undefined}
       data-activity-review-fixture={isPreview ? "activity-review-preview" : undefined}
       className="absolute inset-0 isolate overflow-hidden"
@@ -626,9 +627,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
 
       <div
         data-activity-review-header
-        className="wish-box-review-mobile-geometry absolute"
+        className="absolute"
         style={{
-          ...mobileReviewGeometry(290.185185, 38.703704, 369.925926, 71.703704),
           left: sceneX(499),
           top: sceneY(95),
           width: sceneX(908),
@@ -728,9 +728,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
       <article
         aria-label="活动信息"
         data-activity-review-info-card
-        className="wish-box-review-mobile-geometry absolute"
+        className="absolute"
         style={{
-          ...mobileReviewGeometry(133, 119, 224, 260),
           left: sceneX(230),
           top: sceneY(311),
           width: toSceneCqw(379),

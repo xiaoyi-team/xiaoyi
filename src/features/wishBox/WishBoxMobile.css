@@ -19,10 +19,6 @@
   display: contents;
 }
 
-.wish-box-review-visual [data-activity-review-mobile-error] {
-  display: none;
-}
-
 .wish-box-timeline [data-timeline-dropdown-trigger="year"],
 .wish-box-timeline [data-timeline-dropdown-trigger="form"] {
   display: none;
@@ -546,6 +542,7 @@
 @media (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
   /* On normal mobile viewports Review's visual layer expands independently;
      the Scene remains Timeline and Viewer's existing coordinate container. */
+
   .wish-box-scene:has(> .wish-box-review-visual) {
     overflow: visible;
     isolation: isolate;
@@ -553,6 +550,7 @@
 
   /* Keep Review's 55% Loading composite independent of the page letterbox.
      The host stays white; only its full-width visual overflow uses the old gray. */
+
   .wish-box-scene:has(> .wish-box-review-visual)::after {
     --review-backplate-side: max(0px, calc((100dvw - 100cqw) / 2));
     content: "";
@@ -568,12 +566,11 @@
   }
 
   .wish-box-review-visual {
+    /* Page Scene supplies cqw for both the board prototype and 667 content; the visual layer still covers the full viewport. */
     --review-mobile-unit: calc(100cqw / 956);
     left: calc((100% - 100dvw) / 2);
     right: auto;
     width: 100dvw;
-    container-type: inline-size;
-    container-name: wish-box-review;
   }
 
   .wish-box-review-visual .wish-box-review-mobile-geometry {
@@ -584,9 +581,9 @@
   }
 
   .wish-box-review-visual img[src*="activity-review-floral-"] {
-    /* Preserve both PNG ratios while covering the visual layer's actual height. */
+    /* Keep the existing edge crops and intrinsic PNG ratios over the visual layer's full height. */
     width: auto !important;
-    height: max(100%, calc(var(--review-mobile-unit) * 440)) !important;
+    height: 100% !important;
   }
 
   .wish-box-review-visual img[src*="activity-review-floral-right"] {
@@ -599,123 +596,14 @@
     z-index: 10 !important;
   }
 
-  .wish-box-review-visual [data-activity-review-header] {
-    border-width: calc(var(--review-mobile-unit) * 0.611) !important;
-    border-radius: calc(var(--review-mobile-unit) * 13.852) !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-title] {
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 16px;
-    font-size: 20px !important;
-    line-height: 28px !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-title] > span {
-    max-width: 100% !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-title="status"] {
-    height: 50% !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-header] > [role="status"] {
-    left: 16px !important;
-    top: 50% !important;
-    width: calc(100% - 32px) !important;
-    height: auto !important;
-    font-size: 14px !important;
-    line-height: 20px;
-  }
-
-  .wish-box-review-visual [data-activity-review-error] [data-activity-review-title="status"] {
-    height: 100% !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-error] [data-activity-review-header] > [role="status"] {
-    display: none;
-  }
-
-  /* Outside the clipped header; keep both the photo board and information card fixed. */
-  .wish-box-review-visual [data-activity-review-mobile-error] {
-    position: absolute;
-    z-index: 35;
-    left: calc(var(--review-mobile-unit) * 391);
-    bottom: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    box-sizing: border-box;
-    width: calc(var(--review-mobile-unit) * 458);
-    padding: 0 12px;
-    border: 1px solid #C7944D;
-    border-radius: 8px;
-    background: #FEF8EE;
-    color: #243D61;
-    font-family: "Noto Serif SC", serif;
-    font-size: 14px;
-    line-height: 20px;
-  }
-
-  .wish-box-review-visual [data-activity-review-mobile-error] > span {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .wish-box-review-visual [data-activity-review-mobile-error] > button {
-    flex: 0 0 auto;
-    box-sizing: border-box;
-    min-width: 96px;
-    min-height: 44px;
-    padding: 0 8px;
-    border: 1px solid #C7944D;
-    border-radius: 6px;
-    background: #F3EDE1;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .wish-box-review-visual [data-activity-review-fixture] [data-activity-review-title] {
-    height: 100% !important;
-  }
-
   .wish-box-review-visual [data-activity-review-fixture] [data-activity-review-header] > p {
     display: none;
-  }
-
-  .wish-box-review-visual [data-review-header-petal="center"] {
-    left: calc(var(--review-mobile-unit) * 354.852) !important;
-    top: calc(var(--review-mobile-unit) * 39.519) !important;
-    width: calc(var(--review-mobile-unit) * 11.407) !important;
-    height: calc(var(--review-mobile-unit) * 8.556) !important;
-  }
-
-  .wish-box-review-visual [data-review-header-petal="left"] {
-    left: calc(var(--review-mobile-unit) * 57.037) !important;
-    top: calc(var(--review-mobile-unit) * 31.37) !important;
-    width: calc(var(--review-mobile-unit) * 11.407) !important;
-    height: calc(var(--review-mobile-unit) * 8.556) !important;
-  }
-
-  .wish-box-review-visual [data-activity-review-info-card] {
-    border-width: calc(var(--review-mobile-unit) * 0.407) !important;
-    border-radius: calc(var(--review-mobile-unit) * 7.333) !important;
   }
 
   .wish-box-review-visual [data-activity-review-info-scroll] {
     position: absolute;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    left: calc(var(--review-mobile-unit) * 16 - 1px);
-    top: calc(var(--review-mobile-unit) * 16 - 1px);
-    width: calc(var(--review-mobile-unit) * 192);
-    height: calc(var(--review-mobile-unit) * 228);
-    padding-bottom: 6px;
     overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: none;
@@ -731,20 +619,11 @@
     position: static !important;
     flex-shrink: 0;
     width: auto !important;
-    height: 22px !important;
-    gap: 6px !important;
-  }
-
-  .wish-box-review-visual [data-review-info-label] > span:first-child {
-    width: 18px !important;
-    height: 18px !important;
   }
 
   .wish-box-review-visual [data-review-info-label] > span:last-child {
     width: auto !important;
     height: auto !important;
-    font-size: 16px !important;
-    line-height: 22px !important;
   }
 
   .wish-box-review-visual [data-review-info-content] {
@@ -755,15 +634,8 @@
     height: auto !important;
     min-width: 0;
     overflow: visible !important;
-    font-size: 14px !important;
-    line-height: 21px !important;
     white-space: pre-wrap !important;
     overflow-wrap: anywhere;
-  }
-
-  .wish-box-review-visual [data-review-info-content="location"],
-  .wish-box-review-visual [data-review-info-content="time"] {
-    margin-bottom: 8px;
   }
 
   .wish-box-review-visual [data-review-info-content="time"] > span {
@@ -772,61 +644,17 @@
     text-overflow: clip;
   }
 
-  .wish-box-review-visual [data-review-info-sparkle] {
-    left: calc(var(--review-mobile-unit) * 201.59 - 1px);
-    top: calc(var(--review-mobile-unit) * 240.59 - 1px);
-    width: calc(var(--review-mobile-unit) * 8.342);
-    height: calc(var(--review-mobile-unit) * 8.342);
-  }
-
-  .wish-box-review-visual [data-activity-review-photo-board] {
-    left: calc(var(--review-mobile-unit) * 391) !important;
-    top: calc(var(--review-mobile-unit) * 120) !important;
-    /* Scale the entire accepted 1119-wide board, including all M5 geometry and
-       corner art. New visual Scene cqw is based on 956, not the old 1920. */
-    transform: scale(calc(458 * 1920 / 1119 / 956));
-    transform-origin: top left;
-  }
-
-  .wish-box-review-visual [data-activity-review-return] {
-    left: calc(var(--review-mobile-unit) * 60);
-    top: calc(var(--review-mobile-unit) * 8);
-    width: calc(var(--review-mobile-unit) * 110.5);
-    min-width: 72px;
-    height: calc(var(--review-mobile-unit) * 48.1);
-    min-height: 44px;
-    border-radius: calc(var(--review-mobile-unit) * 14.3);
-    filter: drop-shadow(0 2.6px 2.438px #000);
-  }
-
-  .wish-box-review-visual [data-activity-review-return] > img {
-    left: calc(var(--review-mobile-unit) * 4.55);
-    top: calc(var(--review-mobile-unit) * 3.25);
-    width: calc(var(--review-mobile-unit) * 48.1);
-    height: calc(var(--review-mobile-unit) * 41.6);
-  }
-
-  .wish-box-review-visual [data-activity-review-return] > span {
-    left: calc(var(--review-mobile-unit) * 55.25);
-    top: calc(var(--review-mobile-unit) * 24.05 - 13px);
-    width: auto;
-    height: 26px;
-    font-size: 18px;
-    line-height: 26px;
-    white-space: nowrap;
-    text-shadow: 0 0 1.3px #000;
-  }
-
-  .wish-box-review-visual > [data-activity-review-record-id] {
+  .wish-box-review-visual > [data-activity-review-layout] {
+    /* 667 is the only Touch geometry. The existing Scene limits width by height; center its coordinates inside the full-width visual layer. */
     display: grid;
     grid-template-columns: 100%;
-    /* The definite section height is H; the scene unit is W / 956.
-       Row 1 splits only the extra height, while row 3 grows with the title. */
-    grid-template-rows:
-      max(0px, calc((100% - var(--review-mobile-unit) * 440) / 2))
-      calc(var(--review-mobile-unit) * 38.703704)
-      auto
-      minmax(0, 1fr);
+    grid-template-rows: max(0px, calc((100% - var(--review-667-unit) * 375) / 2))
+        calc(var(--review-667-unit) * 30)
+        auto
+        minmax(0, 1fr);
+    --review-content-offset: calc((100% - 100cqw) / 2);
+    --review-667-unit: calc(100cqw / 667);
+    --review-667-decoration-scale: calc(956 * 375 / (667 * 440));
 
     & > [data-activity-review-header] {
       position: relative !important;
@@ -834,9 +662,13 @@
       align-self: start;
       top: 0 !important;
       height: auto !important;
-      min-height: var(--review-mobile-height);
       display: grid;
       place-items: center;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 163.5) !important;
+      width: calc(var(--review-667-unit) * 340) !important;
+      min-height: calc(var(--review-667-unit) * 65.903);
+      border-width: calc(var(--review-667-unit) * 0.562) !important;
+      border-radius: calc(var(--review-667-unit) * 12.731) !important;
 
       & > [data-activity-review-title] {
         position: static !important;
@@ -847,28 +679,22 @@
         min-width: 0;
         padding: 4px 16px;
         white-space: normal !important;
+        font-size: 18px !important;
+        line-height: 26px !important;
 
         & > span {
           white-space: normal !important;
           text-overflow: clip !important;
           overflow: hidden !important;
           overflow-wrap: anywhere;
+
           /* A visual two-line guard, not a business title-length limit. */
           max-block-size: 2lh;
+          max-width: 100% !important;
         }
-      }
-
-      & [data-review-header-petal="center"] {
-        top: calc(50% + var(--review-mobile-unit) * 3.667148) !important;
-      }
-
-      & [data-review-header-petal="left"] {
-        top: calc(50% - var(--review-mobile-unit) * 4.481852) !important;
       }
     }
 
-    /* 110.407408 = the original header top + height. Anchoring to its
-       actual bottom adds D3 and title growth once, including attached art. */
     & > [data-activity-review-info-card],
     & > img[src*="activity-review-iris-purple"],
     & > img[src*="activity-review-bouquet-ribbon"],
@@ -879,189 +705,178 @@
     & > img[src*="activity-review-header-petal-right"],
     & > svg.wish-box-review-star {
       grid-area: 4 / 1 / 5 / 2;
-      top: calc(var(--review-mobile-top) - var(--review-mobile-unit) * 110.407408) !important;
     }
 
     & > [data-activity-review-photo-board] {
       grid-area: 4 / 1 / 5 / 2;
-      /* The photo board starts at design Y=120, relative to the header bottom. */
-      top: calc(var(--review-mobile-unit) * 9.592592) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 263) !important;
+
+      /* Change only the board's outer scale; all six layouts stay intact. */
+      transform: scale(calc(355 * 1920 / (1119 * 667)));
+      transform-origin: top left;
     }
 
     & > img[src*="activity-review-iris-divider"] {
       grid-area: 2 / 1 / 5 / 2;
-      top: var(--review-mobile-top) !important;
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 265.44) !important;
+      top: calc(var(--review-667-unit) * -8.333) !important;
+      width: calc(var(--review-667-unit) * 135.764) !important;
+      height: calc(var(--review-667-unit) * 68.056) !important;
     }
-  }
 
-  /* The old 224s info card reaches the new 182px width at ~777px. Query
-     Review's visual width, not the narrower 16:9 Scene hosting the 956 layout. */
-  @container wish-box-review (width < 777px) {
-    .wish-box-review-visual > [data-activity-review-record-id] {
-      --review-667-unit: calc(100cqw / 667);
-      --review-667-decoration-scale: calc(956 * 375 / (667 * 440));
-      grid-template-rows:
-        max(0px, calc((100% - var(--review-667-unit) * 375) / 2))
-        calc(var(--review-667-unit) * 30)
-        auto
-        minmax(0, 1fr);
+    & > [data-activity-review-info-card],
+    & > [data-activity-review-photo-board] {
+      /* Stay anchored to the actual header bottom when a title grows. */
+      top: calc(var(--review-667-unit) * 14.097) !important;
+    }
 
-      & > [data-activity-review-header] {
-        left: calc(var(--review-667-unit) * 163.5) !important;
-        width: calc(var(--review-667-unit) * 340) !important;
-        min-height: calc(var(--review-667-unit) * 65.903);
-        border-width: calc(var(--review-667-unit) * 0.562) !important;
-        border-radius: calc(var(--review-667-unit) * 12.731) !important;
-      }
-      & [data-activity-review-title="success"] {
-        font-size: 18px !important;
-        line-height: 26px !important;
-      }
+    & > [data-activity-review-info-card] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 70) !important;
+      width: calc(var(--review-667-unit) * 182) !important;
+      height: calc(var(--review-667-unit) * 171) !important;
+      border-width: calc(var(--review-667-unit) * 0.347) !important;
+      border-radius: calc(var(--review-667-unit) * 6.25) !important;
+      background-color: rgb(254 248 238 / 78%) !important;
+    }
 
-      & > [data-activity-review-info-card],
-      & > [data-activity-review-photo-board] {
-        /* Stay anchored to the actual header bottom when a title grows. */
-        top: calc(var(--review-667-unit) * 14.097) !important;
-      }
-      & > [data-activity-review-info-card] {
-        left: calc(var(--review-667-unit) * 70) !important;
-        width: calc(var(--review-667-unit) * 182) !important;
-        height: calc(var(--review-667-unit) * 171) !important;
-        border-width: calc(var(--review-667-unit) * 0.347) !important;
-        border-radius: calc(var(--review-667-unit) * 6.25) !important;
-        background-color: rgb(254 248 238 / 78%) !important;
-      }
-      & [data-activity-review-info-scroll] {
-        left: calc(var(--review-667-unit) * 12 - 1px);
-        top: calc(var(--review-667-unit) * 12 - 1px);
-        width: calc(var(--review-667-unit) * 158);
-        height: calc(var(--review-667-unit) * 147);
-        gap: 3px;
-        padding-bottom: 8px;
-      }
-      & [data-review-info-label] {
-        height: 18px !important;
-        gap: 4px !important;
-      }
-      & [data-review-info-label] > span:first-child {
-        width: 13px !important;
-        height: 13px !important;
-      }
-      & [data-review-info-label] > span:last-child {
-        font-size: 12.5px !important;
-        line-height: 18px !important;
-      }
-      & [data-review-info-content] {
-        font-size: 11.5px !important;
-        line-height: 17px !important;
-      }
-      & [data-review-info-content="location"],
-      & [data-review-info-content="time"] { margin-bottom: 5px; }
-      & [data-review-info-sparkle] {
-        left: calc(var(--review-667-unit) * 160.65 - 1px);
-        top: calc(var(--review-667-unit) * 151.65 - 1px);
-        width: calc(var(--review-667-unit) * 7.11);
-        height: calc(var(--review-667-unit) * 7.11);
-      }
-      & > [data-activity-review-photo-board] {
-        left: calc(var(--review-667-unit) * 263) !important;
-        /* Change only the board's outer scale; all six layouts stay intact. */
-        transform: scale(calc(355 * 1920 / (1119 * 667)));
-      }
+    & [data-activity-review-info-scroll] {
+      left: calc(var(--review-667-unit) * 12 - 1px);
+      top: calc(var(--review-667-unit) * 12 - 1px);
+      width: calc(var(--review-667-unit) * 158);
+      height: calc(var(--review-667-unit) * 147);
+      gap: 3px;
+      padding-bottom: 8px;
+    }
 
-      & [data-review-header-petal="center"] {
-        left: calc(var(--review-667-unit) * 312.361) !important;
-        top: calc(50% + var(--review-667-unit) * 3.7155) !important;
-        width: calc(var(--review-667-unit) * 9.722) !important;
-        height: calc(var(--review-667-unit) * 7.292) !important;
-      }
-      & [data-review-header-petal="left"] {
-        left: calc(var(--review-667-unit) * 58.542) !important;
-        top: calc(50% - var(--review-667-unit) * 3.2295) !important;
-        width: calc(var(--review-667-unit) * 9.722) !important;
-        height: calc(var(--review-667-unit) * 7.292) !important;
-      }
-      & > img[src*="activity-review-header-petal-right"] {
-        left: calc(var(--review-667-unit) * 561.97) !important;
-        top: calc(var(--review-667-unit) * -21.943) !important;
-        width: calc(var(--review-667-unit) * 10.764) !important;
-        height: calc(var(--review-667-unit) * 8.333) !important;
-      }
-      & > img[src*="activity-review-iris-divider"] {
-        left: calc(var(--review-667-unit) * 265.44) !important;
-        top: calc(var(--review-667-unit) * -8.333) !important;
-        width: calc(var(--review-667-unit) * 135.764) !important;
-        height: calc(var(--review-667-unit) * 68.056) !important;
-      }
-      & > img[src*="activity-review-rose"] {
-        left: calc(var(--review-667-unit) * 458.85) !important;
-        top: calc(var(--review-667-unit) * -35.833) !important;
-        width: calc(var(--review-667-unit) * 50.769) !important;
-        height: calc(var(--review-667-unit) * 53.022) !important;
-      }
-      & > img[src*="activity-review-bow"] {
-        left: calc(var(--review-667-unit) * 148.08) !important;
-        top: calc(var(--review-667-unit) * -37.223) !important;
-        width: calc(var(--review-667-unit) * 52.599) !important;
-        height: calc(var(--review-667-unit) * 52.599) !important;
-      }
-      & > img[src*="activity-review-bouquet-ribbon"] {
-        left: calc(var(--review-667-unit) * 233.75) !important;
-        top: calc(var(--review-667-unit) * 160.147) !important;
-        width: calc(var(--review-667-unit) * 86.962) !important;
-        height: calc(var(--review-667-unit) * 86.833) !important;
-      }
-      & > img[src*="activity-review-bouquet-vertical"] {
-        left: calc(var(--review-667-unit) * 242.64) !important;
-        top: calc(var(--review-667-unit) * 105.407) !important;
-        width: calc(var(--review-667-unit) * 41.169) !important;
-        height: calc(var(--review-667-unit) * 72.878) !important;
-      }
-      & > img[src*="activity-review-white-flowers"] {
-        left: calc(var(--review-667-unit) * 569.5) !important;
-        top: calc(var(--review-667-unit) * -20.843) !important;
-        width: calc(var(--review-667-unit) * 73.906) !important;
-        height: calc(var(--review-667-unit) * 73.906) !important;
-      }
-      & > img[src*="activity-review-iris-purple"] {
-        left: calc(var(--review-667-unit) * 595.96) !important;
-        top: calc(var(--review-667-unit) * 80.297) !important;
-        width: calc(var(--review-667-unit) * 53.747) !important;
-        height: calc(var(--review-667-unit) * 53.747) !important;
-      }
-      & > svg.wish-box-review-star {
-        /* Rebase the old centered 440-high decorative plane to the 375-high one. */
-        left: calc((var(--review-mobile-left) - var(--review-mobile-unit) * 86.888889) * var(--review-667-decoration-scale) + var(--review-667-unit) / 6) !important;
-        top: calc(var(--review-mobile-top) * var(--review-667-decoration-scale) - var(--review-667-unit) * 95.903) !important;
-        width: calc(var(--review-mobile-width) * var(--review-667-decoration-scale)) !important;
-        height: calc(var(--review-mobile-height) * var(--review-667-decoration-scale)) !important;
-      }
+    & [data-review-info-label] {
+      height: 18px !important;
+      gap: 4px !important;
+    }
 
-      & > [data-activity-review-return] {
-        left: 12px;
-        top: 19px;
-        width: 86px;
-        min-width: 0;
-        height: 40px;
-        min-height: 0;
-        border-radius: 10px;
-        filter: drop-shadow(0 4px 10.9px #000);
-      }
-      & > [data-activity-review-return] > img {
-        left: 14.5px;
-        top: 10.486px;
-        width: 22px;
-        height: 19.027px;
-      }
-      & > [data-activity-review-return] > span {
-        left: 43.5px;
-        top: 10px;
-        width: 28px;
-        height: 20px;
-        font-size: 14px;
-        line-height: 20px;
-        text-shadow: 0 0.6px 1.5px rgb(46 31 18 / 88%), 0 1px 4px rgb(46 31 18 / 40%);
-      }
+    & [data-review-info-label] > span:first-child {
+      width: 13px !important;
+      height: 13px !important;
+    }
+
+    & [data-review-info-label] > span:last-child {
+      font-size: 12.5px !important;
+      line-height: 18px !important;
+    }
+
+    & [data-review-info-content] {
+      font-size: 11.5px !important;
+      line-height: 17px !important;
+    }
+
+    & [data-review-info-content="location"],
+    & [data-review-info-content="time"] {
+      margin-bottom: 5px;
+    }
+
+    & [data-review-info-sparkle] {
+      left: calc(var(--review-667-unit) * 160.65 - 1px);
+      top: calc(var(--review-667-unit) * 151.65 - 1px);
+      width: calc(var(--review-667-unit) * 7.11);
+      height: calc(var(--review-667-unit) * 7.11);
+    }
+
+    & [data-review-header-petal="center"] {
+      left: calc(var(--review-667-unit) * 312.361) !important;
+      top: calc(50% + var(--review-667-unit) * 3.7155) !important;
+      width: calc(var(--review-667-unit) * 9.722) !important;
+      height: calc(var(--review-667-unit) * 7.292) !important;
+    }
+
+    & [data-review-header-petal="left"] {
+      left: calc(var(--review-667-unit) * 58.542) !important;
+      top: calc(50% - var(--review-667-unit) * 3.2295) !important;
+      width: calc(var(--review-667-unit) * 9.722) !important;
+      height: calc(var(--review-667-unit) * 7.292) !important;
+    }
+
+    & > img[src*="activity-review-header-petal-right"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 561.97) !important;
+      top: calc(var(--review-667-unit) * -21.943) !important;
+      width: calc(var(--review-667-unit) * 10.764) !important;
+      height: calc(var(--review-667-unit) * 8.333) !important;
+    }
+
+    & > img[src*="activity-review-rose"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 458.85) !important;
+      top: calc(var(--review-667-unit) * -35.833) !important;
+      width: calc(var(--review-667-unit) * 50.769) !important;
+      height: calc(var(--review-667-unit) * 53.022) !important;
+    }
+
+    & > img[src*="activity-review-bow"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 148.08) !important;
+      top: calc(var(--review-667-unit) * -37.223) !important;
+      width: calc(var(--review-667-unit) * 52.599) !important;
+      height: calc(var(--review-667-unit) * 52.599) !important;
+    }
+
+    & > img[src*="activity-review-bouquet-ribbon"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 233.75) !important;
+      top: calc(var(--review-667-unit) * 160.147) !important;
+      width: calc(var(--review-667-unit) * 86.962) !important;
+      height: calc(var(--review-667-unit) * 86.833) !important;
+    }
+
+    & > img[src*="activity-review-bouquet-vertical"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 242.64) !important;
+      top: calc(var(--review-667-unit) * 105.407) !important;
+      width: calc(var(--review-667-unit) * 41.169) !important;
+      height: calc(var(--review-667-unit) * 72.878) !important;
+    }
+
+    & > img[src*="activity-review-white-flowers"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 569.5) !important;
+      top: calc(var(--review-667-unit) * -20.843) !important;
+      width: calc(var(--review-667-unit) * 73.906) !important;
+      height: calc(var(--review-667-unit) * 73.906) !important;
+    }
+
+    & > img[src*="activity-review-iris-purple"] {
+      left: calc(var(--review-content-offset) + var(--review-667-unit) * 595.96) !important;
+      top: calc(var(--review-667-unit) * 80.297) !important;
+      width: calc(var(--review-667-unit) * 53.747) !important;
+      height: calc(var(--review-667-unit) * 53.747) !important;
+    }
+
+    & > svg.wish-box-review-star {
+      /* Rebase the old centered 440-high decorative plane to the 375-high one. */
+      left: calc(var(--review-content-offset) + (var(--review-mobile-left) - var(--review-mobile-unit) * 86.888889) * var(--review-667-decoration-scale) + var(--review-667-unit) / 6) !important;
+      top: calc(var(--review-mobile-top) * var(--review-667-decoration-scale) - var(--review-667-unit) * 95.903) !important;
+      width: calc(var(--review-mobile-width) * var(--review-667-decoration-scale)) !important;
+      height: calc(var(--review-mobile-height) * var(--review-667-decoration-scale)) !important;
+    }
+
+    & > [data-activity-review-return] {
+      left: 12px;
+      top: 19px;
+      width: 86px;
+      min-width: 0;
+      height: 40px;
+      min-height: 0;
+      border-radius: 10px;
+      filter: drop-shadow(0 4px 10.9px #000);
+    }
+
+    & > [data-activity-review-return] > img {
+      left: 14.5px;
+      top: 10.486px;
+      width: 22px;
+      height: 19.027px;
+    }
+
+    & > [data-activity-review-return] > span {
+      left: 43.5px;
+      top: 10px;
+      width: 28px;
+      height: 20px;
+      font-size: 14px;
+      line-height: 20px;
+      text-shadow: 0 0.6px 1.5px rgb(46 31 18 / 88%), 0 1px 4px rgb(46 31 18 / 40%);
     }
   }
 }
@@ -1127,61 +942,7 @@
     min-width: 96px;
   }
 }
-
-/* Keep PC retry feedback inside the existing header without shrinking its hit target. */
 @media not all and (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse) {
-  .wish-box-review-visual [data-activity-review-error] [data-activity-review-header]:has(> [role="status"] > button) {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    justify-items: center;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 20px;
-
-    & > [data-activity-review-title="status"] {
-      position: static;
-      min-width: 0;
-      max-width: 100%;
-      height: auto !important;
-    }
-
-    & > [role="status"] {
-      position: static;
-      flex-direction: row;
-      width: 100% !important;
-      height: auto !important;
-      gap: 12px !important;
-      font-size: 14px !important;
-      line-height: 20px;
-    }
-
-    & > [role="status"] > button {
-      flex: 0 0 80px;
-      box-sizing: border-box;
-      width: 80px;
-      height: 44px;
-      padding: 0 4px;
-      border: 1px solid #c7944d;
-      border-radius: 4px;
-      background: #fff9e9;
-      color: #243d61;
-      white-space: nowrap;
-      text-decoration: none;
-      outline-offset: 2px;
-
-      &:hover:not(:disabled) {
-        background: #f3ddb0;
-      }
-
-      &:focus-visible {
-        outline: 2px solid #243d61;
-      }
-
-      &:disabled {
-        opacity: 0.65;
-      }
-    }
-  }
 
   /* Keep the visible title to two lines; longer content remains scrollable. */
   .wish-box-review-visual > [data-activity-review-record-id] > [data-activity-review-header] > [data-activity-review-title="success"] > span {
