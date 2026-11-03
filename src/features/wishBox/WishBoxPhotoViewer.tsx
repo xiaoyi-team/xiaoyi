@@ -91,7 +91,7 @@ function ViewerContent({
             event.preventDefault();
             focusCloseControl();
           }}
-          style={{ ...mediaStyle, backgroundColor: "#FEF8EE", opacity: 0.55 }}
+          style={{ ...mediaStyle, opacity: 0.55 }}
         />
       ) : null}
 
@@ -107,7 +107,7 @@ function ViewerContent({
         style={{
           ...mediaStyle,
           visibility: status === "ready" ? "visible" : "hidden",
-          backgroundColor: media.source === "preview" ? media.placeholderColor : "#FEF8EE",
+          ...(media.source === "preview" ? { backgroundColor: media.placeholderColor } : {}),
         }}
       >
         {media.source === "record" ? (
