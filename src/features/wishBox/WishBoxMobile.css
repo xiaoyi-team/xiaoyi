@@ -1819,6 +1819,15 @@
 
 }
 
+.wish-box-scene [data-photo-viewer-placeholder] {
+  left: 16.4062500%;
+  top: 13.5575810%;
+  width: 66.6116396cqw;
+  height: 41.8173059cqw;
+  box-shadow: 0.3645833cqw 0.3125000cqw 0.5156250cqw rgba(0, 0, 0, 0.32);
+  transform: rotate(-0.735704deg);
+}
+
 .wish-box-scene [data-photo-viewer-return] {
   display: none;
 }
@@ -1891,24 +1900,24 @@
 
   /* Fit the 667 sample's bounds, retaining each photo's intrinsic aspect ratio. */
   .wish-box-scene [data-photo-viewer-placeholder] {
-    left: 50% !important;
-    top: 50% !important;
+    left: 50%;
+    top: 50%;
     max-width: var(--viewer-mobile-image-max-width);
     max-height: var(--viewer-mobile-image-max-height);
-    box-shadow: calc(var(--viewer-mobile-unit) * 3.139) calc(var(--viewer-mobile-unit) * 2.69) calc(var(--viewer-mobile-unit) * 4.439) rgb(0 0 0 / 32%) !important;
-    transform: translate(-50%, -50%) rotate(-0.735704deg) !important;
+    box-shadow: calc(var(--viewer-mobile-unit) * 3.139) calc(var(--viewer-mobile-unit) * 2.69) calc(var(--viewer-mobile-unit) * 4.439) rgb(0 0 0 / 32%);
+    transform: translate(-50%, -50%) rotate(-0.735704deg);
   }
 
   .wish-box-scene [data-photo-viewer-placeholder]:has(> img) {
-    width: max-content !important;
-    height: max-content !important;
+    width: max-content;
+    height: max-content;
     background-color: transparent !important;
   }
 
   /* Keep loading ownership without drawing a PC-shaped outline on mobile. */
   .wish-box-scene [role="dialog"][data-photo-viewer-record-id] > [data-photo-viewer-placeholder][aria-hidden="true"] {
     background-color: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none;
   }
 
   .wish-box-scene [data-photo-viewer-placeholder] > img {

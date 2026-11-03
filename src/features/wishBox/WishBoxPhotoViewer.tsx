@@ -5,12 +5,6 @@ import WishBoxLoading from "./WishBoxLoading";
 const toSceneCqw = (designPixels: number) =>
   `${(designPixels / 19.2).toFixed(7)}cqw`;
 
-const sceneX = (designPixels: number) =>
-  `${((designPixels / 1920) * 100).toFixed(7)}%`;
-
-const sceneY = (designPixels: number) =>
-  `${((designPixels / 1080) * 100).toFixed(7)}%`;
-
 export type PhotoViewerMedia =
   | { source: "record"; recordId: number; imgKey: string; imgUrl: string }
   | { source: "preview"; fixtureId: string; placeholderColor: string };
@@ -21,12 +15,6 @@ type WishBoxPhotoViewerProps = {
 };
 
 const mediaStyle = {
-  left: sceneX(315),
-  top: sceneY(146.421875),
-  width: toSceneCqw(1278.943481),
-  height: toSceneCqw(802.892273),
-  boxShadow: `${toSceneCqw(7)} ${toSceneCqw(6)} ${toSceneCqw(9.9)} rgba(0, 0, 0, 0.32)`,
-  transform: "rotate(-0.735704deg)",
   transformOrigin: "top left",
 };
 
