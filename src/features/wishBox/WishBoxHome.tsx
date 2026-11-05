@@ -30,7 +30,6 @@ function WishBoxHome({
   return (
     <div
       className="wish-box-home absolute inset-0"
-      style={{ opacity: inactive ? 0.41 : 1 }}
       inert={inactive}
       aria-hidden={inactive}
     >
