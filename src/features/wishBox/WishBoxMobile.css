@@ -848,12 +848,24 @@
         & > span {
           white-space: normal;
           text-overflow: clip;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
+          overscroll-behavior-y: contain;
+          scrollbar-width: none;
           overflow-wrap: anywhere;
 
-          /* A visual two-line guard, not a business title-length limit. */
+          /* Keep two visible lines; longer titles scroll inside the existing text box. */
           max-block-size: 2lh;
           max-width: 100%;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          &:focus-visible {
+            outline: 2px solid #4c392b;
+            outline-offset: -2px;
+          }
         }
       }
     }
