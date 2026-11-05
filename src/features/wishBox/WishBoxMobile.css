@@ -798,7 +798,7 @@
     height: auto;
     min-width: 0;
     overflow: visible;
-    white-space: pre-wrap !important;
+    white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 

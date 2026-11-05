@@ -708,8 +708,8 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             role={isPreview ? undefined : "region"}
             aria-label={isPreview ? undefined : "活动地点详情"}
             tabIndex={isPreview ? undefined : 0}
-            className={isPreview ? "absolute flex flex-col" : "absolute overflow-auto focus-visible:outline-2"}
-            style={{ left: toSceneCqw(161), top: toSceneCqw(26), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontWeight: 400, gap: toSceneCqw(14), whiteSpace: isPreview ? "nowrap" : "pre-wrap", overflowWrap: "anywhere" }}
+            className={isPreview ? "absolute flex flex-col whitespace-nowrap" : "absolute overflow-auto focus-visible:outline-2 whitespace-pre-wrap"}
+            style={{ left: toSceneCqw(161), top: toSceneCqw(26), color: "#1F3B66", fontFamily: '"Noto Serif SC", serif', fontWeight: 400, gap: toSceneCqw(14), overflowWrap: "anywhere" }}
           >
             {typeof reviewContent.location === "string" ? reviewContent.location : reviewContent.location.map((line) => <span key={line}>{line}</span>)}
           </div>
