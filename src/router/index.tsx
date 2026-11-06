@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import BarPage from "../pages/BarPage";
 import CandyHousePage from "../pages/CandyHousePage";
+import GasStationListPage from "../pages/GasStationListPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import SplashPage from "../pages/SplashPage";
@@ -22,12 +23,16 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: "/xiaoyi",
+    path: "/xiao-yi",
     element: <XiaoYiPage />,
   },
   {
-    path: "/candy-house",
+    path: "/Osborn-acheive",
     element: <CandyHousePage />,
+  },
+  {
+    path: "/GasStationList",
+    element: <GasStationListPage />,
   },
   {
     path: "/wish-box",

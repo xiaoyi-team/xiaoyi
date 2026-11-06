@@ -1,192 +1,83 @@
 import { Link } from "react-router";
 
-import homeBackground from "../../../assets/home/home-background.png";
-import homeLabelBar from "../../../assets/home/home-label-bar.png";
-import homeLabelCandyHouse from "../../../assets/home/home-label-candy-house.png";
-import homeLabelVote from "../../../assets/home/home-label-vote.png";
-import homeLabelWishBox from "../../../assets/home/home-label-wish-box.png";
-import homeLabelXiaoyi from "../../../assets/home/home-label-xiaoyi.png";
-import homeOverlayBar from "../../../assets/home/home-overlay-bar.png";
-import homeOverlayCandyHouse from "../../../assets/home/home-overlay-candy-house.png";
-import homeOverlayVote from "../../../assets/home/home-overlay-vote.png";
-import homeOverlayWishBox from "../../../assets/home/home-overlay-wish-box.png";
-import homeOverlayXiaoyi from "../../../assets/home/home-overlay-xiaoyi.png";
+import candyHouseTitle from "../../../assets/home/candy-house-home-title.png";
+import pitStopTitle from "../../../assets/home/pit-stop-home-title.png";
+import weedsBarTitle from "../../../assets/home/weeds-bar-home-title.png";
+import wishBoxTitle from "../../../assets/home/wish-box-home-title.png";
+import xiaoyiTitle from "../../../assets/home/xiaoyi-home-title.png";
+import xiaoyiLoveTitle from "../../../assets/home/xiaoyi-love-home-title.png";
 
 const homeEntries = [
   {
-    label: "萧逸家",
-    to: "/xiaoyi",
-    overlay: homeOverlayXiaoyi,
-    sign: homeLabelXiaoyi,
-    hotspot: {
-      left: "21.82%",
-      top: "38.43%",
-      width: "11.15%",
-      height: "16.48%",
-      zIndex: 13,
-    },
-    hover: {
-      left: "21.27%",
-      top: "37.6%",
-      width: "12.26%",
-      height: "18.13%",
-    },
-    signPosition: {
-      left: "12.4%",
-      top: "45%",
-      width: "12.86%",
-      height: "10%",
-    },
+    id: "xiao-yi",
+    title: "萧逸家",
+    image: xiaoyiTitle,
+    to: "/xiao-yi",
+    ariaLabel: "进入萧逸家",
   },
   {
-    label: "心愿盒",
+    id: "wish-box",
+    title: "心愿盒",
+    image: wishBoxTitle,
     to: "/wish-box",
-    overlay: homeOverlayWishBox,
-    sign: homeLabelWishBox,
-    hotspot: {
-      left: "25.16%",
-      top: "30.65%",
-      width: "19.11%",
-      height: "22.69%",
-      zIndex: 10,
-    },
-    hover: {
-      left: "24.43%",
-      top: "29.07%",
-      width: "21.03%",
-      height: "24.95%",
-    },
-    signPosition: {
-      left: "24.43%",
-      top: "28.43%",
-      width: "12.86%",
-      height: "10%",
-    },
+    ariaLabel: "进入心愿盒",
   },
   {
-    label: "报告老师我要玩萧与逸之恋",
-    to: "/vote",
-    overlay: homeOverlayVote,
-    sign: homeLabelVote,
-    hotspot: {
-      left: "36.93%",
-      top: "21.02%",
-      width: "29.32%",
-      height: "34.72%",
-      zIndex: 12,
-    },
-    hover: {
-      left: "33.96%",
-      top: "16.11%",
-      width: "35.48%",
-      height: "42.01%",
-    },
-    signPosition: {
-      left: "54.53%",
-      top: "20.65%",
-      width: "14.32%",
-      height: "10%",
-    },
+    id: "Osborn-acheive",
+    title: "糖果屋",
+    image: candyHouseTitle,
+    to: "/Osborn-acheive",
+    ariaLabel: "进入糖果屋",
   },
   {
-    label: "杂草酒吧",
+    id: "GasStationList",
+    title: "加油站",
+    image: pitStopTitle,
+    to: "/GasStationList",
+    ariaLabel: "进入加油站",
+  },
+  {
+    id: "bar",
+    title: "杂草酒吧",
+    image: weedsBarTitle,
     to: "/bar",
-    overlay: homeOverlayBar,
-    sign: homeLabelBar,
-    hotspot: {
-      left: "54.53%",
-      top: "42.41%",
-      width: "16.56%",
-      height: "19.63%",
-      zIndex: 14,
-    },
-    hover: {
-      left: "53.23%",
-      top: "38.15%",
-      width: "20.04%",
-      height: "23.75%",
-    },
-    signPosition: {
-      left: "64.32%",
-      top: "59.26%",
-      width: "14.32%",
-      height: "10%",
-    },
+    ariaLabel: "进入杂草酒吧",
   },
   {
-    label: "糖果屋",
-    to: "/candy-house",
-    overlay: homeOverlayCandyHouse,
-    sign: homeLabelCandyHouse,
-    hotspot: {
-      left: "71.51%",
-      top: "41.11%",
-      width: "9.69%",
-      height: "17.22%",
-      zIndex: 11,
-    },
-    hover: {
-      left: "70.36%",
-      top: "39.26%",
-      width: "11.72%",
-      height: "20.84%",
-    },
-    signPosition: {
-      left: "76.72%",
-      top: "37.04%",
-      width: "12.86%",
-      height: "10%",
-    },
+    id: "vote",
+    title: "萧与逸之恋",
+    image: xiaoyiLoveTitle,
+    to: "/vote",
+    ariaLabel: "进入萧与逸之恋",
   },
 ] as const;
 
 function HomeMap() {
   return (
-    <section
-      aria-label="首页地图"
-      className="relative aspect-video max-w-[1920px] overflow-hidden"
-      style={{ width: "min(100vw, calc(100vh * 16 / 9))" }}
+    <nav
+      aria-label="首页主题入口"
+      className="grid w-full max-w-6xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-6"
     >
-      <img
-        src={homeBackground}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
-        draggable={false}
-      />
-
       {homeEntries.map((entry) => (
-        <div
-          key={entry.to}
-          className="group pointer-events-none absolute inset-0"
+        <Link
+          key={entry.id}
+          to={entry.to}
+          aria-label={entry.ariaLabel}
+          title={entry.title}
+          className="block w-full max-w-[821px] justify-self-center rounded-sm outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-white motion-reduce:transition-none"
         >
           <img
-            src={entry.overlay}
+            src={entry.image}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute select-none object-contain opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+            className="pointer-events-none block h-auto w-full select-none"
             draggable={false}
-            style={entry.hover}
+            width={821}
+            height={234}
           />
-          <img
-            src={entry.sign}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute select-none object-contain opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"
-            draggable={false}
-            style={entry.signPosition}
-          />
-          <Link
-            to={entry.to}
-            aria-label={entry.label}
-            className="pointer-events-auto absolute cursor-pointer rounded-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            style={entry.hotspot}
-          >
-            <span className="sr-only">{entry.label}</span>
-          </Link>
-        </div>
+        </Link>
       ))}
-    </section>
+    </nav>
   );
 }
 

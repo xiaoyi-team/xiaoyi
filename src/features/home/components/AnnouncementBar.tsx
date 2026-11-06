@@ -34,7 +34,7 @@ function AnnouncementBar() {
       aria-busy={isLoading}
       aria-label="首页公告"
       aria-live="polite"
-      className="absolute inset-x-4 top-4 z-20 mx-auto max-w-3xl rounded-md bg-black/65 px-4 py-2 text-sm text-white shadow-md backdrop-blur-sm"
+      className="relative z-20 mx-auto w-full max-w-3xl rounded-md bg-black/65 px-4 py-2 text-sm text-white shadow-md backdrop-blur-sm"
     >
       {isLoading ? (
         <p className="text-center">公告加载中…</p>
