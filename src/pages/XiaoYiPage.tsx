@@ -5,12 +5,14 @@ import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
 import signInCalendar from "../assets/xiao-yi-scene/sign-in-calendar.png";
 import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
+import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
 import "./xiao-yi-page.css";
 
 const SCENE_WIDTH = 1920;
 const SCENE_HEIGHT = 1080;
 
 function XiaoYiPage() {
+  const statView = useSignInStat();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
@@ -83,7 +85,7 @@ function XiaoYiPage() {
           </div>
         </div>
       </div>
-      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} />
+      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} />
     </main>
   );
 }

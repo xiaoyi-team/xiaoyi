@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay, type SignInDemoState } from "./sign-in-demo";
+import type { SignInStatView } from "./useSignInStat";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -90,15 +91,17 @@ type SignInBoardProps = {
   titleId: string;
   mobile: boolean;
   demo: SignInDemoState;
+  statView?: SignInStatView;
   onSignIn: () => void;
 };
 
-function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
+function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardProps) {
   const [selectedDay, setSelectedDay] = useState(DEMO_TODAY);
   const quoteRef = useRef<HTMLDivElement>(null);
   const selected = getDemoDay(selectedDay, demo.todaySigned, demo.todayQuote);
   const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
   const signInLabel = demo.todaySigned ? "已签到" : "点击签到";
+  const totalDays = statView ? statView.kind === "ready" ? statView.totalDays : "—" : demo.totalDays;
 
   function handleSignIn() {
     setSelectedDay(DEMO_TODAY);
@@ -261,13 +264,15 @@ function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
         <Artwork src={titlePin} x={-50} y={119.253} width={93.854} height={66.875} />
       </header>
 
-      <section className="sign-in-board__rewards" aria-label="累计签到与奖励（设计样本）">
+      {statView && <p className="sign-in-board__sign-in-demo-note">签到与抽卡为本地演示，不会保存。</p>}
+
+      <section className="sign-in-board__rewards" aria-label={statView ? "真实累计签到与演示奖励进度" : "累计签到与奖励（设计样本）"}>
         <Artwork className="sign-in-board__rewards-paper" src={mobile ? rewardsPaperMobile : rewardsPaper} x={-6} y={-2} width={873} height={253} />
         <div className="sign-in-board__rewards-border" aria-hidden="true" />
         <Artwork src={rewardRivet} x={17} y={12} width={19} height={19} />
         <Artwork src={rewardRivet} x={824} y={11} width={19} height={19} />
         <p className="sign-in-board__total">
-          <span>已累计签到</span><strong>{demo.totalDays}</strong><span>天</span>
+          <span>{statView ? "真实累计" : "已累计签到"}</span><strong>{totalDays}</strong><span>天</span>
         </p>
         <Artwork src={starGoldRewards} x={338} y={33} width={26} height={26} />
         <div className="sign-in-board__progress" role="progressbar" aria-label="距离30天奖励的累计签到进度（设计样本）" aria-valuemin={0} aria-valuemax={DEMO_REWARD_TARGET} aria-valuenow={demo.totalDays}>
@@ -294,6 +299,20 @@ function SignInBoard({ titleId, mobile, demo, onSignIn }: SignInBoardProps) {
           ))}
         </ul>
       </section>
+      {statView && (
+        <div className="sign-in-board__reward-demo-note" aria-live="polite">
+          <span>进度与奖励状态为演示。</span>
+          {statView.kind === "initializing" && <span>正在确认登录状态。</span>}
+          {statView.kind === "guest" && <span>登录后查看累计签到。</span>}
+          {statView.kind === "loading" && <span>正在获取真实统计。</span>}
+          {statView.kind === "error" && (
+            <>
+              <span>统计获取失败。</span>
+              <button type="button" onClick={statView.retry}>重试</button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
