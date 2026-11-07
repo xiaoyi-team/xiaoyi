@@ -1,0 +1,143 @@
+.announcement-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 960px;
+  height: 56px;
+  min-height: 56px;
+  margin: 12px auto 12px;
+  padding: 0 18px 0 22px;
+  border: 1px solid #c2cbe0;
+  border-radius: 28px;
+  background: linear-gradient(175.55deg, #fff 0%, #f1f4fa 50%, #dde4f3 100%);
+  box-shadow: 0 7px 22px #26365129;
+  color: #202b4a;
+  font-family: "Noto Serif SC", serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.announcement-bar::before {
+  position: absolute;
+  z-index: 1;
+  inset: 5px;
+  border: 1px solid #ffffffe5;
+  border-radius: 23px;
+  content: "";
+  pointer-events: none;
+}
+
+.announcement-bar__icon {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0.7px solid #c4cee38c;
+  border-radius: 50%;
+  background: #ffffff99;
+  pointer-events: none;
+}
+
+.announcement-bar__icon img {
+  display: block;
+  width: 18px;
+  height: 15px;
+}
+
+.announcement-bar__icon--arrow img {
+  width: 7px;
+  height: 12px;
+}
+
+.announcement-bar__text {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+  margin-right: 280px;
+}
+
+.announcement-bar__text p {
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-bar__orbit,
+.announcement-bar__star,
+.announcement-bar__iris {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.announcement-bar__orbit {
+  top: 5px;
+  right: 132px;
+  width: 200px;
+  height: 46px;
+}
+
+.announcement-bar__orbit img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.announcement-bar__star--small {
+  top: 34px;
+  right: 204px;
+  width: 6px;
+  height: 6px;
+}
+
+.announcement-bar__star--large {
+  top: 14px;
+  right: 169px;
+  width: 13px;
+  height: 13px;
+}
+
+.announcement-bar__iris {
+  top: -20px;
+  right: 71px;
+  width: 94px;
+  height: 94px;
+}
+
+@media (max-width: 700px) {
+  .announcement-bar__text {
+    margin-right: 145px;
+  }
+
+  .announcement-bar__orbit {
+    top: 8px;
+    right: 65px;
+    width: 140px;
+    height: auto;
+  }
+
+  .announcement-bar__star--small {
+    right: 126px;
+  }
+
+  .announcement-bar__star--large {
+    right: 97px;
+  }
+
+  .announcement-bar__iris {
+    top: -9px;
+    right: 57px;
+    width: 70px;
+    height: 70px;
+  }
+}
