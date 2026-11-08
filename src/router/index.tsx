@@ -3,7 +3,7 @@ import BarPage from "../pages/BarPage";
 import CandyHousePage from "../pages/CandyHousePage";
 import GasStationListPage from "../pages/GasStationListPage";
 import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
+import Login from "../pages/Login";
 import SplashPage from "../pages/SplashPage";
 import VotePage from "../pages/VotePage";
 import WishBoxPage from "../pages/WishBoxPage";
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <Login />,
   },
   {
     path: "/home",
