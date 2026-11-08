@@ -1230,3 +1230,41 @@
   font-size: 7.7px;
   line-height: 11.2px;
 }
+
+/* Calendar status stays outside the fixed five-row calendar geometry. */
+.sign-in-board__calendar-status {
+  position: absolute;
+  top: 0;
+  left: 1000px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  border: 1px solid #c2a77e;
+  border-radius: 4px;
+  background: #fbf1de;
+  color: #101d49;
+  font: 500 16px/22px system-ui, sans-serif;
+}
+.sign-in-board__calendar-status button {
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.sign-in-board__calendar-status button:focus-visible {
+  outline: 2px solid #304bcc;
+  outline-offset: 2px;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-status {
+  top: 0;
+  left: 230px;
+  padding: 1px 5px;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 13px;
+}

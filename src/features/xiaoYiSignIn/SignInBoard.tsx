@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay, type SignInDemoState } from "./sign-in-demo";
+import type { SignInCalendarView } from "./useSignInCalendar";
 import type { SignInStatView } from "./useSignInStat";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
@@ -87,24 +88,56 @@ function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
   );
 }
 
+export type SignInCalendarBinding = {
+  view: SignInCalendarView;
+  selectedDate: string;
+  onSelectDate: (date: string) => void;
+  onReturnToday: () => void;
+};
+
 type SignInBoardProps = {
   titleId: string;
   mobile: boolean;
   demo: SignInDemoState;
   statView?: SignInStatView;
+  calendar?: SignInCalendarBinding;
   onSignIn: () => void;
 };
 
-function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardProps) {
-  const [selectedDay, setSelectedDay] = useState(DEMO_TODAY);
+function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: SignInBoardProps) {
+  const [demoSelectedDay, setDemoSelectedDay] = useState(DEMO_TODAY);
+  const selectedDay = calendar ? Number(calendar.selectedDate.slice(-2)) : demoSelectedDay;
+  const dateForDay = (day: number) => `2026-09-${String(day).padStart(2, "0")}`;
+  function selectDay(day: number) {
+    if (calendar) calendar.onSelectDate(dateForDay(day));
+    else setDemoSelectedDay(day);
+  }
+  function signedForDay(day: number): boolean | undefined {
+    if (!calendar) return getDemoDay(day, demo.todaySigned).signed;
+    return calendar.view.kind === "ready"
+      ? calendar.view.data.list.find((item) => item.day === day)?.is_signed
+      : undefined;
+  }
+  function statusForDay(day: number) {
+    if (!calendar) return getDemoDay(day, demo.todaySigned).status;
+    const signed = signedForDay(day);
+    return signed === undefined ? "签到状态待获取" : signed ? "已签到" : "未签到";
+  }
+  const showingDemoQuote = !!calendar && selectedDay === DEMO_TODAY && demo.todayQuote !== null;
   const quoteRef = useRef<HTMLDivElement>(null);
-  const selected = getDemoDay(selectedDay, demo.todaySigned, demo.todayQuote);
+  const selected = calendar ? {
+    weekday: ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date(Date.UTC(2026, 8, selectedDay)).getUTCDay()],
+    quoteFontSize: 30, quoteLineHeight: 45,
+    quote: showingDemoQuote ? demo.todayQuote! : "历史语录尚未接入。\n签到与抽卡仅为本地演示。",
+    footer: showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${statusForDay(selectedDay)} · 暂无语录数据`,
+  } : getDemoDay(selectedDay, demo.todaySigned, demo.todayQuote);
   const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
-  const signInLabel = demo.todaySigned ? "已签到" : "点击签到";
+  const signInLabel = calendar ? demo.todaySigned ? "演示完成" : "演示签到" : demo.todaySigned ? "已签到" : "点击签到";
   const totalDays = statView ? statView.kind === "ready" ? statView.totalDays : "—" : demo.totalDays;
 
   function handleSignIn() {
-    setSelectedDay(DEMO_TODAY);
+    if (calendar) calendar.onReturnToday();
+    else setDemoSelectedDay(DEMO_TODAY);
     onSignIn();
   }
 
@@ -131,8 +164,8 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
-        {(selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
-          <div className="sign-in-board__review-date" aria-label={`${DEMO_YEAR}年${DEMO_MONTH}月${selectedDay}日 ${selected.weekday}`}>
+        {(calendar || selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
+          <div className="sign-in-board__review-date" aria-label={`${showingDemoQuote ? "本地演示日期 " : ""}${DEMO_YEAR}年${DEMO_MONTH}月${selectedDay}日 ${selected.weekday}`}>
             <span className="sign-in-board__review-date-number">{DEMO_MONTH} / {selectedDay}</span>
             <span className="sign-in-board__review-weekday">{selected.weekday}</span>
           </div>
@@ -157,7 +190,7 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
         <Artwork src={iris} x={472} y={-37} width={290} height={495} />
         <Artwork className="sign-in-board__quote-label-paper" src={quoteLabelPaper} x={385} y={223.734} width={266.127} height={97.045} />
         <div className="sign-in-board__quote-label">
-          <h3>今日语录</h3>
+          <h3>{showingDemoQuote ? "演示语录" : "今日语录"}</h3>
         </div>
         <Artwork className="sign-in-board__quote-label-star" src={starBlue} x={421.109} y={255.805} width={32.501} height={32.501} />
         <Artwork src={paperclip} x={421} y={-32} width={57} height={114} />
@@ -171,12 +204,12 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
         <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
           <h3 className="sign-in-board__month">2026 · 09</h3>
-          <button type="button" className="sign-in-board__return-today" onClick={() => setSelectedDay(DEMO_TODAY)}>
+          <button type="button" className="sign-in-board__return-today" onClick={() => calendar ? calendar.onReturnToday() : setDemoSelectedDay(DEMO_TODAY)}>
             <span>返回今日</span>
           </button>
           <Artwork src={calendarArrows} x={447} y={89} width={158} height={24} />
           <div className="sign-in-board__month-rule" aria-hidden="true" />
-          <div className="sign-in-board__calendar-table" role="table" aria-label="2026年9月签到记录（设计样本）">
+          <div className="sign-in-board__calendar-table" role="table" aria-label={calendar ? "2026年9月真实签到记录" : "2026年9月签到记录（设计样本）"}>
             <div className="sign-in-board__weekdays" role="row">
               {weekdays.map((weekday) => (
                 <span role="columnheader" key={weekday}>{weekday}</span>
@@ -195,15 +228,15 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
                         <button
                           type="button"
                           className="sign-in-board__date-button"
-                          aria-label={`${DEMO_MONTH}月${day}日，${getDemoDay(day, demo.todaySigned).status}（演示）`}
+                          aria-label={calendar ? `${dateForDay(day)}，${statusForDay(day)}（真实日历）` : `${DEMO_MONTH}月${day}日，${getDemoDay(day, demo.todaySigned).status}（演示）`}
                           aria-pressed={selectedDay === day}
                           aria-current={day === DEMO_TODAY ? "date" : undefined}
-                          onClick={() => setSelectedDay(day)}
+                          onClick={() => selectDay(day)}
                         >
                           <span className={day === DEMO_TODAY ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
                             {day}
                           </span>
-                          {day !== DEMO_TODAY && getDemoDay(day, demo.todaySigned).signed && (
+                          {day !== DEMO_TODAY && signedForDay(day) && (
                             <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
                           )}
                           {selectedDay === day && (
@@ -224,7 +257,7 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
             </div>
           </div>
           <div className="sign-in-board__today-copy" aria-hidden="true">
-            {demo.todaySigned && (
+            {signedForDay(DEMO_TODAY) && (
               <img className="sign-in-board__today-stamp" src={signInStamp} alt="" draggable={false} />
             )}
             <span className="sign-in-board__today-number">24</span>
@@ -263,6 +296,17 @@ function SignInBoard({ titleId, mobile, demo, statView, onSignIn }: SignInBoardP
         <Artwork src={titleStar} x={327.838} y={-5.772} width={26} height={26} />
         <Artwork src={titlePin} x={-50} y={119.253} width={93.854} height={66.875} />
       </header>
+
+      {calendar && (
+        <div className="sign-in-board__calendar-status" role="status">
+          {calendar.view.kind === "initializing" && "正在确认登录状态。"}
+          {calendar.view.kind === "guest" && "登录后查看真实签到日历。"}
+          {calendar.view.kind === "loading" && "正在加载真实日历。"}
+          {calendar.view.kind === "ready" && "签到标记来自真实日历。"}
+          {calendar.view.kind === "invalid-month" && "日历月份无效。"}
+          {calendar.view.kind === "error" && <><span>日历获取失败。</span><button type="button" onClick={calendar.view.retry}>重试日历</button></>}
+        </div>
+      )}
 
       {statView && <p className="sign-in-board__sign-in-demo-note">签到与抽卡为本地演示，不会保存。</p>}
 

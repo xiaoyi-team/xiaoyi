@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import SignInBoard from "./SignInBoard";
+import SignInBoard, { type SignInCalendarBinding } from "./SignInBoard";
 import DrawCardOverlay from "./DrawCardOverlay";
 import { DEMO_DRAW_QUOTE, type SignInDemoState } from "./sign-in-demo";
 import type { SignInStatView } from "./useSignInStat";
@@ -11,6 +11,7 @@ type SignInOverlayProps = {
   onClose: () => void;
   children?: ReactNode;
   statView?: SignInStatView;
+  calendar?: SignInCalendarBinding;
 };
 
 function isOutsidePanel(
@@ -53,7 +54,7 @@ function readSignInBoardScale() {
   );
 }
 
-function SignInOverlay({ open, onClose, children, statView }: SignInOverlayProps) {
+function SignInOverlay({ open, onClose, children, statView, calendar }: SignInOverlayProps) {
   const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14, todayQuote: null });
   const [drawOpen, setDrawOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -180,7 +181,7 @@ function SignInOverlay({ open, onClose, children, statView }: SignInOverlayProps
                 : undefined
             }
           >
-            <SignInBoard titleId={titleId} mobile={boardScale === null} demo={demo} statView={statView} onSignIn={handleSignIn} />
+            <SignInBoard titleId={titleId} mobile={boardScale === null} demo={demo} statView={statView} calendar={calendar} onSignIn={handleSignIn} />
           </div>
         </div>
         {children}

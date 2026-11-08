@@ -5,6 +5,7 @@ import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
 import signInCalendar from "../assets/xiao-yi-scene/sign-in-calendar.png";
 import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
+import { useSignInCalendar } from "../features/xiaoYiSignIn/useSignInCalendar";
 import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
 import "./xiao-yi-page.css";
 
@@ -13,6 +14,8 @@ const SCENE_HEIGHT = 1080;
 
 function XiaoYiPage() {
   const statView = useSignInStat();
+  const calendarView = useSignInCalendar("2026-09");
+  const [selectedDate, setSelectedDate] = useState("2026-09-24");
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
@@ -85,7 +88,10 @@ function XiaoYiPage() {
           </div>
         </div>
       </div>
-      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} />
+      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} calendar={{
+        view: calendarView, selectedDate, onSelectDate: setSelectedDate,
+        onReturnToday: () => setSelectedDate("2026-09-24"),
+      }} />
     </main>
   );
 }
