@@ -1,4 +1,3 @@
-
 import {
   useCallback,
   useEffect,
@@ -10,6 +9,7 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 import { useAuth } from "../auth/AuthContext";
+import { getSafeRedirect } from "../auth/navigation";
 
 import {
   getCaptchaApi,
@@ -592,7 +592,7 @@ function Picker({
             ["一", "二", "三"][questionIndex]
           }`;
 
-  let options: string[] = [];
+  let options: string[];
 
   if (type === "month") {
     options = Array.from(
@@ -879,17 +879,11 @@ const forgotRequestVersionRef = useRef(0);
 
   const captchaUrlRef = useRef("");
   const loginAttemptRef = useRef(false);
+  const [enteredAuthenticated] = useState(() => isAuthenticated);
   // 保存本次登录返回的用户资料，避免成功弹窗读取到上一轮的 React 状态。
   const loginResultRef = useRef<Awaited<ReturnType<typeof login>> | null>(null);
 
-  const redirectPath =
-    (
-      location.state as {
-        from?: {
-          pathname?: string;
-        };
-      } | null
-    )?.from?.pathname || "/";
+  const redirectPath = getSafeRedirect(new URLSearchParams(location.search).get("redirect"));
 
   /* ==========================================================
      响应式画布
@@ -1008,9 +1002,19 @@ const forgotRequestVersionRef = useRef(0);
     }, []);
 
   useEffect(() => {
-    if (mode === "login") {
-      void refreshCaptcha();
+    if (mode !== "login") {
+      return;
     }
+
+    // 推迟至 Effect 完成后加载验证码，避免同步触发状态更新。
+    // 页面模式切换或组件卸载时取消尚未执行的任务。
+    const timer = window.setTimeout(() => {
+      void refreshCaptcha();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [mode, refreshCaptcha]);
 
   useEffect(() => {
@@ -1088,9 +1092,7 @@ const forgotRequestVersionRef = useRef(0);
       !dialog &&
       mode === "login"
     ) {
-      navigate("/", {
-        replace: true,
-      });
+      navigate(redirectPath, { replace: true });
     }
   }, [
     initializing,
@@ -1098,6 +1100,7 @@ const forgotRequestVersionRef = useRef(0);
     dialog,
     mode,
     navigate,
+    redirectPath,
   ]);
 
   /* ==========================================================
@@ -1983,6 +1986,8 @@ const handleForgotStepTwo = async (
      页面渲染
      ========================================================== */
 
+  if (initializing || (enteredAuthenticated && isAuthenticated)) return null;
+
   return (
     <main
       className="figma-auth-page"
@@ -2283,7 +2288,7 @@ const handleForgotStepTwo = async (
                     switchMode("register");
                   }}
                 >
-                  立即注册　›
+                  立即注册{"\u3000"}›
                 </button>
 
                 <button
@@ -2291,7 +2296,7 @@ const handleForgotStepTwo = async (
                   className="figma-auth-secondary figma-auth-secondary--guest"
                   onClick={enterGuestMode}
                 >
-                  游客模式　›
+                  游客模式{"\u3000"}›
                 </button>
               </div>
             </form>
@@ -2369,7 +2374,7 @@ const handleForgotStepTwo = async (
                         switchMode("login");
                       }}
                     >
-                      立即登录　›
+                      立即登录{"\u3000"}›
                     </button>
                   </div>
                 </form>
