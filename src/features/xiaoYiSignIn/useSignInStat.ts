@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../../auth/auth-context";
+import { useAuth } from "../../auth/AuthContext";
 import { getSignInStat } from "./sign-in-stat";
 
 const STAT_QUERY_KEY = ["xiaoYiSignIn", "stat"] as const;

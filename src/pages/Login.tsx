@@ -1,4 +1,3 @@
-
 import {
   useCallback,
   useEffect,
@@ -9,7 +8,8 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import { useAuth } from "../auth/auth-context";
+import { useAuth } from "../auth/AuthContext";
+import { getSafeRedirect } from "../auth/navigation";
 
 import {
   getCaptchaApi,
@@ -592,18 +592,25 @@ function Picker({
             ["一", "二", "三"][questionIndex]
           }`;
 
-  const options =
-    type === "month"
-      ? Array.from(
-          { length: 12 },
-          (_, index) => `${index + 1}月`
-        )
-      : type === "day"
-        ? Array.from(
-            { length: month ? MONTH_DAYS[month - 1] : 31 },
-            (_, index) => String(index + 1)
-          )
-        : QUESTION_OPTIONS[questionIndex];
+  let options: string[];
+
+  if (type === "month") {
+    options = Array.from(
+      { length: 12 },
+      (_, index) => `${index + 1}月`
+    );
+  } else if (type === "day") {
+    const daysInMonth = month
+      ? MONTH_DAYS[month - 1]
+      : 31;
+
+    options = Array.from(
+      { length: daysInMonth },
+      (_, index) => String(index + 1)
+    );
+  } else {
+    options = QUESTION_OPTIONS[questionIndex];
+  }
 
   return (
     <div
@@ -872,17 +879,11 @@ const forgotRequestVersionRef = useRef(0);
 
   const captchaUrlRef = useRef("");
   const loginAttemptRef = useRef(false);
+  const [enteredAuthenticated] = useState(() => isAuthenticated);
   // 保存本次登录返回的用户资料，避免成功弹窗读取到上一轮的 React 状态。
   const loginResultRef = useRef<Awaited<ReturnType<typeof login>> | null>(null);
 
-  const redirectPath =
-    (
-      location.state as {
-        from?: {
-          pathname?: string;
-        };
-      } | null
-    )?.from?.pathname || "/";
+  const redirectPath = getSafeRedirect(new URLSearchParams(location.search).get("redirect"));
 
   /* ==========================================================
      响应式画布
@@ -1001,11 +1002,19 @@ const forgotRequestVersionRef = useRef(0);
     }, []);
 
   useEffect(() => {
-    if (mode === "login") {
-      queueMicrotask(() => {
-        void refreshCaptcha();
-      });
+    if (mode !== "login") {
+      return;
     }
+
+    // 推迟至 Effect 完成后加载验证码，避免同步触发状态更新。
+    // 页面模式切换或组件卸载时取消尚未执行的任务。
+    const timer = window.setTimeout(() => {
+      void refreshCaptcha();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [mode, refreshCaptcha]);
 
   useEffect(() => {
@@ -1083,9 +1092,7 @@ const forgotRequestVersionRef = useRef(0);
       !dialog &&
       mode === "login"
     ) {
-      navigate("/", {
-        replace: true,
-      });
+      navigate(redirectPath, { replace: true });
     }
   }, [
     initializing,
@@ -1093,6 +1100,7 @@ const forgotRequestVersionRef = useRef(0);
     dialog,
     mode,
     navigate,
+    redirectPath,
   ]);
 
   /* ==========================================================
@@ -1977,6 +1985,8 @@ const handleForgotStepTwo = async (
   /* ==========================================================
      页面渲染
      ========================================================== */
+
+  if (initializing || (enteredAuthenticated && isAuthenticated)) return null;
 
   return (
     <main

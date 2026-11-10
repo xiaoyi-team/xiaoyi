@@ -13,7 +13,9 @@
  */
 
 import {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -39,8 +41,6 @@ import type {
   LoginParams,
   RegisterParams,
 } from "../types/auth";
-import { AuthContext } from "./auth-context";
-import type { AuthContextValue } from "./auth-context";
 
 /**
  * 判断用户资料是否完善。
@@ -78,6 +78,66 @@ function checkProfileFinished(
   return false;
 }
 
+/**
+ * AuthContext 对外提供的数据和方法
+ */
+interface AuthContextValue {
+  /**
+   * 当前用户信息
+   */
+  user: CurrentUser | null;
+
+  /**
+   * 是否已经登录。
+   *
+   * 只取决于登录 Token 是否有效，
+   * 不取决于个人资料是否完善。
+   */
+  isAuthenticated: boolean;
+  isLogin: boolean;
+
+  /**
+   * 是否正在恢复登录状态
+   */
+  initializing: boolean;
+  isLoading: boolean;
+
+  /**
+   * 当前用户资料是否完善
+   */
+  profileFinished: boolean;
+
+  /**
+   * 登录
+   */
+  login: (
+  params: LoginParams,
+  remember?: boolean
+) => Promise<CurrentUser | null>;
+
+  /**
+   * 注册
+   *
+   * 注册成功不自动登录。
+   */
+  register: (
+    params: RegisterParams
+  ) => Promise<string>;
+
+  /**
+   * 退出登录
+   */
+  logout: () => Promise<void>;
+
+  /**
+   * 重新获取当前用户资料
+   */
+  refreshUser: () => Promise<void>;
+}
+
+const AuthContext = createContext<
+  AuthContextValue | undefined
+>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -338,7 +398,9 @@ const login = useCallback(
     () => ({
       user,
       isAuthenticated,
+      isLogin: isAuthenticated,
       initializing,
+      isLoading: initializing,
       profileFinished,
       login,
       register,
@@ -362,4 +424,22 @@ const login = useCallback(
       {children}
     </AuthContext.Provider>
   );
+}
+
+/**
+ * 其他页面统一使用此 Hook
+ * 获取用户登录状态及资料。
+ */
+// 保持现有 useAuth 导入路径兼容；仅豁免该 Hook 的 Fast Refresh 导出检查。
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth(): AuthContextValue {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      "useAuth 必须在 AuthProvider 内使用"
+    );
+  }
+
+  return context;
 }
