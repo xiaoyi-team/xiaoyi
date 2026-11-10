@@ -94,11 +94,13 @@ interface AuthContextValue {
    * 不取决于个人资料是否完善。
    */
   isAuthenticated: boolean;
+  isLogin: boolean;
 
   /**
    * 是否正在恢复登录状态
    */
   initializing: boolean;
+  isLoading: boolean;
 
   /**
    * 当前用户资料是否完善
@@ -396,7 +398,9 @@ const login = useCallback(
     () => ({
       user,
       isAuthenticated,
+      isLogin: isAuthenticated,
       initializing,
+      isLoading: initializing,
       profileFinished,
       login,
       register,
@@ -426,6 +430,8 @@ const login = useCallback(
  * 其他页面统一使用此 Hook
  * 获取用户登录状态及资料。
  */
+// 保持现有 useAuth 导入路径兼容；仅豁免该 Hook 的 Fast Refresh 导出检查。
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
 
