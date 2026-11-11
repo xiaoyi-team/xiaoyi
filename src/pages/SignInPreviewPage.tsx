@@ -3,6 +3,8 @@ import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import DrawCardOverlay, { type DrawCardStage } from "../features/xiaoYiSignIn/DrawCardOverlay";
 import RewardNotice, { type RewardMilestone } from "../features/xiaoYiSignIn/RewardNotice";
 
+import { SIGN_IN_DEMO_DATE } from "../features/xiaoYiSignIn/sign-in-dates";
+
 function SignInPreviewPage() {
   const [open, setOpen] = useState(false);
   const [drawOpen, setDrawOpen] = useState(false);
@@ -39,6 +41,7 @@ function SignInPreviewPage() {
         </div>
       </SignInOverlay>
       <DrawCardOverlay
+        signInDate={SIGN_IN_DEMO_DATE}
         open={drawOpen}
         stage={mode === "auto" ? "waiting" : mode}
         autoPlay={mode === "auto"}

@@ -1,5 +1,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, DEMO_YEAR, getDemoDay, type SignInDemoState } from "./sign-in-demo";
+import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, getDemoDay, type SignInDemoState } from "./sign-in-demo";
+import YearMonthPicker from "./YearMonthPicker";
+import { createSignInMonth, isSupportedSignInDate, SIGN_IN_DEMO_DATE } from "./sign-in-dates";
 import type { SignInCalendarView } from "./useSignInCalendar";
 import type { SignInStatView } from "./useSignInStat";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
@@ -47,14 +49,8 @@ import todayGoldRing from "../../assets/xiao-yi-sign-in/today-gold-ring.svg";
 import todayTagPaper from "../../assets/xiao-yi-sign-in/today-tag-paper.png";
 import todayTagPaperMobile from "../../assets/xiao-yi-sign-in/today-tag-paper-mobile.png";
 
-// September 2026 and all displayed values are Figma fixtures, not business data.
+// DEV and the retained today treatment use September 2026 prototype fixtures.
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const calendarWeeks = Array.from({ length: 5 }, (_, week) =>
-  Array.from({ length: 7 }, (_, column) => {
-    const day = week * 7 + column;
-    return day >= 1 && day <= 30 ? day : null;
-  }),
-);
 const rewards = [
   { days: 30, gift: gift30, preview: reward30 },
   { days: 111, gift: gift111, preview: reward111 },
@@ -90,9 +86,13 @@ function Artwork({ src, x, y, width, height, className = "" }: ArtworkProps) {
 
 export type SignInCalendarBinding = {
   view: SignInCalendarView;
-  selectedDate: string;
+  todayDate: string;
+  yearMonth: string;
+  selectedDate: string | null;
+  onChangeMonth: (yearMonth: string) => void;
   onSelectDate: (date: string) => void;
   onReturnToday: () => void;
+  onSelectDemoDate: () => void;
 };
 
 type SignInBoardProps = {
@@ -106,15 +106,21 @@ type SignInBoardProps = {
 
 function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: SignInBoardProps) {
   const [demoSelectedDay, setDemoSelectedDay] = useState(DEMO_TODAY);
-  const selectedDay = calendar ? Number(calendar.selectedDate.slice(-2)) : demoSelectedDay;
-  const dateForDay = (day: number) => `2026-09-${String(day).padStart(2, "0")}`;
-  function selectDay(day: number) {
-    if (calendar) calendar.onSelectDate(dateForDay(day));
-    else setDemoSelectedDay(day);
+  const yearMonth = calendar?.yearMonth ?? "2026-09";
+  const grid = createSignInMonth(yearMonth);
+  const dateForDay = (day: number) => `${yearMonth}-${String(day).padStart(2, "0")}`;
+  const selectedDate = calendar ? calendar.selectedDate : dateForDay(demoSelectedDay);
+  const selectedDay = selectedDate ? Number(selectedDate.slice(-2)) : null;
+  const demoToday = SIGN_IN_DEMO_DATE;
+  const todayDate = calendar?.todayDate ?? demoToday;
+  const showingDemoMonth = yearMonth === demoToday.slice(0, 7);
+  function selectDate(date: string) {
+    if (calendar) calendar.onSelectDate(date);
+    else setDemoSelectedDay(Number(date.slice(-2)));
   }
   function signedForDay(day: number): boolean | undefined {
     if (!calendar) return getDemoDay(day, demo.todaySigned).signed;
-    return calendar.view.kind === "ready"
+    return calendar.view.kind === "ready" && calendar.view.data.yearMonth === yearMonth
       ? calendar.view.data.list.find((item) => item.day === day)?.is_signed
       : undefined;
   }
@@ -123,20 +129,20 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
     const signed = signedForDay(day);
     return signed === undefined ? "签到状态待获取" : signed ? "已签到" : "未签到";
   }
-  const showingDemoQuote = !!calendar && selectedDay === DEMO_TODAY && demo.todayQuote !== null;
+  const showingDemoQuote = !!calendar && selectedDate === demoToday && demo.todayQuote !== null;
   const quoteRef = useRef<HTMLDivElement>(null);
   const selected = calendar ? {
-    weekday: ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date(Date.UTC(2026, 8, selectedDay)).getUTCDay()],
+    weekday: selectedDate ? ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date(`${selectedDate}T00:00:00Z`).getUTCDay()] : "",
     quoteFontSize: 30, quoteLineHeight: 45,
     quote: showingDemoQuote ? demo.todayQuote! : "历史语录尚未接入。\n签到与抽卡仅为本地演示。",
-    footer: showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${statusForDay(selectedDay)} · 暂无语录数据`,
-  } : getDemoDay(selectedDay, demo.todaySigned, demo.todayQuote);
+    footer: showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · 暂无语录数据`,
+  } : getDemoDay(selectedDay ?? DEMO_TODAY, demo.todaySigned, demo.todayQuote);
   const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
   const signInLabel = calendar ? demo.todaySigned ? "演示完成" : "演示签到" : demo.todaySigned ? "已签到" : "点击签到";
   const totalDays = statView ? statView.kind === "ready" ? statView.totalDays : "—" : demo.totalDays;
 
   function handleSignIn() {
-    if (calendar) calendar.onReturnToday();
+    if (calendar) calendar.onSelectDemoDate();
     else setDemoSelectedDay(DEMO_TODAY);
     onSignIn();
   }
@@ -144,10 +150,11 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
   // Date or content changes restart reading; closing the mounted board does not.
   useLayoutEffect(() => {
     if (quoteRef.current) quoteRef.current.scrollTop = 0;
-  }, [selectedDay, selected.quote]);
+  }, [selectedDate, selected.quote]);
 
   return (
-    <div className="sign-in-board">
+    <div className="sign-in-board" data-calendar-rows={grid.rowCount}>
+      {calendar && !isSupportedSignInDate(todayDate) && <p className="sign-in-board__year-limit" role="status">当前日历仅支持2026年。</p>}
       {/* Final-render assets already contain their Figma rotation and shadow. */}
       <Artwork className="sign-in-board__root-art" src={coverLeft} x={99} y={32.286} width={909.708} height={831.347} />
       <Artwork className="sign-in-board__root-art" src={coverRight} x={836.632} y={79.259} width={744.423} height={765.874} />
@@ -164,9 +171,9 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
-        {(calendar || selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
-          <div className="sign-in-board__review-date" aria-label={`${showingDemoQuote ? "本地演示日期 " : ""}${DEMO_YEAR}年${DEMO_MONTH}月${selectedDay}日 ${selected.weekday}`}>
-            <span className="sign-in-board__review-date-number">{DEMO_MONTH} / {selectedDay}</span>
+        {selectedDate && (calendar || selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
+          <div className="sign-in-board__review-date" aria-label={`${showingDemoQuote ? "本地演示日期 " : ""}${grid.year}年${grid.month}月${selectedDay}日 ${selected.weekday}`}>
+            <span className="sign-in-board__review-date-number">{grid.month} / {selectedDay}</span>
             <span className="sign-in-board__review-weekday">{selected.weekday}</span>
           </div>
         )}
@@ -174,7 +181,7 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
           className="sign-in-board__quote-content"
           ref={quoteRef}
           role="region"
-          aria-label={`${DEMO_MONTH}月${selectedDay}日寄语，可纵向滚动查看`}
+          aria-label={selectedDate ? `${selectedDate}寄语，可纵向滚动查看` : "寄语，可纵向滚动查看"}
           tabIndex={0}
         >
           <p style={mobile ? undefined : {
@@ -203,22 +210,25 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
       <section className="sign-in-board__calendar" aria-label="签到日历">
         <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
-          <h3 className="sign-in-board__month">2026 · 09</h3>
+          {calendar ? <YearMonthPicker key={yearMonth} yearMonth={yearMonth} onChangeMonth={calendar.onChangeMonth} /> : <h3 className="sign-in-board__month">{grid.year} · {String(grid.month).padStart(2, "0")}</h3>}
           <button type="button" className="sign-in-board__return-today" onClick={() => calendar ? calendar.onReturnToday() : setDemoSelectedDay(DEMO_TODAY)}>
             <span>返回今日</span>
           </button>
           <Artwork src={calendarArrows} x={447} y={89} width={158} height={24} />
           <div className="sign-in-board__month-rule" aria-hidden="true" />
-          <div className="sign-in-board__calendar-table" role="table" aria-label={calendar ? "2026年9月真实签到记录" : "2026年9月签到记录（设计样本）"}>
+          <div className="sign-in-board__calendar-table" role="table" aria-label={`${grid.year}年${grid.month}月${calendar ? "真实签到记录" : "签到记录（设计样本）"}`}>
             <div className="sign-in-board__weekdays" role="row">
               {weekdays.map((weekday) => (
                 <span role="columnheader" key={weekday}>{weekday}</span>
               ))}
             </div>
             <div role="rowgroup">
-              {calendarWeeks.map((week, index) => (
+              {grid.weeks.map((week, index) => (
                 <div className="sign-in-board__week" role="row" key={index}>
-                  {week.map((day, column) => (
+                  {week.map((date, column) => {
+                    const day = date ? Number(date.slice(-2)) : null;
+                    const isToday = date === todayDate;
+                    return (
                     <div
                       className="sign-in-board__day"
                       role="cell"
@@ -228,19 +238,24 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
                         <button
                           type="button"
                           className="sign-in-board__date-button"
+                          data-today={calendar && isToday || undefined}
                           aria-label={calendar ? `${dateForDay(day)}，${statusForDay(day)}（真实日历）` : `${DEMO_MONTH}月${day}日，${getDemoDay(day, demo.todaySigned).status}（演示）`}
-                          aria-pressed={selectedDay === day}
-                          aria-current={day === DEMO_TODAY ? "date" : undefined}
-                          onClick={() => selectDay(day)}
+                          aria-pressed={selectedDate === date}
+                          aria-current={isToday ? "date" : undefined}
+                          onClick={() => date && selectDate(date)}
                         >
-                          <span className={day === DEMO_TODAY ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
+                          {calendar && isToday && <span className="sign-in-board__current-day-art" aria-hidden="true">
+                            <img src={todayGoldRing} alt="" draggable={false} />
+                            <img src={todayBlueCircle} alt="" draggable={false} />
+                          </span>}
+                          <span className={calendar ? "sign-in-board__date-number" : isToday ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
                             {day}
                           </span>
-                          {day !== DEMO_TODAY && signedForDay(day) && (
+                          {(calendar || !isToday) && signedForDay(day) && (
                             <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
                           )}
-                          {selectedDay === day && (
-                            mobile && day === DEMO_TODAY ? (
+                          {selectedDate === date && (
+                            !calendar && mobile && isToday ? (
                               <svg className="sign-in-board__selection-ring sign-in-board__selection-ring--today" width="31.49" height="31.49" viewBox="0 0 31.49 31.49" fill="none" aria-hidden="true">
                                 <circle cx="15.745" cy="15.745" r="15.369" stroke="#ad7e37" strokeWidth="0.752" />
                               </svg>
@@ -251,16 +266,17 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
                         </button>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ))}
             </div>
           </div>
-          <div className="sign-in-board__today-copy" aria-hidden="true">
-            {signedForDay(DEMO_TODAY) && (
+          {showingDemoMonth && <><div className="sign-in-board__today-copy" aria-hidden="true">
+            {!calendar && signedForDay(DEMO_TODAY) && (
               <img className="sign-in-board__today-stamp" src={signInStamp} alt="" draggable={false} />
             )}
-            <span className="sign-in-board__today-number">24</span>
+            {!calendar && <span className="sign-in-board__today-number">24</span>}
             <span className="sign-in-board__sign-in-label">{signInLabel}</span>
           </div>
           <button
@@ -268,15 +284,15 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
             className="sign-in-board__sign-in-button"
             aria-label={`${DEMO_MONTH}月${DEMO_TODAY}日，${signInLabel}（本地演示）`}
             onClick={handleSignIn}
-          />
+          /></>}
         </div>
         {/* These decorations are exported in the parent's rotated coordinates. */}
-        <div className="sign-in-board__today-art" aria-hidden="true">
-          <Artwork className="sign-in-board__today-gold" src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />
-          <Artwork className="sign-in-board__today-blue" src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />
+        {showingDemoMonth && <div className="sign-in-board__today-art" aria-hidden="true">
+          {!calendar && <Artwork className="sign-in-board__today-gold" src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />}
+          {!calendar && <Artwork className="sign-in-board__today-blue" src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />}
           <Artwork className="sign-in-board__today-paper" src={mobile ? todayTagPaperMobile : todayTagPaper} x={308.004} y={384.563} width={144.922} height={64.487} />
-          <Artwork className="sign-in-board__today-star" src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />
-        </div>
+          {!calendar && <Artwork className="sign-in-board__today-star" src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />}
+        </div>}
       </section>
 
       {[0, 1, 2, 3, 4].map((index) => (

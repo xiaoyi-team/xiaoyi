@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import atticBackground from "../assets/xiao-yi-scene/attic-background.png";
 import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
@@ -7,6 +7,7 @@ import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import { useSignInCalendar } from "../features/xiaoYiSignIn/useSignInCalendar";
 import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
+import { createSignInDateState, getBeijingDate, getNextBeijingMidnight, signInDateReducer } from "../features/xiaoYiSignIn/sign-in-dates";
 import "./xiao-yi-page.css";
 
 const SCENE_WIDTH = 1920;
@@ -14,13 +15,39 @@ const SCENE_HEIGHT = 1080;
 
 function XiaoYiPage() {
   const statView = useSignInStat();
-  const calendarView = useSignInCalendar("2026-09");
-  const [selectedDate, setSelectedDate] = useState("2026-09-24");
+  const [{ todayDate, yearMonth, selectedDate }, dispatchDate] = useReducer(
+    signInDateReducer, null, () => createSignInDateState(new Date()),
+  );
+  const calendarView = useSignInCalendar(yearMonth);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
   // A touch hold does not consistently retain the native :active pseudo-class.
   const [signInPressed, setSignInPressed] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    function schedule() {
+      clearTimeout(timer);
+      const now = new Date();
+      timer = setTimeout(refreshToday, Math.max(1, getNextBeijingMidnight(now) - now.getTime()));
+    }
+    function refreshToday() {
+      dispatchDate({ type: "refresh-today", date: getBeijingDate(new Date()) });
+      schedule();
+    }
+    function onVisibility() {
+      if (document.visibilityState === "visible") refreshToday();
+    }
+    schedule();
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", refreshToday);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", refreshToday);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -80,7 +107,10 @@ function XiaoYiPage() {
               onPointerUp={() => setSignInPressed(false)}
               onPointerCancel={() => setSignInPressed(false)}
               onPointerLeave={() => setSignInPressed(false)}
-              onClick={() => setSignInOpen(true)}
+              onClick={() => {
+                dispatchDate({ type: "refresh-today", date: getBeijingDate(new Date()) });
+                setSignInOpen(true);
+              }}
             >
               <img className="xiao-yi-page__calendar" src={signInCalendar} width={83} height={104} alt="" draggable={false} />
               <img className="xiao-yi-page__wordmark" src={signInWordmark} width={262} height={108} alt="" draggable={false} />
@@ -89,8 +119,11 @@ function XiaoYiPage() {
         </div>
       </div>
       <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} calendar={{
-        view: calendarView, selectedDate, onSelectDate: setSelectedDate,
-        onReturnToday: () => setSelectedDate("2026-09-24"),
+        view: calendarView, todayDate, yearMonth, selectedDate,
+        onSelectDate: (date) => dispatchDate({ type: "select", date }),
+        onChangeMonth: (month) => dispatchDate({ type: "month", yearMonth: month }),
+        onReturnToday: () => dispatchDate({ type: "return-today", date: getBeijingDate(new Date()) }),
+        onSelectDemoDate: () => dispatchDate({ type: "select-demo-date" }),
       }} />
     </main>
   );

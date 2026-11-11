@@ -11,9 +11,12 @@ import starUpperDivider from "../../assets/xiao-yi-sign-in/draw-card-star-upper-
 import starLowerDivider from "../../assets/xiao-yi-sign-in/draw-card-star-lower-divider.svg";
 import "./draw-card.css";
 
+import { formatSignInCardDate } from "./sign-in-dates";
+
 export type DrawCardStage = "waiting" | "drawn" | "settled";
 
 type DrawCardOverlayProps = {
+  signInDate: string;
   open: boolean;
   stage?: DrawCardStage;
   autoPlay?: boolean;
@@ -43,6 +46,7 @@ function readPageHidden() {
 }
 
 type DrawCardSceneProps = {
+  signInDate: string;
   stage: DrawCardStage;
   autoPlay: boolean;
   mobile: boolean;
@@ -50,7 +54,8 @@ type DrawCardSceneProps = {
   onCollect?: () => void;
 };
 
-function DrawCardScene({ stage, autoPlay, mobile, scale, onCollect }: DrawCardSceneProps) {
+function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }: DrawCardSceneProps) {
+  const { dateText, weekday } = formatSignInCardDate(signInDate);
   const [isSettled, setIsSettled] = useState(
     () => autoPlay && window.matchMedia(REDUCED_MOTION).matches,
   );
@@ -113,10 +118,10 @@ function DrawCardScene({ stage, autoPlay, mobile, scale, onCollect }: DrawCardSc
                 </span>
               ))}
               <h3 className="draw-card-scene__title">今日寄语</h3>
-              {/* Fixed Figma card copy, not the C1 business date calculation. */}
+              {/* The host supplies the date associated with this draw. */}
               <div className="draw-card-scene__date-row">
-                <span className="draw-card-scene__date">9 / 24</span>
-                <span className="draw-card-scene__weekday">Wed.</span>
+                <span className="draw-card-scene__date">{dateText}</span>
+                <span className="draw-card-scene__weekday">{weekday}</span>
               </div>
               <p className="draw-card-scene__quote">
                 {mobile ? <>赛车的终点<br />是赛道的尽头，<br />而我的终点<br />是你的身边。</> : <>赛车的终点是赛道的尽头，<br />而我的终点是你的身边。</>}
@@ -142,7 +147,7 @@ function DrawCardScene({ stage, autoPlay, mobile, scale, onCollect }: DrawCardSc
   );
 }
 
-function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, onCollect, children }: DrawCardOverlayProps) {
+function DrawCardOverlay({ signInDate, open, stage = "waiting", autoPlay = false, onCollect, children }: DrawCardOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const collectedRef = useRef(false);
   const scale = useSyncExternalStore(subscribeToViewport, readBoardScale);
@@ -183,7 +188,7 @@ function DrawCardOverlay({ open, stage = "waiting", autoPlay = false, onCollect,
           style={mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
         >
           {/* A fresh scene owns each opening; resize never changes its key. */}
-          <DrawCardScene key={autoPlay ? "auto" : "static"} stage={stage} autoPlay={autoPlay} mobile={mobile} scale={scale} onCollect={onCollect ? handleCollect : undefined} />
+          <DrawCardScene signInDate={signInDate} key={autoPlay ? "auto" : "static"} stage={stage} autoPlay={autoPlay} mobile={mobile} scale={scale} onCollect={onCollect ? handleCollect : undefined} />
         </div>
       )}
       {children}

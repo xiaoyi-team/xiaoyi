@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import SignInBoard, { type SignInCalendarBinding } from "./SignInBoard";
 import DrawCardOverlay from "./DrawCardOverlay";
+import { SIGN_IN_DEMO_DATE } from "./sign-in-dates";
 import { DEMO_DRAW_QUOTE, type SignInDemoState } from "./sign-in-demo";
 import type { SignInStatView } from "./useSignInStat";
 import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
@@ -43,15 +44,7 @@ function readSignInBoardScale() {
     viewportHeight <= 0
   ) return 0;
 
-  const sceneScale = Math.min(1, viewportWidth / 1920, viewportHeight / 1080);
-
-  // Both rectangles are centered. Their intersection takes the smaller span;
-  // viewportScale already includes the 16px safety margin, so do not deduct it again.
-  return Math.min(
-    viewportScale,
-    1920 * sceneScale / BOARD_WIDTH,
-    1080 * sceneScale / BOARD_HEIGHT,
-  );
+  return Math.min(1, viewportWidth / BOARD_WIDTH, viewportHeight / BOARD_HEIGHT);
 }
 
 function SignInOverlay({ open, onClose, children, statView, calendar }: SignInOverlayProps) {
@@ -192,7 +185,7 @@ function SignInOverlay({ open, onClose, children, statView, calendar }: SignInOv
   return (
     <>
       {signInDialog}
-      <DrawCardOverlay open={open && drawOpen} autoPlay onCollect={handleCollect} />
+      <DrawCardOverlay signInDate={SIGN_IN_DEMO_DATE} open={open && drawOpen} autoPlay onCollect={handleCollect} />
     </>
   );
 }
