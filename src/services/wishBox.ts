@@ -8,11 +8,16 @@ export type SupportRecordListItem = {
   act_category: string
   act_kind: string
   location: string | null
-  content: string | null
-  link: string | null
   cover_img: PhotoItem | null
-  content_photo_list: Record<string, unknown>[]
-  template_type: string
+  content_photo_list: PhotoItem[]
+  timeline_enable: boolean
+  timeline_photo_list: PhotoItem[]
+  timeline_link: string | null
+  notice_enable: boolean
+  notice_is_show: boolean
+  notice_layout_config: unknown
+  created_at: string
+  updated_at: string
 }
 
 export type PhotoItem = {
@@ -23,19 +28,9 @@ export type PhotoItem = {
   pos_y?: number
 }
 
-export type SupportRecordDetail = {
-  id: number
-  title: string
-  start_time: string
-  end_time: string
-  act_category: string
-  act_kind: string
-  location: string | null
+export type SupportRecordDetail = SupportRecordListItem & {
   content: string | null
-  link: string | null
-  cover_img: PhotoItem | null
-  content_photo_list: Record<string, unknown>[]
-  template_type: string
+  block_list: Record<string, unknown>[]
 }
 
 export type NoticeLayoutConfigDto = {
@@ -75,16 +70,12 @@ export type GlobalNoticeDto = {
 }
 
 export type SupportRecordListParams = {
-  plate?: 'timeline' | 'notice'
-  year?: string
   act_kind?: string
   act_category?: string
 }
 
 export function normalizeSupportRecordListParams(params: SupportRecordListParams = {}) {
   return {
-    plate: params.plate,
-    year: params.year,
     act_kind: params.act_kind,
     act_category: params.act_category,
   }
@@ -97,13 +88,11 @@ export async function getSupportRecords(
   const normalized = normalizeSupportRecordListParams(params)
   const search = new URLSearchParams()
 
-  if (normalized.plate !== undefined) search.set('plate', normalized.plate)
-  if (normalized.year !== undefined) search.set('year', normalized.year)
   if (normalized.act_kind !== undefined) search.set('act_kind', normalized.act_kind)
   if (normalized.act_category !== undefined) search.set('act_category', normalized.act_category)
 
   const query = search.toString()
-  const response = await request(`/support_record/list${query ? `?${query}` : ''}`, { signal })
+  const response = await request(`/support_record/timeline/list${query ? `?${query}` : ''}`, { signal })
   if (!Array.isArray(response)) {
     throw new Error('Invalid support record list response: expected an array')
   }

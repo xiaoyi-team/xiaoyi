@@ -12,11 +12,9 @@ export function useSupportRecords(params: SupportRecordListParams = {}) {
     queryKey: [
       'wishBox',
       'supportRecords',
-      'list',
-      normalized.plate ?? null,
-      normalized.year ?? null,
-      normalized.act_kind ?? null,
+      'timeline',
       normalized.act_category ?? null,
+      normalized.act_kind ?? null,
     ],
     queryFn: ({ signal }) => getSupportRecords(normalized, signal),
   })

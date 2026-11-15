@@ -11,6 +11,13 @@ export type TimelineRecord = {
   coverPosY: number;
 };
 
+export function filterTimelineRecordsByYear(
+  records: readonly TimelineRecord[],
+  year: number | null,
+): TimelineRecord[] {
+  return year === null ? [...records] : records.filter((record) => record.startDate.year === year);
+}
+
 const BEIJING_DATETIME_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/;
 
@@ -53,7 +60,8 @@ function normalizeCoverPosition(value: unknown): number {
 export function mapSupportRecordsToTimeline(
   records: readonly SupportRecordListItem[],
 ): TimelineRecord[] {
-  // Backend order is start_time DESC, id DESC; never reverse the cached array in place.
+  // Backend order is start_time DESC. Reverse a copy for the existing visual direction;
+  // no same-time tie-breaker is assumed, and the cached response is never mutated.
   return [...records].reverse().map((record) => {
     if (typeof record.id !== "number" || !Number.isSafeInteger(record.id) || record.id <= 0) {
       throw new Error("Timeline mapping error, id: expected a positive safe integer.");

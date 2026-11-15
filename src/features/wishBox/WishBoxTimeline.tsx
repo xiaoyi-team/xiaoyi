@@ -10,7 +10,7 @@ import type { ActivityReviewSelection } from "./WishBoxActivityReview";
 import TimelineCard from "./TimelineCard";
 import WishBoxLoading from "./WishBoxLoading";
 import { useSupportRecords } from "./hooks/useSupportRecords";
-import { mapSupportRecordsToTimeline } from "./timelineData";
+import { filterTimelineRecordsByYear, mapSupportRecordsToTimeline } from "./timelineData";
 import {
   deriveTimelinePresentation,
   getTimelineSlotX,
@@ -308,22 +308,25 @@ function WishBoxTimeline({
   const [feedbackIntent, setFeedbackIntent] = useState<FeedbackIntent>(null);
   const filterKey = JSON.stringify([selectedYear, selectedKind, selectedForm]);
   const query = useSupportRecords({
-    plate: "timeline",
-    year: selectedYear === "全部" ? undefined : selectedYear,
     act_kind: selectedKind === "全部种类" ? undefined : selectedKind,
     act_category: selectedForm === "全部" ? undefined : selectedForm,
   });
   const mappingResult = useMemo<TimelineMappingResult>(() => {
     if (query.data === undefined) return { status: "pending" };
     try {
+      const timelineRecords = mapSupportRecordsToTimeline(query.data);
+      const yearFilteredRecords = filterTimelineRecordsByYear(
+        timelineRecords,
+        selectedYear === "全部" ? null : Number(selectedYear),
+      );
       return {
         status: "success",
-        presentation: deriveTimelinePresentation(mapSupportRecordsToTimeline(query.data)),
+        presentation: deriveTimelinePresentation(yearFilteredRecords),
       };
     } catch (error) {
       return { status: "error", error };
     }
-  }, [query.data]);
+  }, [query.data, selectedYear]);
   const currentPresentation = mappingResult.status === "success" ? mappingResult.presentation : null;
   const [lastPresentation, setLastPresentation] = useState<TimelinePresentation | null>(null);
   // This is a display snapshot only; never write it into the target Query's cache.

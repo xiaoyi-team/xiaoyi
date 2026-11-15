@@ -67,18 +67,18 @@ function normalizePhotoPosition(value: unknown): number {
 
 function mapReviewPhotos(value: unknown, recordId: number): ReviewPhotos {
   if (!Array.isArray(value)) {
-    return invalidPhotos(recordId, "content_photo_list", "expected an array.");
+    return invalidPhotos(recordId, "timeline_photo_list", "expected an array.");
   }
   if (value.length === 0) return { status: "empty" };
   if (value.length > 6) {
-    return invalidPhotos(recordId, "content_photo_list", `expected at most 6 photos, received ${value.length}.`);
+    return invalidPhotos(recordId, "timeline_photo_list", `expected at most 6 photos, received ${value.length}.`);
   }
 
   const items: ReviewPhoto[] = [];
   const seenKeys = new Set<string>();
   for (let index = 0; index < value.length; index++) {
     const photo: unknown = value[index];
-    const path = `content_photo_list[${index}]`;
+    const path = `timeline_photo_list[${index}]`;
     if (!isPlainObject(photo)) {
       return invalidPhotos(recordId, path, "expected a plain object.");
     }
@@ -149,6 +149,6 @@ export function mapSupportRecordDetailToReview(
     endDate,
     location: detail.location,
     content: detail.content,
-    photos: mapReviewPhotos(detail.content_photo_list, detail.id),
+    photos: mapReviewPhotos(detail.timeline_photo_list, detail.id),
   };
 }
