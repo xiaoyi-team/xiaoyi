@@ -809,31 +809,33 @@ function WishBoxTimeline({
             >
               这段花径还未盛放
             </h2>
-            <p
-              className="m-0 text-[#647568]"
-              style={{ fontSize: "clamp(16px, 1.0416667cqw, 20px)", lineHeight: 1.5 }}
-            >
-              换一种筛选，寻找其他相遇
-            </p>
-            {hasActiveFilters ? (
-              <button
-                type="button"
-                onClick={() => {
-                  backButtonRef.current?.focus({ preventScroll: true });
-                  onFiltersChange({ year: "全部", kind: "全部种类", form: "全部" });
-                }}
-                className="pointer-events-auto cursor-pointer rounded-full border border-[#9BA68F] bg-[#FAF8F0] px-7 py-2.5 text-[#465B49] transition-colors hover:bg-[#F0F2E9] active:bg-[#E5EADD] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#465B49] motion-reduce:transition-none"
-                style={{
-                  minWidth: "140px",
-                  minHeight: "48px",
-                  fontSize: "clamp(16px, 0.9375cqw, 18px)",
-                  lineHeight: 1.5,
-                  textShadow: "none",
-                }}
+            <div data-timeline-empty-group>
+              <p
+                className="m-0 text-[#647568]"
+                style={{ fontSize: "clamp(16px, 1.0416667cqw, 20px)", lineHeight: 1.5 }}
               >
-                清除筛选
-              </button>
-            ) : null}
+                换一种筛选，寻找其他相遇
+              </p>
+              {hasActiveFilters ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    backButtonRef.current?.focus({ preventScroll: true });
+                    onFiltersChange({ year: "全部", kind: "全部种类", form: "全部" });
+                  }}
+                  className="pointer-events-auto cursor-pointer rounded-full border border-[#9BA68F] bg-[#FAF8F0] px-7 py-2.5 text-[#465B49] transition-colors hover:bg-[#F0F2E9] active:bg-[#E5EADD] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#465B49] motion-reduce:transition-none"
+                  style={{
+                    minWidth: "140px",
+                    minHeight: "48px",
+                    fontSize: "clamp(16px, 0.9375cqw, 18px)",
+                    lineHeight: 1.5,
+                    textShadow: "none",
+                  }}
+                >
+                  清除筛选
+                </button>
+              ) : null}
+            </div>
           </div>
         ) : null}
       </div>
