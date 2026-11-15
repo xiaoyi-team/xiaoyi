@@ -1,9 +1,12 @@
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
+import { useAuth } from "../auth/AuthContext";
+import { useGoLogin } from "../auth/navigation";
 import atticBackground from "../assets/xiao-yi-scene/attic-background.png";
 import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
 import signInCalendar from "../assets/xiao-yi-scene/sign-in-calendar.png";
 import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
+import GuestLoginPrompt from "../features/xiaoYiGuestLogin/GuestLoginPrompt";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import { useSignInCalendar } from "../features/xiaoYiSignIn/useSignInCalendar";
 import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
@@ -14,6 +17,8 @@ const SCENE_WIDTH = 1920;
 const SCENE_HEIGHT = 1080;
 
 function XiaoYiPage() {
+  const { initializing, isAuthenticated, user, refreshUser } = useAuth();
+  const goLogin = useGoLogin();
   const statView = useSignInStat();
   const [{ todayDate, yearMonth, selectedDate }, dispatchDate] = useReducer(
     signInDateReducer, null, () => createSignInDateState(new Date()),
@@ -22,6 +27,8 @@ function XiaoYiPage() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
+  const [guestLoginOpen, setGuestLoginOpen] = useState(false);
+  const [profileRefreshState, setProfileRefreshState] = useState<"idle" | "loading" | "success" | "error">("idle");
   // A touch hold does not consistently retain the native :active pseudo-class.
   const [signInPressed, setSignInPressed] = useState(false);
 
@@ -97,9 +104,11 @@ function XiaoYiPage() {
             <button
               className="xiao-yi-page__sign-in"
               type="button"
+              disabled={profileRefreshState === "loading"}
               aria-label="打开每日逸签"
               aria-haspopup="dialog"
-              aria-expanded={signInOpen}
+              aria-expanded={signInOpen || guestLoginOpen}
+              aria-busy={profileRefreshState === "loading"}
               data-pressed={signInPressed || undefined}
               onPointerDown={(event) => {
                 if (event.isPrimary && event.pointerType === "touch") setSignInPressed(true);
@@ -108,6 +117,26 @@ function XiaoYiPage() {
               onPointerCancel={() => setSignInPressed(false)}
               onPointerLeave={() => setSignInPressed(false)}
               onClick={() => {
+                if (initializing) return;
+
+                if (!isAuthenticated) {
+                  setProfileRefreshState("idle");
+                  setGuestLoginOpen(true);
+                  return;
+                }
+
+                if (user === null) {
+                  if (profileRefreshState === "loading") return;
+
+                  setProfileRefreshState("loading");
+                  void refreshUser().then(
+                    () => setProfileRefreshState("success"),
+                    () => setProfileRefreshState("error"),
+                  );
+                  return;
+                }
+
+                setProfileRefreshState("idle");
                 dispatchDate({ type: "refresh-today", date: getBeijingDate(new Date()) });
                 setSignInOpen(true);
               }}
@@ -118,6 +147,36 @@ function XiaoYiPage() {
           </div>
         </div>
       </div>
+      {profileRefreshState !== "idle" && (
+        <div
+          role={profileRefreshState === "error" ? "alert" : "status"}
+          aria-live={profileRefreshState === "error" ? "assertive" : "polite"}
+          style={{
+            position: "fixed",
+            zIndex: 5,
+            right: 16,
+            bottom: 16,
+            maxWidth: "min(420px, calc(100vw - 32px))",
+            padding: "12px 16px",
+            borderRadius: 8,
+            background: "rgba(20, 24, 32, 0.94)",
+            color: "#fff",
+            boxShadow: "0 4px 18px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          {profileRefreshState === "loading" && "正在恢复登录资料…"}
+          {profileRefreshState === "success" && "认证状态已更新，请再次点击入口继续。"}
+          {profileRefreshState === "error" && "登录资料暂时无法恢复，请再次点击入口重试。"}
+        </div>
+      )}
+      <GuestLoginPrompt
+        open={guestLoginOpen}
+        onClose={() => setGuestLoginOpen(false)}
+        onLogin={() => {
+          setGuestLoginOpen(false);
+          goLogin();
+        }}
+      />
       <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} calendar={{
         view: calendarView, todayDate, yearMonth, selectedDate,
         onSelectDate: (date) => dispatchDate({ type: "select", date }),
