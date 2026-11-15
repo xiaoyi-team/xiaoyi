@@ -1,18 +1,17 @@
 import { useEffect, useRef } from "react";
 import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
-import AnnouncementBoard, {
-  type AnnouncementDisplayFixture,
-} from "./AnnouncementBoard";
-
-export type { AnnouncementDisplayFixture } from "./AnnouncementBoard";
+import AnnouncementBoard from "./AnnouncementBoard";
+import type { AnnouncementViewData } from "./announcementSample";
 
 type AnnouncementViewProps = {
-  announcement: AnnouncementDisplayFixture;
+  announcement: AnnouncementViewData | null;
+  announcementStatus: "loading" | "error" | "ready";
+  onRetryAnnouncement: () => void;
   onClose: () => void;
 };
 
-function AnnouncementView({ announcement, onClose }: AnnouncementViewProps) {
+function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncement, onClose }: AnnouncementViewProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -57,7 +56,20 @@ function AnnouncementView({ announcement, onClose }: AnnouncementViewProps) {
             height: "var(--announcement-article-height, 83.33333%)",
           }}
         >
-          <AnnouncementBoard announcement={announcement} interactive />
+          {announcement && announcementStatus === "ready" ? (
+            <AnnouncementBoard data={announcement} interactive />
+          ) : (
+            <div className="absolute inset-0 grid place-items-center text-center" role={announcementStatus === "error" ? "alert" : "status"}>
+              <div className="flex flex-col items-center gap-3">
+                <p>{announcementStatus === "error" ? "公告加载失败" : "公告加载中"}</p>
+                {announcementStatus === "error" ? (
+                  <button type="button" onClick={onRetryAnnouncement} className="rounded border px-3 py-1">
+                    重试
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          )}
         </article>
       </div>
     </section>

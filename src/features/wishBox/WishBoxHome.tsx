@@ -1,8 +1,7 @@
 import type { Ref } from "react";
 import { Link } from "react-router";
-import AnnouncementBoard, {
-  type AnnouncementDisplayFixture,
-} from "./AnnouncementBoard";
+import AnnouncementBoard from "./AnnouncementBoard";
+import type { AnnouncementViewData } from "./announcementSample";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import gardenBackground from "../../assets/wish-box/wish-box-home-background.png";
 import wishlandSign from "../../assets/wish-box/wishland-sign.png";
@@ -11,7 +10,8 @@ import mobileHatchRight from "../../assets/wish-box/mobile-wishland-hatch-right.
 import mobileScript from "../../assets/wish-box/mobile-wishland-script.png";
 
 type WishBoxHomeProps = {
-  announcement: AnnouncementDisplayFixture;
+  announcement: AnnouncementViewData | null;
+  announcementStatus: "loading" | "error" | "ready";
   onOpenAnnouncement: () => void;
   announcementButtonRef: Ref<HTMLButtonElement>;
   onOpenTimeline: () => void;
@@ -21,6 +21,7 @@ type WishBoxHomeProps = {
 
 function WishBoxHome({
   announcement,
+  announcementStatus,
   onOpenAnnouncement,
   announcementButtonRef,
   onOpenTimeline,
@@ -152,13 +153,17 @@ function WishBoxHome({
               transformOrigin: "top left",
             }}
           >
-            <AnnouncementBoard announcement={announcement} />
+            {announcement ? <AnnouncementBoard data={announcement} /> : null}
           </div>
           <button
             ref={announcementButtonRef}
             type="button"
             onClick={onOpenAnnouncement}
-            aria-label={`查看${announcement.title}详情`}
+            aria-label={announcement
+              ? `查看${announcement.title}详情`
+              : announcementStatus === "loading"
+                ? "公告加载中，打开查看状态"
+                : "公告加载失败，打开重试"}
             className="absolute inset-0 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
           />
         </div>

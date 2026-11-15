@@ -38,6 +38,42 @@ export type SupportRecordDetail = {
   template_type: string
 }
 
+export type NoticeLayoutConfigDto = {
+  left_ratio: number
+  right_ratio: number
+}
+
+export type GlobalNoticeBlockDto = {
+  sort: number
+  title?: string | null
+  content?: string | null
+  font_size?: string | null
+  font_color?: string | null
+  font_weight?: 'normal' | 'bold' | null
+}
+
+export type GlobalNoticeDto = {
+  id: number
+  title: string
+  start_time: string
+  end_time: string
+  act_category: string
+  act_kind: string
+  location?: string | null
+  cover_img: PhotoItem | null
+  content_photo_list: PhotoItem[]
+  timeline_enable: boolean
+  timeline_photo_list: PhotoItem[]
+  timeline_link: string | null
+  notice_enable: boolean
+  notice_is_show: boolean
+  notice_layout_config?: NoticeLayoutConfigDto | null
+  created_at: string
+  updated_at: string
+  content?: string | null
+  block_list: GlobalNoticeBlockDto[]
+}
+
 export type SupportRecordListParams = {
   plate?: 'timeline' | 'notice'
   year?: string
@@ -87,4 +123,16 @@ export async function getSupportRecordDetail(
 
   // Only the top-level object is checked; fields rely on the API contract.
   return response as SupportRecordDetail
+}
+export async function getGlobalNotice(signal?: AbortSignal): Promise<GlobalNoticeDto> {
+  const response = await request('/front/global_notice', { signal })
+  if (response === null) {
+    throw new Error('Invalid global notice response: expected the active notice, received null')
+  }
+  if (typeof response !== 'object' || Array.isArray(response)) {
+    throw new Error('Invalid global notice response: expected an object')
+  }
+
+  // The API contract allows null defensively; normal business flow requires one active notice.
+  return response as GlobalNoticeDto
 }
