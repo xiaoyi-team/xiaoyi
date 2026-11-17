@@ -13,8 +13,40 @@ export function formatSignInCardDate(date: string): { dateText: string; weekday:
 }
 
 // UI calendar dates; server sign-in state remains owned by M2.
+export const SIGN_IN_LAUNCH_MONTH = "2026-11";
+
+export function getSignInYearOptions(todayDate: string): number[] {
+  const currentMonth = todayDate.slice(0, 7);
+  if (!isValidSignInDate(todayDate) || currentMonth < SIGN_IN_LAUNCH_MONTH) return [];
+  const firstYear = Number(SIGN_IN_LAUNCH_MONTH.slice(0, 4));
+  const currentYear = Number(currentMonth.slice(0, 4));
+  return Array.from({ length: currentYear - firstYear + 1 }, (_, index) => firstYear + index);
+}
+
+export function getSignInMonthOptions(year: number, todayDate: string): number[] {
+  const currentMonth = todayDate.slice(0, 7);
+  if (!isValidSignInDate(todayDate) || currentMonth < SIGN_IN_LAUNCH_MONTH) return [];
+  const currentYear = Number(currentMonth.slice(0, 4));
+  if (year < Number(SIGN_IN_LAUNCH_MONTH.slice(0, 4)) || year > currentYear) return [];
+  const firstMonth = year === Number(SIGN_IN_LAUNCH_MONTH.slice(0, 4))
+    ? Number(SIGN_IN_LAUNCH_MONTH.slice(5))
+    : 1;
+  const lastMonth = year === currentYear ? Number(currentMonth.slice(5)) : 12;
+  return Array.from({ length: Math.max(0, lastMonth - firstMonth + 1) }, (_, index) => firstMonth + index);
+}
+
+export function isValidSignInDate(date: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const [year, month, day] = date.split("-").map(Number);
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const value = new Date(0);
+  value.setUTCHours(0, 0, 0, 0);
+  value.setUTCFullYear(year, month - 1, day);
+  return value.getUTCFullYear() === year && value.getUTCMonth() === month - 1 && value.getUTCDate() === day;
+}
+
 export function createSignInMonth(yearMonth: string) {
-  if (!/^2026-(0[1-9]|1[0-2])$/.test(yearMonth)) throw new Error("签到板仅支持2026年有效月份。");
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(yearMonth)) throw new Error("签到板月份必须为有效年月。");
   const year = Number(yearMonth.slice(0, 4));
   const month = Number(yearMonth.slice(5));
   const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
@@ -46,15 +78,16 @@ export function getNextBeijingMidnight(now: Date): number {
 }
 
 export const SIGN_IN_DEMO_DATE = "2026-09-24";
-export const isSupportedSignInDate = (date: string) => date.startsWith("2026-");
+export const isSupportedSignInDate = (date: string) => isValidSignInDate(date) && date.slice(0, 7) >= SIGN_IN_LAUNCH_MONTH;
 
 export type SignInDateState = { todayDate: string; yearMonth: string; selectedDate: string | null };
 export function createSignInDateState(now: Date): SignInDateState {
   const todayDate = getBeijingDate(now);
+  const todaySupported = isSupportedSignInDate(todayDate);
   return {
     todayDate,
-    yearMonth: isSupportedSignInDate(todayDate) ? todayDate.slice(0, 7) : "2026-09",
-    selectedDate: isSupportedSignInDate(todayDate) ? todayDate : null,
+    yearMonth: todaySupported ? todayDate.slice(0, 7) : SIGN_IN_LAUNCH_MONTH,
+    selectedDate: todaySupported ? todayDate : null,
   };
 }
 export type SignInDateAction =
@@ -71,9 +104,12 @@ export function signInDateReducer(state: SignInDateState, action: SignInDateActi
     : { ...state, todayDate: action.date };
   if (action.type === "select-demo-date") return { ...state, yearMonth: "2026-09", selectedDate: SIGN_IN_DEMO_DATE };
   if (action.type === "month") {
+    if (!getSignInMonthOptions(Number(action.yearMonth.slice(0, 4)), state.todayDate).includes(Number(action.yearMonth.slice(5)))) return state;
     createSignInMonth(action.yearMonth);
     return action.yearMonth === state.yearMonth && state.selectedDate === null ? state : { ...state, yearMonth: action.yearMonth, selectedDate: null };
   }
+  if (!isSupportedSignInDate(action.date) || action.date.slice(0, 7) !== state.yearMonth ||
+    !getSignInMonthOptions(Number(state.yearMonth.slice(0, 4)), state.todayDate).includes(Number(state.yearMonth.slice(5)))) return state;
   const dates = createSignInMonth(state.yearMonth).weeks.flat();
   return dates.includes(action.date) ? { ...state, selectedDate: action.date } : state;
 }

@@ -154,7 +154,7 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
 
   return (
     <div className="sign-in-board" data-calendar-rows={grid.rowCount}>
-      {calendar && !isSupportedSignInDate(todayDate) && <p className="sign-in-board__year-limit" role="status">当前日历仅支持2026年。</p>}
+      {calendar && !isSupportedSignInDate(todayDate) && <p className="sign-in-board__year-limit" role="status">签到日历自2026年11月起提供。</p>}
       {/* Final-render assets already contain their Figma rotation and shadow. */}
       <Artwork className="sign-in-board__root-art" src={coverLeft} x={99} y={32.286} width={909.708} height={831.347} />
       <Artwork className="sign-in-board__root-art" src={coverRight} x={836.632} y={79.259} width={744.423} height={765.874} />
@@ -210,7 +210,7 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
       <section className="sign-in-board__calendar" aria-label="签到日历">
         <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
-          {calendar ? <YearMonthPicker key={yearMonth} yearMonth={yearMonth} onChangeMonth={calendar.onChangeMonth} /> : <h3 className="sign-in-board__month">{grid.year} · {String(grid.month).padStart(2, "0")}</h3>}
+          {calendar ? <YearMonthPicker key={yearMonth} yearMonth={yearMonth} todayDate={todayDate} onChangeMonth={calendar.onChangeMonth} /> : <h3 className="sign-in-board__month">{grid.year} · {String(grid.month).padStart(2, "0")}</h3>}
           <button type="button" className="sign-in-board__return-today" onClick={() => calendar ? calendar.onReturnToday() : setDemoSelectedDay(DEMO_TODAY)}>
             <span>返回今日</span>
           </button>
