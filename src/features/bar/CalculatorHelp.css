@@ -1,0 +1,62 @@
+.calculator-help-layer { --help-unit: calc(100cqw / 1920); position: absolute; inset: 0; z-index: 50; background: rgb(0 0 0 / 35%); pointer-events: auto; font-family: 'Noto Serif SC', serif; }
+.calculator-help { position: absolute; left: calc(530 * var(--help-unit)); top: calc(88 * var(--help-unit)); width: calc(860 * var(--help-unit)); height: calc(904 * var(--help-unit)); box-sizing: border-box; overflow: hidden; border: calc(2 * var(--help-unit)) solid #edd496; border-radius: calc(30 * var(--help-unit)); background: linear-gradient(#303b57, #131829); box-shadow: 0 calc(12 * var(--help-unit)) calc(27.2 * var(--help-unit)) #00000059; }
+.calculator-help__edge, .calculator-help__decoration { position: absolute; pointer-events: none; }
+.calculator-help__edge { border: calc(.7 * var(--help-unit)) solid #ebd5a2; border-radius: calc(24 * var(--help-unit)); }
+.calculator-help__edge--outer { inset: calc(7 * var(--help-unit) - var(--help-border-offset, 0px)); }
+.calculator-help__edge--inner { left: calc(19 * var(--help-unit) - var(--help-border-offset, 0px)); right: calc(19 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(20 * var(--help-unit) - var(--help-border-offset, 0px)); bottom: calc(20 * var(--help-unit) - var(--help-border-offset, 0px)); }
+.calculator-help__decoration { opacity: .16; object-fit: cover; }
+.calculator-help__decoration--top { left: calc(-40 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(-2.4834 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(349.637 * var(--help-unit)); height: calc(349.637 * var(--help-unit)); transform: rotate(-9.63deg); transform-origin: top left; }
+.calculator-help__decoration--bottom { left: calc(580 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(630 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(294 * var(--help-unit)); height: calc(294 * var(--help-unit)); }
+.calculator-help__title { position: absolute; left: calc(80 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(40 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(700 * var(--help-unit)); height: calc(48 * var(--help-unit)); margin: 0; display: flex; justify-content: center; align-items: center; color: #edd496; font-size: calc(32 * var(--help-unit)); line-height: calc(44 * var(--help-unit)); font-weight: 700; white-space: pre; }
+.calculator-help__body { position: absolute; left: calc(32 * var(--help-unit)); top: calc(122 * var(--help-unit)); width: calc(796 * var(--help-unit)); height: calc(559 * var(--help-unit)); overflow: visible; color: #e8ebf5; }
+.calculator-help__item { padding: calc(12 * var(--help-unit)) calc(20 * var(--help-unit)); margin-bottom: calc(16 * var(--help-unit)); }
+.calculator-help__item h3, .calculator-help__item p { margin: 0; font-size: calc(18 * var(--help-unit)); line-height: calc(25 * var(--help-unit)); font-weight: 700; }
+.calculator-help__item:last-child { margin-bottom: 0; }
+.calculator-help__item h3 { color: #edd496; margin-bottom: calc(5 * var(--help-unit)); }
+.calculator-help__close { position: absolute; left: calc(335 * var(--help-unit)); top: calc(812 * var(--help-unit)); width: calc(190 * var(--help-unit)); height: calc(52 * var(--help-unit)); box-sizing: border-box; padding: 0; isolation: isolate; border: calc(1.5 * var(--help-unit)) solid #edd496; border-radius: calc(24 * var(--help-unit)); background: transparent; color: #edd496; font: 500 calc(16 * var(--help-unit)) / calc(24 * var(--help-unit)) 'Noto Serif SC', serif; cursor: pointer; }
+.calculator-help__close-label { position: absolute; left: calc(-55 * var(--help-unit) - var(--help-close-border-offset, 0px)); top: calc(10 * var(--help-unit) - var(--help-close-border-offset, 0px)); width: calc(300 * var(--help-unit)); height: calc(32 * var(--help-unit)); display: flex; justify-content: center; align-items: center; color: inherit; font: inherit; white-space: pre; }
+.calculator-help__close:focus-visible, .calculator-help__body:focus-visible { outline: 2px solid #ebd5a2; }
+.calculator-help-layer--touch { --help-unit: calc(100cqw / 667); background: rgb(0 0 0 / 50%); }
+.calculator-help-layer--touch .calculator-help { left: calc(44 * var(--help-unit)); top: calc(16 * var(--help-unit)); width: calc(579 * var(--help-unit)); height: calc(343 * var(--help-unit)); border-width: var(--help-unit); border-radius: calc(20 * var(--help-unit)); overflow: visible; box-shadow: none; }
+.calculator-help-layer--touch .calculator-help__edge--outer { inset: calc(5 * var(--help-unit) - var(--help-border-offset, 0px)); }
+.calculator-help-layer--touch .calculator-help__edge--inner { inset: calc(12 * var(--help-unit) - var(--help-border-offset, 0px)); }
+.calculator-help-layer--touch .calculator-help__decoration--top { left: calc(-12 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(2.933 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(143 * var(--help-unit)); height: calc(143 * var(--help-unit)); }
+.calculator-help-layer--touch .calculator-help__decoration--bottom { left: calc(440 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(211 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(139 * var(--help-unit)); height: calc(139 * var(--help-unit)); }
+.calculator-help-layer--touch .calculator-help__title { left: calc(24 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(12 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(531 * var(--help-unit)); height: calc(30 * var(--help-unit)); display: block; text-align: center; color: #ebd5a2; font-size: calc(20 * var(--help-unit)); line-height: calc(30 * var(--help-unit)); font-weight: 600; }
+.calculator-help-layer--touch .calculator-help__body { left: calc(40 * var(--help-unit)); top: calc(55 * var(--help-unit)); width: calc(499 * var(--help-unit)); height: calc(225 * var(--help-unit)); max-height: none; overflow-x: hidden; overflow-y: auto; }
+.calculator-help-layer--touch .calculator-help__item { padding: 0; margin-bottom: calc(14 * var(--help-unit)); }
+.calculator-help-layer--touch .calculator-help__item h3, .calculator-help-layer--touch .calculator-help__item p { font-size: calc(14 * var(--help-unit)); line-height: calc(22 * var(--help-unit)); font-weight: 400; }
+.calculator-help-layer--touch .calculator-help__item:last-child { margin-bottom: 0; }
+.calculator-help-layer--touch .calculator-help__body { scrollbar-width: none; }
+.calculator-help-layer--touch .calculator-help__body::-webkit-scrollbar { display: none; }
+.calculator-help-layer--touch .calculator-help__item h3 { margin-bottom: calc(4 * var(--help-unit)); color: #ebd5a2; }
+.calculator-help-layer--touch .calculator-help__close { left: calc(189.5 * var(--help-unit) - var(--help-border-offset, 0px)); top: calc(291 * var(--help-unit) - var(--help-border-offset, 0px)); width: calc(200 * var(--help-unit)); height: calc(36 * var(--help-unit)); border-width: var(--help-unit); border-color: #ebd5a2; border-radius: calc(18 * var(--help-unit)); color: #ebd5a2; font-size: calc(14 * var(--help-unit)); line-height: calc(22 * var(--help-unit)); font-weight: 400; }
+.calculator-help-layer--touch .calculator-help__close-label { left: calc(0 * var(--help-unit) - var(--help-close-border-offset, 0px)); top: calc(7 * var(--help-unit) - var(--help-close-border-offset, 0px)); width: calc(200 * var(--help-unit)); height: calc(22 * var(--help-unit)); display: block; text-align: center; }
+
+/* Only these corrected nodes use frame-edge coordinates. Other layers stay unchanged. */
+.calculator-help__body,
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close {
+  translate: calc(-1 * var(--help-border-offset, 0px)) calc(-1 * var(--help-border-offset, 0px));
+}
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close {
+  box-shadow: inset 0 calc(2 * var(--help-unit)) calc(5.1 * var(--help-unit)) calc(1 * var(--help-unit)) #ffdba6cc;
+}
+/* Figma shadows remain visible through the transparent button interior. */
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close::before,
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--help-close-border-offset, 0px));
+  border: inherit;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+}
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close::before {
+  border-color: #ffb857;
+  filter: blur(calc(2.15 * var(--help-unit)));
+}
+.calculator-help-layer:not(.calculator-help-layer--touch) .calculator-help__close::after {
+  border-color: #ffb857cc;
+  filter: blur(calc(7.74 * var(--help-unit)));
+}
