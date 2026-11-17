@@ -196,6 +196,11 @@ export interface ApiRequestOptions
    * 返回数据解析方式
    */
   responseType?: ResponseType;
+
+  /**
+   * Optional service-specific base URL. Existing requests keep using VITE_API_BASE_URL.
+   */
+  baseUrl?: string;
 }
 
 /**
@@ -397,21 +402,20 @@ export async function apiRequest<T>(
   path: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
-  /**
-   * 没有配置服务器地址
-   */
-  if (!API_BASE) {
+  const {
+    auth = true,
+    responseType = "auto",
+    baseUrl,
+    ...fetchOptions
+  } = options;
+
+  const requestBaseUrl = baseUrl?.trim().replace(/\/$/, "") || API_BASE;
+  if (!requestBaseUrl) {
     throw new ApiError(
       "暂未配置后端接口地址，请检查 .env 中的 VITE_API_BASE_URL。",
       0
     );
   }
-
-  const {
-    auth = true,
-    responseType = "auto",
-    ...fetchOptions
-  } = options;
 
   const headers =
     new Headers(
@@ -437,7 +441,7 @@ export async function apiRequest<T>(
 
   try {
     response = await fetch(
-      `${API_BASE}${path}`,
+      `${requestBaseUrl}${path}`,
       {
         ...fetchOptions,
         headers,

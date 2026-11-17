@@ -483,6 +483,23 @@
   white-space: pre-line;
 }
 
+.sign-in-board__quote-retry {
+  flex-shrink: 0;
+  margin: 8px auto 12px;
+  padding: 4px 14px;
+  border: 1px solid #8d7758;
+  border-radius: 4px;
+  background: transparent;
+  color: #101d49;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sign-in-board__quote-retry:focus-visible {
+  outline: 2px solid #101d49;
+  outline-offset: 2px;
+}
+
 .sign-in-board__quote-footer {
   position: absolute;
   top: 609px;

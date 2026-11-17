@@ -9,6 +9,7 @@ import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import GuestLoginPrompt from "../features/xiaoYiGuestLogin/GuestLoginPrompt";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import { useSignInCalendar } from "../features/xiaoYiSignIn/useSignInCalendar";
+import { useSignInQuote } from "../features/xiaoYiSignIn/useSignInQuote";
 import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
 import { createSignInDateState, getBeijingDate, getNextBeijingMidnight, signInDateReducer } from "../features/xiaoYiSignIn/sign-in-dates";
 import "./xiao-yi-page.css";
@@ -27,6 +28,7 @@ function XiaoYiPage() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
+  const quoteView = useSignInQuote({ date: selectedDate, todayDate, enabled: signInOpen, calendar: calendarView });
   const [guestLoginOpen, setGuestLoginOpen] = useState(false);
   const [profileRefreshState, setProfileRefreshState] = useState<"idle" | "loading" | "success" | "error">("idle");
   // A touch hold does not consistently retain the native :active pseudo-class.
@@ -177,7 +179,7 @@ function XiaoYiPage() {
           goLogin();
         }}
       />
-      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} calendar={{
+      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} quoteView={quoteView} calendar={{
         view: calendarView, todayDate, yearMonth, selectedDate,
         onSelectDate: (date) => dispatchDate({ type: "select", date }),
         onChangeMonth: (month) => dispatchDate({ type: "month", yearMonth: month }),

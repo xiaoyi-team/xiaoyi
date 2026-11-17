@@ -4,6 +4,7 @@ import DrawCardOverlay from "./DrawCardOverlay";
 import { SIGN_IN_DEMO_DATE } from "./sign-in-dates";
 import { DEMO_DRAW_QUOTE, type SignInDemoState } from "./sign-in-demo";
 import type { SignInStatView } from "./useSignInStat";
+import type { SignInQuoteView } from "./useSignInQuote";
 import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
 import "./sign-in.css";
 
@@ -12,6 +13,7 @@ type SignInOverlayProps = {
   onClose: () => void;
   children?: ReactNode;
   statView?: SignInStatView;
+  quoteView?: SignInQuoteView;
   calendar?: SignInCalendarBinding;
 };
 
@@ -47,7 +49,7 @@ function readSignInBoardScale() {
   return Math.min(1, viewportWidth / BOARD_WIDTH, viewportHeight / BOARD_HEIGHT);
 }
 
-function SignInOverlay({ open, onClose, children, statView, calendar }: SignInOverlayProps) {
+function SignInOverlay({ open, onClose, children, statView, quoteView, calendar }: SignInOverlayProps) {
   const [demo, setDemo] = useState<SignInDemoState>({ todaySigned: false, totalDays: 14, todayQuote: null });
   const [drawOpen, setDrawOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -174,7 +176,7 @@ function SignInOverlay({ open, onClose, children, statView, calendar }: SignInOv
                 : undefined
             }
           >
-            <SignInBoard titleId={titleId} mobile={boardScale === null} demo={demo} statView={statView} calendar={calendar} onSignIn={handleSignIn} />
+            <SignInBoard titleId={titleId} mobile={boardScale === null} demo={demo} statView={statView} quoteView={quoteView} calendar={calendar} onSignIn={handleSignIn} />
           </div>
         </div>
         {children}

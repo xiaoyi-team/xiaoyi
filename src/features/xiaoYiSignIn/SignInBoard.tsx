@@ -4,6 +4,7 @@ import YearMonthPicker from "./YearMonthPicker";
 import { createSignInMonth, isSupportedSignInDate, SIGN_IN_DEMO_DATE } from "./sign-in-dates";
 import type { SignInCalendarView } from "./useSignInCalendar";
 import type { SignInStatView } from "./useSignInStat";
+import type { SignInQuoteView } from "./useSignInQuote";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -100,11 +101,12 @@ type SignInBoardProps = {
   mobile: boolean;
   demo: SignInDemoState;
   statView?: SignInStatView;
+  quoteView?: SignInQuoteView;
   calendar?: SignInCalendarBinding;
   onSignIn: () => void;
 };
 
-function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: SignInBoardProps) {
+function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onSignIn }: SignInBoardProps) {
   const [demoSelectedDay, setDemoSelectedDay] = useState(DEMO_TODAY);
   const yearMonth = calendar?.yearMonth ?? "2026-09";
   const grid = createSignInMonth(yearMonth);
@@ -129,13 +131,50 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
     const signed = signedForDay(day);
     return signed === undefined ? "签到状态待获取" : signed ? "已签到" : "未签到";
   }
-  const showingDemoQuote = !!calendar && selectedDate === demoToday && demo.todayQuote !== null;
+  const showingDemoQuote = !!calendar && !quoteView && selectedDate === demoToday && demo.todayQuote !== null;
+  const quoteViewText = quoteView?.kind === "ready" ? quoteView.data.content : quoteView ? ({
+    idle: "请选择日期查看语录。",
+    initializing: "正在确认登录状态…",
+    guest: "登录后查看历史语录。",
+    "profile-unavailable": "暂时无法确认登录状态。",
+    loading: "正在加载当日语录…",
+    "calendar-loading": "正在获取签到状态…",
+    "calendar-error": "签到状态暂不可用。",
+    "calendar-unavailable": "无法确认该日期的签到状态。",
+    "not-signed": "这一天还未签到。",
+    "today-not-signed": "签到获取今日语录",
+    future: "这一天还未到来，期待与你一起解锁新的语录。",
+    "no-record": "该日期暂无已分配的逸签语录。",
+    "invalid-date": "该日期暂不可查询。",
+    unauthorized: "登录状态已失效，请重新登录。",
+    error: "语录暂时无法加载，请重试。",
+  }[quoteView.kind]) : null;
+  const quoteViewStatus = quoteView ? ({
+    idle: "未选择日期",
+    initializing: "确认登录状态",
+    guest: "登录后查看",
+    "profile-unavailable": "登录资料待确认",
+    loading: "语录加载中",
+    "calendar-loading": "签到状态加载中",
+    "calendar-error": "签到状态不可用",
+    "calendar-unavailable": "签到状态待确认",
+    "not-signed": "未签到",
+    "today-not-signed": "今日未签到",
+    future: "未来日期",
+    "no-record": "暂无已分配语录",
+    ready: "历史语录",
+    "invalid-date": "日期不可查询",
+    unauthorized: "登录状态失效",
+    error: "加载失败",
+  }[quoteView.kind]) : null;
   const quoteRef = useRef<HTMLDivElement>(null);
   const selected = calendar ? {
     weekday: selectedDate ? ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date(`${selectedDate}T00:00:00Z`).getUTCDay()] : "",
     quoteFontSize: 30, quoteLineHeight: 45,
-    quote: showingDemoQuote ? demo.todayQuote! : "历史语录尚未接入。\n签到与抽卡仅为本地演示。",
-    footer: showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · 暂无语录数据`,
+    quote: quoteViewText ?? (showingDemoQuote ? demo.todayQuote! : "历史语录尚未接入。\n签到与抽卡仅为本地演示。"),
+    footer: quoteViewStatus
+      ? `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · ${quoteViewStatus}`
+      : showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · 暂无语录数据`,
   } : getDemoDay(selectedDay ?? DEMO_TODAY, demo.todaySigned, demo.todayQuote);
   const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
   const signInLabel = calendar ? demo.todaySigned ? "演示完成" : "演示签到" : demo.todaySigned ? "已签到" : "点击签到";
@@ -184,12 +223,15 @@ function SignInBoard({ titleId, mobile, demo, statView, calendar, onSignIn }: Si
           aria-label={selectedDate ? `${selectedDate}寄语，可纵向滚动查看` : "寄语，可纵向滚动查看"}
           tabIndex={0}
         >
-          <p style={mobile ? undefined : {
+          <p aria-live={quoteView ? "polite" : undefined} aria-atomic={quoteView ? true : undefined} style={mobile ? undefined : {
             fontSize: selected.quoteFontSize,
             lineHeight: `${selected.quoteLineHeight}px`,
           }}>
             {selected.quote}
           </p>
+          {quoteView?.kind === "error" && (
+            <button type="button" className="sign-in-board__quote-retry" onClick={quoteView.retry}>重试</button>
+          )}
         </div>
         <p className="sign-in-board__quote-footer" aria-live="polite" aria-atomic="true">
           {selected.footer}
