@@ -9,12 +9,9 @@ npm run dev
 
 默认以办公室背景展示档案界面，桌面设计基础画板尺寸为 1464×1086。
 
-## 接入已有 React + Vite + TypeScript 项目
+## 共享静态资源
 
-1. 将 `public/assets/` 整个文件夹复制到已有项目的 `public/assets/`。
-2. 将 `src/OsbornArchive.tsx` 与 `src/OsbornArchive.css` 复制到已有项目 `src/` 中。
-3. 在路由页面中 `import OsbornArchive from './OsbornArchive'` 并渲染 `<OsbornArchive />`。
-4. 安装依赖 `npm install lucide-react`。
+独立启动和构建直接读取主项目的 public 目录。糖果屋素材统一维护在主项目 public/assets 中。
 
 ## 行为与数据说明
 

@@ -1,6 +1,6 @@
 const img9 = "/assets/figma/8f682889-ca65-48de-af8d-9bbbb8f7ef41.png";
-const img10 = "/assets/figma/e824449e-ff3c-412b-bca9-4cb761f118d1.png";
-const imgImg82811 = "/assets/figma/6fbaf303-1c30-44dc-bc19-81a6d51f59ad.png";
+const img10 = "/assets/figma/1b369fee-cdb5-4057-8ab3-cc030fb15a0e.png";
+const imgImg82811 = "/assets/figma/4b0fd9f2-8526-410b-84fe-a8c27364f0d6.png";
 const imgFrame13 = "/assets/figma/8eafc205-c7ab-4313-80f8-dc109d8d98a5.svg";
 const imgFrame = "/assets/figma/b0cc76b0-de2a-4c1d-96b4-9a61222daa95.svg";
 

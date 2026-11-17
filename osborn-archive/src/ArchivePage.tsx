@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type MouseEvent, type FocusEvent } from 'react';
 import { useCandyArchive } from './useCandyArchive';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import ZoomViewport from './ZoomViewport';
@@ -20,13 +20,13 @@ import Sort from './figma/Node6448_3038';
 import './garage-candy.css';
 
 export interface ArchiveItem { id: string; name: string; category: string; series: string; imageUrl: string; owned: boolean; favorite: boolean; quantity: number; price: string; size?: string; material?: string; }
-interface ArchivePageProps { items?: ArchiveItem[]; onBack?: () => void; onLoginRequired?: () => void; initialOpen?: boolean; }
+interface ArchivePageProps { items?: ArchiveItem[]; onBack?: () => void; onLoginRequired?: () => void; initialOpen?: boolean; canEdit?: () => boolean; }
 
 /** Integration: list input {category, query, sort}; output {items: ArchiveItem[]}.
  * Routing: entrance -> archive; outside click -> entrance; garden route supplied by host.
  * Data is loaded through the documented candy API; no mock fallback or local record persistence.
  */
-export default function ArchivePage({ items, onBack, onLoginRequired, initialOpen = false }: ArchivePageProps) {
+export default function ArchivePage({ items, onBack, onLoginRequired, initialOpen = false, canEdit = () => true }: ArchivePageProps) {
   const [open, setOpen] = useState(initialOpen);
   const [status, setStatus] = useState('全部');
   const [query, setQuery] = useState('');
@@ -52,7 +52,7 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
       <div className="min-[1024px]:hidden relative h-[375px] w-[667px]" onClick={event=>{const name=(event.target as HTMLElement).closest('button')?.dataset.name; if(name?.includes('图鉴'))setOpen(true); if(name?.includes('返回花园'))onBack?.();}}><MobileEntrance /></div>
     </> : <>
       <button aria-label="关闭档案，返回入口" className="absolute inset-0" onClick={()=>setOpen(false)} />
-      <section aria-label="官谷图鉴" className="relative ml-auto hidden h-[1081px] w-[1457px] min-[1024px]:block">
+      <section aria-label="官谷图鉴" className="relative top-[18px] ml-auto hidden h-[1081px] w-[1457px] min-[1024px]:block">
         <div className="pointer-events-none absolute inset-0"><div className="absolute inset-0"><Frame /></div><div className="absolute left-0 top-0 h-[171.178px] w-[1441.077px]"><Heading /></div></div>
         <div className="absolute left-[104.498px] top-[97.531px] h-[71.656px] w-[1311.698px]" onClick={categoryClick}><Categories selectedCategory={category} /></div>
         <input aria-label="搜索谷子名称、系列、角色" value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索谷子名称、系列、角色…" className="absolute left-[1020px] top-[121px] h-[28px] w-[208px] bg-[#050d0f] text-[13.933px]" />
@@ -60,11 +60,11 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
         <div className="absolute left-[16.919px] top-[189.092px] h-[692.672px] w-[82.603px]" onClick={statusClick}><Tabs selected={status} /></div>
         <img alt="" src="/assets/figma/0f59f9f8-ff18-4428-98d8-2e1bac4e7d88.png" className="pointer-events-none absolute left-[86.584px] top-[155.254px] h-[851.907px] w-[873.802px]" />
         <img alt="" src="/assets/anchor-wave-corner.png" className="pointer-events-none absolute left-[0px] top-[622px] h-[460px] w-[414px] max-w-none z-20" />
-        <div className="absolute left-[94.584px] top-[176.058px] h-[780px] w-[857.802px] overflow-y-auto px-[22.852px] py-[20px] [scrollbar-width:none]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} /></div>
-        {!selected && !loading && visible.length > 0 && <p className="absolute left-[66%] top-[25%] text-[#f7ead2]">选择商品查看详情</p>}
-        {selected && <RecordEditor key={selected.id} item={selected} onSave={updateRecord} onClose={()=>setSelected(null)} />}
+        <div className="absolute left-[94.584px] top-[176.058px] h-[780px] w-[857.802px] overflow-y-auto px-[22.852px] py-[20px] [scrollbar-width:none]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} /></div>
+        {!selected && !loading && !storageError && <EmptyDetail />}
+        {selected && <RecordEditor key={selected.id} item={selected} canEdit={canEdit} onSave={updateRecord} onClose={()=>setSelected(null)} />}
       </section>
-      <section aria-label="移动端官谷图鉴" className="relative ml-auto h-[375px] w-[505.525px] min-[1024px]:hidden">
+      <section aria-label="移动端官谷图鉴" className="relative top-[6px] ml-auto h-[375px] w-[505.525px] min-[1024px]:hidden">
         <div className="pointer-events-none absolute inset-0 z-0"><div className="absolute inset-0"><MobileFrame /></div><div className="absolute left-0 top-0 h-[59.392px] w-[500px]"><MobileHeading /></div><div className="absolute left-0 top-0 h-[59.392px] w-[500px]"><MobileNote /></div></div>
         <div className="absolute left-[5.871px] top-[42.5px] h-[240px] w-[28.66px]" onClick={statusClick}><MobileTabs selected={status} /></div>
         <div aria-hidden="true" className="pointer-events-none absolute left-[36.525px] top-[40.5px] z-10 h-[43px] w-[462px] bg-[#050b0d]" />
@@ -77,9 +77,9 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
         </div>}
         <img alt="" src="/assets/figma/0f59f9f8-ff18-4428-98d8-2e1bac4e7d88.png" className="pointer-events-none absolute left-[30px] top-[84px] h-[259px] w-[289px]" />
         <img alt="" src="/assets/anchor-wave-corner.png" className="pointer-events-none absolute left-0 top-[215px] z-20 h-[160px] w-[144px]" />
-        <div className="absolute left-[37.525px] top-[90.5px] h-[249px] w-[281px] overflow-y-auto px-[7px]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} mobile /></div>
-        {!selected && !loading && visible.length > 0 && <p className="absolute left-[66%] top-[25%] text-[#f7ead2]">选择商品查看详情</p>}
-        {selected && <RecordEditor key={selected.id} item={selected} onSave={updateRecord} onClose={()=>setSelected(null)} mobile />}
+        <div className="absolute left-[37.525px] top-[90.5px] h-[249px] w-[281px] overflow-y-auto px-[7px]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} mobile /></div>
+        {!selected && !loading && !storageError && <EmptyDetail mobile />}
+        {selected && <RecordEditor key={selected.id} item={selected} canEdit={canEdit} onSave={updateRecord} onClose={()=>setSelected(null)} mobile />}
       </section>
     </>}
   </main></ZoomViewport>;
@@ -87,26 +87,59 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
 
 interface ItemGridProps { error?: string; loading?: boolean; items: ArchiveItem[]; onSelect: (item: ArchiveItem)=>void; mobile?: boolean; onFavorite: (item: ArchiveItem)=>void; }
 function ItemGrid({items,onSelect,onFavorite,mobile,loading,error}:ItemGridProps){return <div className={`grid ${mobile?'grid-cols-3 gap-x-[6px] gap-y-[6px]':'grid-cols-4 gap-x-[7.962px] gap-y-[12.938px]'}`}>
-  {items.length === 0 && !loading && !error && <p role="status" className="col-span-full p-4 text-center text-[#fff4dc]">暂无商品数据或没有匹配结果</p>}
   {items.map(item=><div key={item.id} className={`relative text-[#161811] ${mobile?'h-[77.273px] w-[85px]':'h-[179.139px] w-[197.053px]'}`}>
-    <img alt="" src="/assets/figma/38eab712-b3c1-4165-996b-6df634acab95.png" className="pointer-events-none absolute max-w-none" style={{left:'-8.08%',top:'-8.89%',width:'116.16%',height:'117.78%'}} />
-    <img alt="" src="/assets/figma/4ea866f9-3e01-433e-8d48-31106f024f53.png" className="pointer-events-none absolute left-[-5.56%] top-[-8.33%] w-[107.08%] max-w-none opacity-[57%]" />
-    <img alt="" src="/assets/figma/a117c115-25ea-40e9-9d74-372ac6c900e8.svg" className="pointer-events-none absolute left-[2.02%] top-[2.22%] h-[95.56%] w-[95.96%]" />
+    <CardArtwork />
     <button aria-label={`查看${item.name}`} onClick={()=>onSelect(item)} onDoubleClick={()=>onFavorite(item)} className="absolute inset-0 w-full">
-      <img src={item.imageUrl} alt="" className="absolute left-[18.69%] top-[8.33%] h-[68.89%] w-[62.63%] object-contain"/><span className={`absolute left-1/2 top-[88.33%] -translate-x-1/2 -translate-y-1/2 w-[88%] truncate font-semibold ${mobile ? 'text-[8.5px] leading-[13.67px]' : 'text-[19.81px] leading-[31.695px]'}`}>{item.name}</span>
+      {item.imageUrl?.trim() && <img key={item.imageUrl} onError={event => { event.currentTarget.style.display = 'none'; }} src={item.imageUrl} alt="" className="absolute left-[18.69%] top-[8.33%] h-[68.89%] w-[62.63%] object-contain"/>}<span className={`absolute left-1/2 top-[88.33%] -translate-x-1/2 -translate-y-1/2 w-[88%] truncate font-semibold ${mobile ? 'text-[8.5px] leading-[13.67px]' : 'text-[19.81px] leading-[31.695px]'}`}>{item.name}</span>
     </button>
     <button aria-label={`${item.favorite?'取消收藏':'收藏'}${item.name}`} aria-pressed={item.favorite} onClick={()=>onFavorite(item)} className={`absolute bottom-[12%] left-[4%] z-10 flex items-center justify-center ${mobile?'h-[27px] w-[27px]':'h-[32px] w-[32px]'}`}>{item.favorite?<FaHeart size={mobile?9.444:16} color="#ff4a19"/>:<FaRegHeart size={mobile?9.444:16} color="#ff4a19"/>}</button>
   </div>)}
+  {items.length === 0 && !loading && !error && <p role="status" className="sr-only">暂无商品数据或没有匹配结果</p>}
+  {!loading && !error && Array.from({length: Math.max(0, (mobile ? 9 : 16) - items.length)}, (_, index) => <div key={`placeholder-${index}`} aria-hidden="true" className={`relative text-center text-[#161811] ${mobile ? 'h-[77.273px] w-[85px]' : 'h-[179.139px] w-[197.053px]'}`}>
+      <CardArtwork />
+      <span className={`absolute left-1/2 top-[88.33%] -translate-x-1/2 -translate-y-1/2 font-semibold ${mobile ? 'text-[8.5px]' : 'text-[19.81px]'}`}>NAME</span>
+      <img alt="" src="/assets/figma/53d7aaeb-5445-4a78-8e99-e350dde2ddb0.svg" className="pointer-events-none absolute left-[7.07%] top-[72.78%] w-[11.11%]" />
+    </div>)}
 </div>;}
 
-interface RecordEditorProps { item: ArchiveItem; mobile?: boolean; onClose: ()=>void; onSave: (item: ArchiveItem)=>Promise<void>; }
-function RecordEditor({item,mobile,onSave}:RecordEditorProps){
+function CardArtwork() {
+  return <>
+    <img alt="" src="/assets/figma/38eab712-b3c1-4165-996b-6df634acab95.png" className="pointer-events-none absolute max-w-none" style={{left:'-8.08%',top:'-8.89%',width:'116.16%',height:'117.78%'}} />
+    <img alt="" src="/assets/figma/4ea866f9-3e01-433e-8d48-31106f024f53.png" className="pointer-events-none absolute left-[-5.56%] top-[-8.33%] w-[107.08%] max-w-none opacity-[57%]" />
+    <img alt="" src="/assets/figma/a117c115-25ea-40e9-9d74-372ac6c900e8.svg" className="pointer-events-none absolute left-[2.02%] top-[2.22%] h-[95.56%] w-[95.96%]" />
+  </>;
+}
+
+function EmptyDetail({mobile = false}: {mobile?: boolean}) {
+  const Artwork = mobile ? MobileDetailArtwork : DetailArtwork;
+  const ignore = () => {};
+  return <aside ref={element => { element?.querySelectorAll("button, input").forEach(control => control.setAttribute("disabled", "")); }} aria-hidden="true" className={mobile ? "absolute left-[319.525px] top-[85.5px] h-[269px] w-[179px] overflow-hidden" : "absolute left-[934.429px] top-[165.206px] h-[887.194px] w-[520.345px]"}>
+    <Artwork name="NAME" imageUrl="" series="" quantity={0} price="0" owned={false} onOwned={ignore} onQuantity={ignore} onPriceChange={ignore} onSave={ignore} />
+  </aside>;
+}
+
+interface RecordEditorProps { item: ArchiveItem; canEdit: () => boolean; mobile?: boolean; onClose: ()=>void; onSave: (item: ArchiveItem)=>Promise<void>; }
+function RecordEditor({item,mobile,onSave,canEdit}:RecordEditorProps){
+  function guardClick(event: MouseEvent<HTMLElement>) {
+    if (!(event.target instanceof Element)) return;
+    const control = event.target.closest('button, [data-name="编辑控件"]');
+    if (control && !canEdit()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+  function guardFocus(event: FocusEvent<HTMLElement>) {
+    if (event.target instanceof HTMLInputElement && !canEdit()) {
+      event.target.blur();
+      event.stopPropagation();
+    }
+  }
   const [quantity,setQuantity]=useState(item.quantity);const [price,setPrice]=useState(item.price);const [owned,setOwned]=useState(item.owned);const [error,setError]=useState('');
-  if (!mobile) return <aside className="absolute left-[934.429px] top-[165.206px] h-[887.194px] w-[520.345px]">
+  if (!mobile) return <aside onClickCapture={guardClick} onFocusCapture={guardFocus} className="absolute left-[934.429px] top-[165.206px] h-[887.194px] w-[520.345px]">
     <DetailArtwork category={item.category} size={item.size} material={item.material} onPriceChange={setPrice} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onSave={()=>{if(!Number.isSafeInteger(quantity)||quantity<0||!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写非负整数数量和有效金额');return;}void onSave({...item,quantity,price,owned,favorite:owned?false:item.favorite}).then(()=>setError('')).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
     {error && <p role="status" className="absolute bottom-[35px] left-[60px] text-[#161811]">{error}</p>}
   </aside>;
-  return <aside className="absolute left-[319.525px] top-[85.5px] h-[269px] w-[179px] overflow-y-auto overflow-x-hidden [scrollbar-width:none]">
+  return <aside onClickCapture={guardClick} onFocusCapture={guardFocus} className="absolute left-[319.525px] top-[85.5px] h-[269px] w-[179px] overflow-hidden">
     <MobileDetailArtwork category={item.category} size={item.size} material={item.material} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onPriceChange={setPrice} onSave={()=>{if(!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写有效金额');return;}void onSave({...item,quantity,price,owned,favorite:owned?false:item.favorite}).then(()=>setError('')).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
     {error && <p role="status" className="absolute bottom-0 bg-[#f2e5cc] text-[8px] text-[#161811]">{error}</p>}
     {/* save input {id:item.id,owned,quantity,price}; output {record,updatedAt}; host integration required */}

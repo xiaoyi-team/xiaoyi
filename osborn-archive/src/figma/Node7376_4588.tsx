@@ -1,5 +1,5 @@
-const img1 = "/assets/figma/b88dca2f-9093-4e60-abb8-7b59f98be2e8.png";
-const img2 = "/assets/figma/b57280dc-4744-4d3e-8f5a-d492bf8600d2.png";
+const img1 = "/assets/figma/4be5c338-98f7-4dc6-b265-9b4436817f18.png";
+const img2 = "/assets/figma/9b45f34f-22cf-41bf-bd02-063eaf3fa897.png";
 
 export default function Group11() {
   return (

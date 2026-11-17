@@ -1,5 +1,5 @@
 const img1 = "/assets/figma/07faa449-5290-4197-8387-9d89863e9e3d.png";
-const img4 = "/assets/figma/d53bf145-b950-47a7-b077-19ad1bdab646.png";
+const img4 = "/assets/figma/7fa6a9ed-a076-40f8-8c71-9e1f456746a9.png";
 const img = "/assets/figma/a915723c-b71e-49a7-9207-06f873d49d3b.svg";
 const img2 = "/assets/figma/cf220035-7d6d-4642-a790-01f8a572d621.svg";
 const img3 = "/assets/figma/f4624d52-9dad-4c13-8107-8efa2e0bb39b.svg";

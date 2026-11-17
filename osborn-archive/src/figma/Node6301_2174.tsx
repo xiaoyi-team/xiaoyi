@@ -1,4 +1,4 @@
-const img1 = "/assets/figma/d161c288-bc98-4aa9-9c1a-f1345e01eb19.png";
+const img1 = "/assets/figma/07faa449-5290-4197-8387-9d89863e9e3d.png";
 const img4 = "/assets/figma/7fa6a9ed-a076-40f8-8c71-9e1f456746a9.png";
 const img5 = "/assets/figma/4be5c338-98f7-4dc6-b265-9b4436817f18.png";
 const img6 = "/assets/figma/9b45f34f-22cf-41bf-bd02-063eaf3fa897.png";

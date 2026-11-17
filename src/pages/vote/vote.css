@@ -1,0 +1,114 @@
+.school-vote {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #1f2b42;
+}
+.school-vote-window { position: relative; overflow: hidden; }
+.school-vote-canvas { transform-origin: top left; }
+.school-vote-canvas button:focus-visible { outline: 3px solid #426ca5; outline-offset: -3px; }
+
+.school-vote, .school-vote * {
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif !important;
+}
+.school-vote-rows {
+  width: 658.8px;
+  max-height: 270px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.school-vote-rows--desktop {
+  position: absolute;
+  left: 325.8px;
+  top: 468px;
+  display: grid;
+  gap: 9px;
+}
+.school-vote-row {
+  width: 100%;
+  flex: none;
+  min-width: 0;
+  border: 1.44px solid #a6b5d0;
+  border-radius: 13.5px;
+  background: #faf7f2;
+  color: #344668;
+  overflow-wrap: anywhere;
+}
+.school-vote-choice {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 56.7px;
+  padding: 6px 22px;
+  text-align: left;
+  font-size: 25.2px;
+}
+.school-vote-choice[aria-pressed="true"], .school-vote-result[data-selected="true"] {
+  background: #e3ecfa;
+  border-color: #6187c0;
+}
+.school-vote-choice-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid #6d8ab3;
+  border-radius: 50%;
+  background: #fffdf9;
+  color: #fff;
+  line-height: 1;
+}
+.school-vote-choice[aria-pressed="true"] .school-vote-choice-mark {
+  background: #6187c0;
+  box-shadow: inset 0 0 0 4px #fffdf9;
+}
+.school-vote-canvas[data-mode="multi"] .school-vote-choice-mark { border-radius: 5px; box-shadow: none; }
+.school-vote-result { min-height: 61px; padding: 5px 16px; font-size: 18px; }
+.school-vote-result-title, .school-vote-result-stats { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.school-vote-result-stats { color: #52617e; font-size: .9em; }
+.school-vote-result-track { flex: 1; height: 7px; background: #e0e4ec; border-radius: 10px; overflow: hidden; }
+.school-vote-result-track > span { display: block; height: 100%; background: #a1b7d6; }
+.school-vote-result[data-selected="true"] .school-vote-result-track > span { background: #7096c8; }
+.school-vote-canvas[data-mobile="true"] .school-vote-rows { width: 317px; max-height: 203px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-choice { min-height: 46px; padding: 5px 9px; gap: 10px; font-size: 14px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-choice-mark { width: 22px; height: 22px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-result { min-height: 47px; padding: 4px 9px; font-size: 12px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-result-track { height: 5px; }
+.school-vote-description { max-width: 535px; white-space: normal; overflow-wrap: anywhere; }
+.school-vote-description > p { line-height: 22px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-description > p { line-height: 17px; }
+.school-vote-canvas[data-view="detail"][data-has-selection="false"] [data-name="提交投票"] {
+  opacity: .55;
+  cursor: default;
+}
+.school-vote-mobile-entrance {
+  position: absolute;
+  left: -70px;
+  top: -55px;
+  transform: scale(.42);
+  transform-origin: top left;
+}
+.school-vote-entrance-label:focus-visible p:first-child {
+  outline: 3px solid white;
+  outline-offset: 4px;
+}
+.school-vote-entrance-label::after {
+  content: "";
+  position: absolute;
+  left: 815px;
+  top: 735px;
+  width: 350px;
+  height: 125px;
+}
+.school-vote [data-vote-entry][data-participated="true"] [data-name="装饰 / list-button-marks"] {
+  display: none;
+}
+.school-vote [data-node-id="8613:647"]:has([data-vote-entry]) [data-name="投票卡片 / 文化节摊位布置风格投票"] {
+  transform: translateY(153.9px);
+}
+.school-vote [data-name^="装饰 /"] {
+  pointer-events: none;
+}

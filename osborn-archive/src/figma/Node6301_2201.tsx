@@ -6,7 +6,7 @@ const imgGroup4 = "/assets/figma/cce1a805-7566-468a-848b-2c5b90eebbfb.svg";
 const imgGroup5 = "/assets/figma/45ec8267-413e-45d4-bcd8-9a3f82ac07c9.svg";
 const imgGroup6 = "/assets/figma/f8151ed8-ea07-4c26-b570-71d8c0c516a6.svg";
 const imgSearch = "/assets/figma/3c7bdef2-ad61-405b-ac98-ceadbd44885e.svg";
-const imgGroup7 = "/assets/figma/3249aa33-8995-41b7-a6af-baf56cc6f2e5.svg";
+const imgGroup7 = "/assets/figma/029e2ef9-4025-4e67-a6d9-7ad71c2315dc.svg";
 const img = "/assets/figma/4c583398-c2eb-49cd-bd59-9f60045dd780.svg";
 
 export default function Component03({ selectedCategory }: { selectedCategory: string }) {

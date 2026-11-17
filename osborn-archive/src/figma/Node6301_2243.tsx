@@ -1,19 +1,19 @@
 const img1 = "/assets/figma/cf99c09d-c2ae-44e6-81c1-60deb1558194.png";
 const img2 = "/assets/figma/c0cfb1f8-dac3-445f-810a-24bfed3f3aa8.png";
-const img3 = "/assets/figma/e05a74f3-143b-4f75-a469-8e187f80c5b5.png";
-const img4 = "/assets/figma/809dfdd7-a169-4606-bcee-992ca8ef9eb8.png";
-const img = "/assets/figma/7b65d4a3-fe2b-4e33-b27c-bafd5ba6d66c.png";
-const img5 = "/assets/figma/c3980ba4-ae77-43ef-a05c-e9839ec74cd2.png";
+const img3 = "/assets/figma/7f74f2f8-0293-4373-b097-39559b11aec7.png";
+const img4 = "/assets/figma/2280b8ea-75a8-4b3f-a05c-34f9a79fef44.png";
+const img = "/assets/figma/43809d72-d90c-4ca4-a674-f624900ecdd9.png";
+const img5 = "/assets/figma/9d26de7c-b817-47b2-9309-c2467f447cb6.png";
 const img6 = "/assets/figma/2fc01165-efe8-4819-9905-36d8f732bf64.png";
 const img7 = "/assets/figma/3a1dec39-5073-47eb-80f0-9ffc25d5adee.png";
 const img8 = "/assets/figma/bf8c2fb7-a60f-4f23-88ad-3f26b842488a.png";
 const img9 = "/assets/figma/9a28e2b7-f807-4fa3-8da0-defbac77554e.png";
 const img10 = "/assets/figma/36954448-9cd7-4bab-a0e8-c3fa3654c895.png";
-const imgChatGpt202610260751292 = "/assets/figma/6bed998a-5e2e-4687-a929-6cbc10dcef61.png";
+const imgChatGpt202610260751292 = "/assets/figma/319b1bcb-6a25-4a83-b0bc-a1a5646023cd.png";
 const img11 = "/assets/figma/1b666b35-56ce-4018-971a-e15b1dea4da8.png";
 const imgImg82811 = "/assets/figma/4b0fd9f2-8526-410b-84fe-a8c27364f0d6.png";
-const img12 = "/assets/figma/e8bc72e7-78f1-4599-8efb-395b8848235e.png";
-const img13 = "/assets/figma/b00fafbf-2e2b-4258-b10d-933d905406e4.png";
+const img12 = "/assets/figma/9d63fc08-929b-40cf-a745-37af6837226d.png";
+const img13 = "/assets/figma/9cf7bee5-d355-4666-a670-9d2716049764.png";
 const imgVector = "/assets/figma/1661afd0-a39e-45b4-a5e7-3acf18bdb3d1.svg";
 const imgVector1 = "/assets/figma/29d777e5-6633-444c-8ce0-b2fee3e65982.svg";
 const imgClipPathGroup = "/assets/figma/919e37d3-118c-4a08-84fe-df19e4773c61.svg";
@@ -164,7 +164,7 @@ export default function Component07({category,size,material,name,imageUrl,series
           <div className="absolute flex items-center justify-center left-[81.6px] size-[210.473px] top-[98.29px]" data-node-id="6301:2286">
             <div className="flex-none rotate-[-0.97deg]">
               <div className="relative size-[207.005px]" data-name="展示商品图 / 困兽a1 · 独立可替换">
-                <img alt="" className="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src={imageUrl} />
+                {imageUrl?.trim() && <img key={imageUrl} onError={event => { event.currentTarget.style.display = 'none'; }} alt="" className="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src={imageUrl} />}
               </div>
             </div>
           </div>

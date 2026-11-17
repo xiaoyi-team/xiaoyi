@@ -1,6 +1,6 @@
-const img2 = "/assets/figma/cf34cf45-d57c-49b3-b3ba-9ae6d85a6822.png";
-const img3 = "/assets/figma/fb501511-5325-48ed-92bf-6a3653ff08de.png";
-const img4 = "/assets/figma/d26aec66-092f-4e8e-b328-b38be57b63b2.png";
+const img2 = "/assets/figma/b3a79ead-9dd5-47eb-b459-acfb9b8ca338.png";
+const img3 = "/assets/figma/e019cb50-ef8c-4729-ad38-724a1eb8b3e9.png";
+const img4 = "/assets/figma/a57852d1-0123-4b84-bf38-ccb67fe1f07c.png";
 const img5 = "/assets/figma/b466a758-4f13-4c5a-86bf-e34849daff1b.png";
 
 export default function Component01() {

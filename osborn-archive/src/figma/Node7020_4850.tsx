@@ -1,19 +1,19 @@
-const img1 = "/assets/figma/db42f65c-0811-4dd0-afe1-31813b41c61c.png";
-const img2 = "/assets/figma/c9a1f205-de62-49ba-8058-7d45be1154ec.png";
+const img1 = "/assets/figma/cf99c09d-c2ae-44e6-81c1-60deb1558194.png";
+const img2 = "/assets/figma/c0cfb1f8-dac3-445f-810a-24bfed3f3aa8.png";
 const img3 = "/assets/figma/7f74f2f8-0293-4373-b097-39559b11aec7.png";
 const img4 = "/assets/figma/2280b8ea-75a8-4b3f-a05c-34f9a79fef44.png";
 const img = "/assets/figma/43809d72-d90c-4ca4-a674-f624900ecdd9.png";
 const img5 = "/assets/figma/9d26de7c-b817-47b2-9309-c2467f447cb6.png";
-const img6 = "/assets/figma/a95d13fb-b2dd-4e23-ab45-6c8de2ca0b72.png";
-const img7 = "/assets/figma/f1f0d19e-f3cc-4d7d-a3ea-854eebb4c6f9.png";
-const img8 = "/assets/figma/f5ce3d19-389c-480c-8fe6-7acf3c60c170.png";
-const img9 = "/assets/figma/f9a90b2b-5bed-4fb7-9208-0078c3dec1f2.png";
-const img10 = "/assets/figma/b3d1eb6c-d4e4-4bc7-9a85-dbb9a9c41090.png";
+const img6 = "/assets/figma/2fc01165-efe8-4819-9905-36d8f732bf64.png";
+const img7 = "/assets/figma/3a1dec39-5073-47eb-80f0-9ffc25d5adee.png";
+const img8 = "/assets/figma/bf8c2fb7-a60f-4f23-88ad-3f26b842488a.png";
+const img9 = "/assets/figma/9a28e2b7-f807-4fa3-8da0-defbac77554e.png";
+const img10 = "/assets/figma/36954448-9cd7-4bab-a0e8-c3fa3654c895.png";
 const imgChatGpt202610260751292 = "/assets/figma/319b1bcb-6a25-4a83-b0bc-a1a5646023cd.png";
 const img11 = "/assets/figma/9d63fc08-929b-40cf-a745-37af6837226d.png";
 const img12 = "/assets/figma/9cf7bee5-d355-4666-a670-9d2716049764.png";
-const imgImg82811 = "/assets/figma/dac5cd6a-8aa7-40aa-8741-98ca9ecaf347.png";
-const img13 = "/assets/figma/74a82171-a1b3-4b2e-871e-621fa1cd169f.png";
+const imgImg82811 = "/assets/figma/4b0fd9f2-8526-410b-84fe-a8c27364f0d6.png";
+const img13 = "/assets/figma/1b666b35-56ce-4018-971a-e15b1dea4da8.png";
 const imgVector = "/assets/figma/b13b493a-4354-4c9c-aad8-1aef30da5c94.svg";
 const imgVector1 = "/assets/figma/813f863a-c4c1-4987-a940-3e001b19c5f4.svg";
 const imgClipPathGroup = "/assets/figma/43615db2-9908-45af-bc60-cc3a79a137d7.svg";
@@ -167,7 +167,7 @@ export default function Component({category,size,material,name,imageUrl,series,q
                 <div className="absolute flex items-center justify-center left-[28.35px] size-[75.906px] top-[37.07px]" data-node-id="7020:4189">
                   <div className="flex-none rotate-[-0.97deg]">
                     <div className="relative size-[74.656px]" data-name="展示商品图 / 困兽a1 · 独立可替换">
-                      <img alt="" className="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src={imageUrl} />
+                      {imageUrl?.trim() && <img key={imageUrl} onError={event => { event.currentTarget.style.display = 'none'; }} alt="" className="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src={imageUrl} />}
                     </div>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export default function Component({category,size,material,name,imageUrl,series,q
                   </div>
                 </div>
               </div>
-              <div className="absolute h-[122px] left-[3.85px] overflow-x-clip overflow-y-auto top-[124.16px] w-[165px]" data-node-id="7337:3590" data-name="商品信息与我的收藏 / 上下滑动">
+              <div className="absolute h-[122px] left-[3.85px] overflow-x-hidden overflow-y-auto overscroll-y-contain touch-pan-y top-[124.16px] w-[165px]" data-node-id="7337:3590" data-name="商品信息与我的收藏 / 上下滑动">
                 <div className="absolute h-[206px] left-0 top-0 w-[165px]" data-node-id="7337:3591" data-name="详情内容 / 宽松排布">
                   <div className="absolute flex h-[44.958px] items-center justify-center left-[104.29px] top-[4.22px] w-[65.781px]" data-node-id="7020:4310">
                     <div className="flex-none rotate-[-10.6deg]">

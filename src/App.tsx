@@ -12,6 +12,8 @@ import PolicyPage from "./pages/PolicyPage";
 import { lazy, Suspense } from "react";
 
 const CandyPage = lazy(() => import("./pages/CandyPage"));
+const SchoolVotePage = lazy(() => import("./pages/vote/SchoolVotePage"));
+const SpinePreviewPage = lazy(() => import("./pages/SpinePreviewPage"));
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
       <Route path="/terms" element={<PolicyPage kind="terms" />} />
       <Route path="/privacy" element={<PolicyPage kind="privacy" />} />
       <Route path="/pit-signal" element={<GasStationList />} />
+      <Route path="/school-vote" element={<Suspense fallback={null}><SchoolVotePage /></Suspense>} />
+      <Route path="/spine-preview" element={<Suspense fallback={null}><SpinePreviewPage /></Suspense>} />
 
       <Route path="/candy" element={<Suspense fallback={null}><CandyPage /></Suspense>} />
 
