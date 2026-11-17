@@ -106,7 +106,7 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
         ? <CalculatorTouchPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />
         : <CalculatorPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />}
     </div>
-    {edit && <CalculatorQuantityInput touch={isTouchViewport} label={edit.field.kind === 'activity' ? ({ monthly: '月卡剩余天数', ceremony: '巡礼剩余天数', wish: '祈愿剩余天数', premium: '悦享卡剩余天数' } as const)[edit.field.key] : edit.label} value={edit.draft} maxDigits={edit.field.kind === 'resource' ? 9 : 4} onChange={draft => setEdit(current => current ? { ...current, draft } : null)} onCancel={() => closeEdit(false)} onCommit={() => closeEdit(true)} />}
+    {edit && <CalculatorQuantityInput touch={isTouchViewport} label={edit.field.kind === 'activity' ? ({ monthly: '月卡剩余天数', ceremony: '巡礼剩余天数', wish: '祈愿剩余周数', premium: '悦享卡剩余天数' } as const)[edit.field.key] : edit.label} value={edit.draft} maxDigits={edit.field.kind === 'resource' ? 9 : 4} onChange={draft => setEdit(current => current ? { ...current, draft } : null)} onCancel={() => closeEdit(false)} onCommit={() => closeEdit(true)} />}
     {helpOpen && <CalculatorHelp touch={isTouchViewport} onClose={closeHelp} />}
     </div>
     {polarisNoticeOpen && <CalculatorPolarisNotice onClose={closePolarisNotice} />}
