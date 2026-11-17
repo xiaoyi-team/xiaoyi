@@ -1,3 +1,4 @@
+import type { QuantityField } from './CalculatorQuantityInput'
 import type { CSSProperties } from 'react'
 import activityCeremony from '../../assets/bar/source/calculator/activity-ceremony.png'
 import activityMonthlyCard from '../../assets/bar/source/calculator/activity-monthly-card.png'
@@ -23,7 +24,7 @@ const contentRegions = [
   { name: '预测结果', height: 108 },
 ] as const
 
-export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, resource, calculatorDate }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState }) {
+export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void }) {
   const { selectedDate, selectDate, dateText, resultDateText, calendarOpen, visibleMonth, setVisibleMonth, today, triggerRef, calendarRef, end, openCalendar, closeCalendar, trapFocus, firstWeekday, count, prev, next, monthKey } = calculatorDate
   return (
     <section className="calculator-touch-panel" aria-label="资源计算器" data-result-date-description={resultDateText}>
@@ -67,6 +68,7 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
                   <span className="touch-resources__minus" aria-hidden="true">−</span>
                   <span className="touch-resources__value" aria-live="polite">{resource.counts[key]}</span>
                   <span className="touch-resources__plus" aria-hidden="true">+</span>
+                  <button type="button" className="touch-resources__hit touch-resources__hit--value" aria-label={`输入${label}`} tabIndex={calendarOpen ? -1 : 0} onClick={() => onEdit({ kind: 'resource', key }, label)} />
                   <button type="button" className="touch-resources__hit touch-resources__hit--minus" aria-label={`${label}减少`} tabIndex={calendarOpen ? -1 : 0} onClick={() => resource.change(key as ResourceKey, -1)} />
                   <button type="button" className="touch-resources__hit touch-resources__hit--plus" aria-label={`${label}增加`} tabIndex={calendarOpen ? -1 : 0} onClick={() => resource.change(key as ResourceKey, 1)} />
                 </div>)}
@@ -82,6 +84,7 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
                   <img className="touch-activity__image" src={image} alt="" draggable={false} />
                   <span className="touch-activity__name">{label}</span>
                   <div className="touch-activity__input"><div className="touch-activity__input-back" /><span className="touch-activity__minus">−</span><span className="touch-activity__value">{activity.counts[key]}</span><span className="touch-activity__plus">+</span><span className="touch-activity__unit">{key === 'wish' ? '周' : '天'}</span>
+                    <button type="button" className="touch-activity__hit touch-activity__hit--value" aria-label={`输入${label}`} tabIndex={calendarOpen ? -1 : 0} onClick={() => onEdit({ kind: 'activity', key }, label)} />
                     <button type="button" className="touch-activity__hit touch-activity__hit--minus" aria-label={`${label}减少`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, -1)} />
                     <button type="button" className="touch-activity__hit touch-activity__hit--plus" aria-label={`${label}增加`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, 1)} />
                   </div>

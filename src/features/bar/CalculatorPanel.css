@@ -164,6 +164,7 @@
 .calculator-panel__plus { left: calc(247 * var(--cp-unit)); top: calc(37 * var(--cp-unit)); width: calc(17 * var(--cp-unit)); height: calc(42 * var(--cp-unit)); font-size: calc(29 * var(--cp-unit)); line-height: calc(42 * var(--cp-unit)); font-weight: 400; }
 .calculator-panel__value { left: calc(127 * var(--cp-unit)); top: calc(43 * var(--cp-unit)); width: calc(110 * var(--cp-unit)); height: calc(36 * var(--cp-unit)); display: flex; align-items: center; justify-content: center; color: #171b31; font-size: calc(21 * var(--cp-unit)); line-height: calc(33 * var(--cp-unit)); font-weight: 500; }
 .calculator-panel__input-hit { left: calc(127 * var(--cp-unit)); top: calc(43 * var(--cp-unit)); width: calc(110 * var(--cp-unit)); height: calc(36 * var(--cp-unit)); }
+.calculator-panel__input-hit.calculator-quantity-trigger { appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
 .calculator-panel__minus-hit { left: calc(93 * var(--cp-unit)); top: calc(38 * var(--cp-unit)); width: calc(34 * var(--cp-unit)); height: calc(46 * var(--cp-unit)); }
 .calculator-panel__plus-hit { left: calc(237 * var(--cp-unit)); top: calc(38 * var(--cp-unit)); width: calc(36 * var(--cp-unit)); height: calc(46 * var(--cp-unit)); }
 
@@ -239,7 +240,7 @@
 .calculator-panel__button-icon--sparkle img { width: calc(73.1304 * var(--cp-unit)); height: calc(78.1739 * var(--cp-unit)); left: calc(50% - 51.6957 * var(--cp-unit)); top: calc(50% - 42.2391 * var(--cp-unit)); }
 .calculator-panel__button-icon--sparkle img { transform: matrix(1, 0, .131313, 1.010101, 0, 0); transform-origin: 70.69% 54.03%; }
 
-.calculator-panel__activity-hit-minus, .calculator-panel__activity-hit-plus, .calculator-panel__wish-hit-minus, .calculator-panel__wish-hit-plus { appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
+.calculator-panel__activity-hit-minus, .calculator-panel__activity-hit-value, .calculator-panel__activity-hit-plus, .calculator-panel__wish-hit-minus, .calculator-panel__wish-hit-value, .calculator-panel__wish-hit-plus { appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
 .calculator-panel__wish-choice { appearance: none; padding: 0; font-family: inherit; background: transparent; pointer-events: auto; cursor: pointer; }
 .calculator-panel__wish-choice--selected { background: #ebd5a2; }
 .calculator-panel__activity-hit:focus-visible, .calculator-panel__wish-hit:focus-visible, .calculator-panel__wish-choice:focus-visible, .calculator-panel__minus-hit:focus-visible, .calculator-panel__plus-hit:focus-visible { outline: calc(2 * var(--cp-unit)) solid #ebd5a2; }

@@ -4,6 +4,7 @@ import CalculatorEntrance from '../features/bar/CalculatorEntrance'
 import CalculatorPanel from '../features/bar/CalculatorPanel'
 import CalculatorTouchPanel from '../features/bar/CalculatorTouchPanel'
 import CalculatorHelp from '../features/bar/CalculatorHelp'
+import CalculatorQuantityInput, { type QuantityField } from '../features/bar/CalculatorQuantityInput'
 import type { GiftState } from '../features/bar/gifts'
 import { initialResourceCounts, type ResourceState } from '../features/bar/resources'
 import { useActivityState } from '../features/bar/useActivityState'
@@ -24,6 +25,32 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
   const activity = useActivityState()
   const [giftCounts, setGiftCounts] = useState<Record<string, number>>({})
   const [resourceCounts, setResourceCounts] = useState(initialResourceCounts)
+  const [edit, setEdit] = useState<{ field: QuantityField; label: string; original: number; draft: string } | null>(null)
+  const editTrigger = useRef<HTMLButtonElement | null>(null)
+  const openEdit = (field: QuantityField, label: string) => {
+    const original = field.kind === 'resource' ? resourceCounts[field.key] : activity.counts[field.key]
+    editTrigger.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null
+    setEdit({ field, label, original, draft: String(original) })
+  }
+  const closeEdit = (commit: boolean) => {
+    if (commit && edit && edit.draft !== '') {
+      const value = Number(edit.draft)
+      if (Number.isSafeInteger(value) && value >= 0 && value !== edit.original) {
+        if (edit.field.kind === 'resource') setResourceCounts(current => ({ ...current, [edit.field.key]: value }))
+        else activity.setValue(edit.field.key, value)
+      }
+    }
+    setEdit(null)
+    requestAnimationFrame(() => {
+      const trigger = editTrigger.current
+      if (trigger?.isConnected) trigger.focus()
+      else if (trigger) {
+        const label = trigger.getAttribute('aria-label')
+        Array.from(panelHost.current?.querySelectorAll<HTMLButtonElement>('button') ?? []).find(button => button.getAttribute('aria-label') === label)?.focus()
+      }
+      editTrigger.current = null
+    })
+  }
   const [helpOpen, setHelpOpen] = useState(false)
   const helpTrigger = useRef<HTMLButtonElement | null>(null)
   const panelHost = useRef<HTMLDivElement>(null)
@@ -49,16 +76,18 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
   const resource: ResourceState = {
     counts: resourceCounts,
     change: (key, delta) => setResourceCounts(counts => ({ ...counts, [key]: Math.max(0, counts[key] + delta) })),
+    setValue: (key, value) => setResourceCounts(counts => ({ ...counts, [key]: value })),
     reset: () => setResourceCounts(initialResourceCounts),
   }
   return <>
     <div className="calculator-scene-backdrop" onClick={onClose} />
     <div className={`calculator-scene-shield${isTouchViewport ? ' calculator-scene-shield--touch' : ''}`} />
-    <div ref={panelHost} style={{ display: 'contents' }} inert={helpOpen || undefined}>
+    <div ref={panelHost} style={{ display: 'contents' }} inert={helpOpen || !!edit || undefined}>
       {isTouchViewport
-        ? <CalculatorTouchPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} />
-        : <CalculatorPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} />}
+        ? <CalculatorTouchPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />
+        : <CalculatorPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />}
     </div>
+    {edit && <CalculatorQuantityInput touch={isTouchViewport} label={edit.field.kind === 'activity' ? ({ monthly: '月卡剩余天数', ceremony: '巡礼剩余天数', wish: '祈愿剩余天数', premium: '悦享卡剩余天数' } as const)[edit.field.key] : edit.label} value={edit.draft} onChange={draft => setEdit(current => current ? { ...current, draft } : null)} onCancel={() => closeEdit(false)} onCommit={() => closeEdit(true)} />}
     {helpOpen && <CalculatorHelp touch={isTouchViewport} onClose={closeHelp} />}
   </>
 }

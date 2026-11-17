@@ -8,6 +8,7 @@ export function useActivityState() {
   const [wishChoice, setWishChoice] = useState<WishChoice>(1)
   const change = (key: ActivityKey, delta: number) => setCounts(current => ({ ...current, [key]: Math.max(0, current[key] + delta) }))
   const reset = () => { setCounts({ monthly: 0, ceremony: 0, wish: 0, premium: 0 }); setWishChoice(1) }
-  return { counts, wishChoice, setWishChoice, change, reset }
+  const setValue = (key: ActivityKey, value: number) => setCounts(current => ({ ...current, [key]: value }))
+  return { counts, wishChoice, setWishChoice, change, setValue, reset }
 }
 export type ActivityState = ReturnType<typeof useActivityState>

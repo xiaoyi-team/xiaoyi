@@ -265,6 +265,7 @@
 .touch-activity__unit { left: calc(80 * var(--ct-unit)); top: 0; font-size: calc(9 * var(--ct-unit)); line-height: calc(22 * var(--ct-unit)); }
 .touch-activity__hit { top: calc(-2 * var(--ct-unit)); width: calc(17 * var(--ct-unit)); height: calc(26 * var(--ct-unit)); appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
 .touch-activity__hit--minus { left: 0; } .touch-activity__hit--plus { left: calc(59 * var(--ct-unit)); }
+.touch-activity__hit--value { left: calc(17 * var(--ct-unit)); width: calc(42 * var(--ct-unit)); }
 .touch-activity__choices { position: absolute; left: calc(45 * var(--ct-unit)); top: calc(46 * var(--ct-unit)); display: flex; gap: calc(3 * var(--ct-unit)); }
 .touch-activity__choice { display: flex; align-items: center; justify-content: center; width: calc(23 * var(--ct-unit)); height: calc(18 * var(--ct-unit)); box-sizing: border-box; padding: 0; border: calc(.6 * var(--ct-unit)) solid #ebd5a2; border-radius: calc(9 * var(--ct-unit)); background: transparent; color: #f2f0fc; font-family: inherit; font-size: calc(9 * var(--ct-unit)); line-height: calc(15.12 * var(--ct-unit)); font-weight: 500; pointer-events: auto; cursor: pointer; }
 .touch-activity__choice--selected { background: #ebd5a2; color: #1f263b; }
@@ -315,6 +316,7 @@
 .touch-resources__value { left: calc(61.44 * var(--ct-unit)); width: calc(52.8 * var(--ct-unit)); color: #171b31; font-family: 'Bar Noto Sans SC', 'Noto Sans SC', sans-serif; font-size: calc(10.08 * var(--ct-unit)); line-height: calc(15.84 * var(--ct-unit)); font-weight: 500; text-align: center; }
 .touch-resources__hit { top: calc(18.24 * var(--ct-unit)); height: calc(22.08 * var(--ct-unit)); appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
 .touch-resources__hit--minus { left: calc(44.64 * var(--ct-unit)); width: calc(16.32 * var(--ct-unit)); }
+.touch-resources__hit--value { left: calc(60.96 * var(--ct-unit)); width: calc(52.8 * var(--ct-unit)); }
 .touch-resources__hit--plus { left: calc(113.76 * var(--ct-unit)); width: calc(17.28 * var(--ct-unit)); }
 .touch-resources__hit:focus-visible { outline: calc(1.5 * var(--ct-unit)) solid #ebd5a2; outline-offset: calc(-1.5 * var(--ct-unit)); }
 

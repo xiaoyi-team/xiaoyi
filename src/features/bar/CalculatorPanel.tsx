@@ -1,3 +1,4 @@
+import type { QuantityField } from './CalculatorQuantityInput'
 import { useEffect, useRef, type CSSProperties } from 'react'
 import type { ActivityKey, ActivityState, WishChoice } from './useActivityState'
 import { dateKey, type CalculatorDateState } from './useCalculatorDate'
@@ -40,7 +41,7 @@ const sparkles = [
   [577.0572509765625, 56.9517822265625, 18], [157.0572509765625, 57.9517822265625, 18],
 ] as const
 
-export default function CalculatorPanel({ onClose, onHelp, activity, gift, resource, calculatorDate }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState }) {
+export default function CalculatorPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void }) {
   const giftCounts = gift.counts
   const giftWindowRef = useRef<HTMLDivElement>(null)
   const giftScrollFrame = useRef<number | null>(null)
@@ -103,7 +104,7 @@ export default function CalculatorPanel({ onClose, onHelp, activity, gift, resou
           <span className="calculator-panel__minus">−</span>
           <span className="calculator-panel__value">{resource.counts[key]}</span>
           <span className="calculator-panel__plus">+</span>
-          <div className="calculator-panel__input-hit" aria-hidden="true" />
+          <button type="button" className="calculator-panel__input-hit calculator-quantity-trigger" aria-label={`输入${label}`} tabIndex={calendarOpen ? -1 : 0} onClick={() => onEdit({ kind: 'resource', key }, label)} />
           <button type="button" className="calculator-panel__minus-hit" aria-label={`${label}减少`} tabIndex={calendarOpen ? -1 : 0} onClick={() => resource.change(key as ResourceKey, -1)} />
           <button type="button" className="calculator-panel__plus-hit" aria-label={`${label}增加`} tabIndex={calendarOpen ? -1 : 0} onClick={() => resource.change(key as ResourceKey, 1)} />
         </div>
@@ -129,7 +130,7 @@ export default function CalculatorPanel({ onClose, onHelp, activity, gift, resou
           <div className="calculator-panel__activity-input">
             <div className="calculator-panel__activity-input-base" />
             <span className="calculator-panel__activity-minus">−</span><span className="calculator-panel__activity-value">{activity.counts[key]}</span><span className="calculator-panel__activity-plus">+</span><span className="calculator-panel__activity-unit">天</span>
-            <button type="button" className="calculator-panel__activity-hit calculator-panel__activity-hit-minus" aria-label={`${label}减少`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, -1)} /><div className="calculator-panel__activity-hit calculator-panel__activity-hit-value" aria-hidden="true" /><button type="button" className="calculator-panel__activity-hit calculator-panel__activity-hit-plus" aria-label={`${label}增加`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, 1)} />
+            <button type="button" className="calculator-panel__activity-hit calculator-panel__activity-hit-minus" aria-label={`${label}减少`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, -1)} /><button type="button" className="calculator-panel__activity-hit calculator-panel__activity-hit-value" aria-label={`输入${label}`} tabIndex={calendarOpen ? -1 : 0} onClick={() => onEdit({ kind: 'activity', key }, label)} /><button type="button" className="calculator-panel__activity-hit calculator-panel__activity-hit-plus" aria-label={`${label}增加`} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change(key as ActivityKey, 1)} />
           </div>
         </div>
       ))}
@@ -139,7 +140,7 @@ export default function CalculatorPanel({ onClose, onHelp, activity, gift, resou
         <div className="calculator-panel__wish-input">
           <div className="calculator-panel__wish-input-base" />
           <span className="calculator-panel__wish-minus">−</span><span className="calculator-panel__wish-value">{activity.counts.wish}</span><span className="calculator-panel__wish-plus">+</span><span className="calculator-panel__wish-unit">周</span>
-          <button type="button" className="calculator-panel__wish-hit calculator-panel__wish-hit-minus" aria-label="隽心祈愿减少" tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change('wish', -1)} /><div className="calculator-panel__wish-hit calculator-panel__wish-hit-value" aria-hidden="true" /><button type="button" className="calculator-panel__wish-hit calculator-panel__wish-hit-plus" aria-label="隽心祈愿增加" tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change('wish', 1)} />
+          <button type="button" className="calculator-panel__wish-hit calculator-panel__wish-hit-minus" aria-label="隽心祈愿减少" tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change('wish', -1)} /><button type="button" className="calculator-panel__wish-hit calculator-panel__wish-hit-value" aria-label="输入隽心祈愿" tabIndex={calendarOpen ? -1 : 0} onClick={() => onEdit({ kind: 'activity', key: 'wish' }, '隽心祈愿')} /><button type="button" className="calculator-panel__wish-hit calculator-panel__wish-hit-plus" aria-label="隽心祈愿增加" tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.change('wish', 1)} />
         </div>
         <div className="calculator-panel__wish-choices">{([1, 2, 3] as WishChoice[]).map(n => <button type="button" key={n} aria-label={`祈愿${n}次`} aria-pressed={activity.wishChoice === n} tabIndex={calendarOpen ? -1 : 0} onClick={() => activity.setWishChoice(n)} className={`calculator-panel__wish-choice${n === activity.wishChoice ? ' calculator-panel__wish-choice--selected' : ''}`}>{n}</button>)}</div>
       </div>

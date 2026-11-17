@@ -15,6 +15,7 @@ export type ResourceCounts = Record<ResourceKey, number>
 export type ResourceState = {
   counts: ResourceCounts
   change: (key: ResourceKey, delta: 1 | -1) => void
+  setValue: (key: ResourceKey, value: number) => void
   reset: () => void
 }
 
