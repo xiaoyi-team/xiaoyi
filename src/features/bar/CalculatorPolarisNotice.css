@@ -1,0 +1,6 @@
+.polaris-notice-layer { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: rgb(0 0 0 / 35%); font-family: 'Noto Serif SC', serif; }
+.polaris-notice { box-sizing: border-box; width: 506px; max-width: 100%; min-height: 66px; padding: 12px 24px; display: flex; align-items: center; justify-content: center; border: 1px solid rgb(93% 83% 59%); border-radius: 12px; background: linear-gradient(180deg, rgb(19% 23% 34%), rgb(7.5% 9.5% 16%)); box-shadow: 0 4px 13.6px rgb(0 0 0 / 35%); color: rgb(91% 92% 96%); text-align: center; font: 400 24px/40px 'Noto Serif SC', serif; }
+@media (max-width: 1024px) {
+  .polaris-notice-layer { background: rgb(0 0 0 / 50%); }
+  .polaris-notice { width: 300px; min-height: 42px; padding: 9px 16px; border-radius: 8px; font-size: 14px; line-height: 22px; }
+}

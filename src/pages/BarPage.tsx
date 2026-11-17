@@ -5,6 +5,7 @@ import CalculatorPanel from '../features/bar/CalculatorPanel'
 import CalculatorTouchPanel from '../features/bar/CalculatorTouchPanel'
 import CalculatorHelp from '../features/bar/CalculatorHelp'
 import CalculatorQuantityInput, { type QuantityField } from '../features/bar/CalculatorQuantityInput'
+import CalculatorPolarisNotice from '../features/bar/CalculatorPolarisNotice'
 import type { GiftState } from '../features/bar/gifts'
 import { initialResourceCounts, type ResourceState } from '../features/bar/resources'
 import { useActivityState } from '../features/bar/useActivityState'
@@ -52,6 +53,8 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     })
   }
   const [helpOpen, setHelpOpen] = useState(false)
+  const [polarisNoticeOpen, setPolarisNoticeOpen] = useState(false)
+  const polarisNoticeFocus = useRef<HTMLElement | null>(null)
   const helpTrigger = useRef<HTMLButtonElement | null>(null)
   const panelHost = useRef<HTMLDivElement>(null)
   const openHelp = (trigger: HTMLButtonElement) => {
@@ -59,6 +62,7 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     setHelpOpen(true)
   }
   const closeHelp = useCallback(() => setHelpOpen(false), [])
+  const closePolarisNotice = useCallback(() => setPolarisNoticeOpen(false), [])
   useLayoutEffect(() => {
     if (helpOpen || !helpTrigger.current) return
     // Restore after React removes inert; a breakpoint change may replace the trigger.
@@ -67,6 +71,14 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     trigger?.focus()
     helpTrigger.current = null
   }, [helpOpen, isTouchViewport])
+  useLayoutEffect(() => {
+    if (polarisNoticeOpen || !polarisNoticeFocus.current) return
+    const trigger = polarisNoticeFocus.current
+    const fallback = panelHost.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')
+    const restoreTarget = trigger.isConnected && !trigger.closest('[inert]') ? trigger : fallback
+    restoreTarget?.focus()
+    if (restoreTarget) polarisNoticeFocus.current = restoreTarget
+  }, [polarisNoticeOpen])
   const gift: GiftState = {
     counts: giftCounts,
     increment: id => setGiftCounts(counts => ({ ...counts, [id]: (counts[id] || 0) + 1 })),
@@ -80,6 +92,13 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     reset: () => setResourceCounts(initialResourceCounts),
   }
   return <>
+    <div
+      style={{ display: 'contents' }}
+      inert={polarisNoticeOpen || undefined}
+      onFocusCapture={event => {
+        if (event.target instanceof HTMLElement) polarisNoticeFocus.current = event.target
+      }}
+    >
     <div className="calculator-scene-backdrop" onClick={onClose} />
     <div className={`calculator-scene-shield${isTouchViewport ? ' calculator-scene-shield--touch' : ''}`} />
     <div ref={panelHost} style={{ display: 'contents' }} inert={helpOpen || !!edit || undefined}>
@@ -89,6 +108,8 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     </div>
     {edit && <CalculatorQuantityInput touch={isTouchViewport} label={edit.field.kind === 'activity' ? ({ monthly: '月卡剩余天数', ceremony: '巡礼剩余天数', wish: '祈愿剩余天数', premium: '悦享卡剩余天数' } as const)[edit.field.key] : edit.label} value={edit.draft} maxDigits={edit.field.kind === 'resource' ? 9 : 4} onChange={draft => setEdit(current => current ? { ...current, draft } : null)} onCancel={() => closeEdit(false)} onCommit={() => closeEdit(true)} />}
     {helpOpen && <CalculatorHelp touch={isTouchViewport} onClose={closeHelp} />}
+    </div>
+    {polarisNoticeOpen && <CalculatorPolarisNotice onClose={closePolarisNotice} />}
   </>
 }
 
