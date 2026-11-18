@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 /.playwright-cli/
+
+# Local-only tests
+.local-tests/
