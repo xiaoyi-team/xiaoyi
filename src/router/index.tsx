@@ -4,12 +4,15 @@ import CandyHousePage from "../pages/CandyHousePage";
 import GasStationListPage from "../pages/GasStationListPage";
 import HomePage from "../pages/HomePage";
 import Login from "../pages/Login";
+import PolicyPage from "../pages/PolicyPage";
 import SplashPage from "../pages/SplashPage";
 import VotePage from "../pages/VotePage";
 import WishBoxPage from "../pages/WishBoxPage";
 import XiaoYiPage from "../pages/XiaoYiPage";
 
 const router = createBrowserRouter([
+  { path: "/terms", element: <PolicyPage kind="terms" /> },
+  { path: "/privacy", element: <PolicyPage kind="privacy" /> },
   {
     path: "/",
     element: <SplashPage />,
