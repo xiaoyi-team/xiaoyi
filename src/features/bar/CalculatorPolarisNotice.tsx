@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import './CalculatorPolarisNotice.css'
 
-export default function CalculatorPolarisNotice({ onClose }: { onClose: () => void }) {
+export default function CalculatorPolarisNotice({ onClose, message = '北极星数量不足，请调整选择后重新计算。' }: { onClose: () => void; message?: string }) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
 
@@ -46,11 +46,11 @@ export default function CalculatorPolarisNotice({ onClose }: { onClose: () => vo
         className="polaris-notice"
         role="alertdialog"
         aria-modal="true"
-        aria-label="北极星数量不足，请调整选择后重新计算。"
+        aria-label={message}
         tabIndex={-1}
         onClick={event => event.stopPropagation()}
       >
-        北极星数量不足，请调整选择后重新计算。
+        {message}
       </div>
     </div>,
     document.body,

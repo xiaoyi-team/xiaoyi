@@ -7,9 +7,10 @@ import CalculatorHelp from '../features/bar/CalculatorHelp'
 import CalculatorQuantityInput, { type QuantityField } from '../features/bar/CalculatorQuantityInput'
 import CalculatorPolarisNotice from '../features/bar/CalculatorPolarisNotice'
 import type { GiftState } from '../features/bar/gifts'
-import { initialResourceCounts, type ResourceState } from '../features/bar/resources'
+import { initialResourceCounts, type ResourceCounts, type ResourceState } from '../features/bar/resources'
 import { useActivityState } from '../features/bar/useActivityState'
-import { useCalculatorDate } from '../features/bar/useCalculatorDate'
+import { dateKey, shanghaiToday, useCalculatorDate } from '../features/bar/useCalculatorDate'
+import { calculateResourcesWithGate } from '../features/bar/calculateResources'
 import { useCallback, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import '../features/bar/BarPage.css'
 
@@ -26,6 +27,16 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
   const activity = useActivityState()
   const [giftCounts, setGiftCounts] = useState<Record<string, number>>({})
   const [resourceCounts, setResourceCounts] = useState(initialResourceCounts)
+  const [calculationResult, setCalculationResult] = useState<{ resources: ResourceCounts; predictionEnd: string } | null>(null)
+  const [calculationStatus, setCalculationStatus] = useState<'idle' | 'calculating' | 'date-required' | 'date-expired' | 'success' | 'blocked' | 'error'>('idle')
+  const calculationLock = useRef(false)
+  const calculationFrame = useRef<number | null>(null)
+  const cancelCalculation = useCallback(() => {
+    if (calculationFrame.current !== null) cancelAnimationFrame(calculationFrame.current)
+    calculationFrame.current = null
+    calculationLock.current = false
+  }, [])
+  useLayoutEffect(() => cancelCalculation, [cancelCalculation])
   const [edit, setEdit] = useState<{ field: QuantityField; label: string; original: number; draft: string } | null>(null)
   const editTrigger = useRef<HTMLButtonElement | null>(null)
   const openEdit = (field: QuantityField, label: string) => {
@@ -53,7 +64,8 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     })
   }
   const [helpOpen, setHelpOpen] = useState(false)
-  const [polarisNoticeOpen, setPolarisNoticeOpen] = useState(false)
+  const [noticeReason, setNoticeReason] = useState<'date-required' | 'date-expired' | 'insufficient-polaris' | 'calculation-error' | null>(null)
+  const polarisNoticeOpen = noticeReason !== null
   const polarisNoticeFocus = useRef<HTMLElement | null>(null)
   const helpTrigger = useRef<HTMLButtonElement | null>(null)
   const panelHost = useRef<HTMLDivElement>(null)
@@ -62,7 +74,47 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     setHelpOpen(true)
   }
   const closeHelp = useCallback(() => setHelpOpen(false), [])
-  const closePolarisNotice = useCallback(() => setPolarisNoticeOpen(false), [])
+  const closePolarisNotice = useCallback(() => setNoticeReason(null), [])
+  const calculate = () => {
+    if (calculationLock.current) return
+    const selectedDate = calculatorDate.selectedDate
+    if (!selectedDate) { setCalculationStatus('date-required'); setNoticeReason('date-required'); return }
+    const predictionEnd = dateKey(selectedDate)
+    if (predictionEnd < dateKey(shanghaiToday())) { setCalculationStatus('date-expired'); setNoticeReason('date-expired'); return }
+    calculationLock.current = true
+    setCalculationStatus('calculating')
+    // Leave a frame for Chrome to paint the disabled button before synchronous work.
+    calculationFrame.current = requestAnimationFrame(() => {
+      calculationFrame.current = requestAnimationFrame(() => {
+        calculationFrame.current = null
+        try {
+          const today = dateKey(shanghaiToday())
+          if (predictionEnd < today) { setCalculationStatus('date-expired'); setNoticeReason('date-expired'); return }
+          const outcome = calculateResourcesWithGate({
+            current: resourceCounts,
+            today,
+            predictionEnd,
+            activityDays: { monthly: activity.counts.monthly, ceremony: activity.counts.ceremony, premium: activity.counts.premium },
+            wishLevel: activity.wishChoice,
+            wishRemainingWeeks: activity.counts.wish,
+            giftCounts,
+          })
+          if (outcome.status === 'success') {
+            setCalculationResult({ resources: outcome.result.resources, predictionEnd })
+            setCalculationStatus('success')
+          } else if (outcome.reason === 'insufficient-polaris') {
+            setNoticeReason('insufficient-polaris')
+            setCalculationStatus('blocked')
+          }
+        } catch {
+          setCalculationStatus('error')
+          setNoticeReason('calculation-error')
+        } finally {
+          calculationLock.current = false
+        }
+      })
+    })
+  }
   useLayoutEffect(() => {
     if (helpOpen || !helpTrigger.current) return
     // Restore after React removes inert; a breakpoint change may replace the trigger.
@@ -91,6 +143,16 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     setValue: (key, value) => setResourceCounts(counts => ({ ...counts, [key]: value })),
     reset: () => setResourceCounts(initialResourceCounts),
   }
+  const reset = () => {
+    cancelCalculation()
+    setCalculationStatus('idle')
+    setCalculationResult(null)
+    setNoticeReason(null)
+    calculatorDate.reset()
+    activity.reset()
+    gift.reset()
+    resource.reset()
+  }
   return <>
     <div
       style={{ display: 'contents' }}
@@ -101,15 +163,15 @@ function CalculatorSession({ isTouchViewport, onClose }: { isTouchViewport: bool
     >
     <div className="calculator-scene-backdrop" onClick={onClose} />
     <div className={`calculator-scene-shield${isTouchViewport ? ' calculator-scene-shield--touch' : ''}`} />
-    <div ref={panelHost} style={{ display: 'contents' }} inert={helpOpen || !!edit || undefined}>
+    <div ref={panelHost} style={{ display: 'contents' }} inert={helpOpen || !!edit || undefined} data-calculation-status={calculationStatus}>
       {isTouchViewport
-        ? <CalculatorTouchPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />
-        : <CalculatorPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} />}
+        ? <CalculatorTouchPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} result={calculationResult} onReset={reset} onCalculate={calculate} calculating={calculationStatus === 'calculating'} />
+        : <CalculatorPanel onClose={onClose} onHelp={openHelp} activity={activity} gift={gift} resource={resource} calculatorDate={calculatorDate} onEdit={openEdit} result={calculationResult} onReset={reset} onCalculate={calculate} calculating={calculationStatus === 'calculating'} />}
     </div>
     {edit && <CalculatorQuantityInput touch={isTouchViewport} label={edit.field.kind === 'activity' ? ({ monthly: '月卡剩余天数', ceremony: '巡礼剩余天数', wish: '祈愿剩余周数', premium: '悦享卡剩余天数' } as const)[edit.field.key] : edit.label} value={edit.draft} maxDigits={edit.field.kind === 'resource' ? 9 : 4} onChange={draft => setEdit(current => current ? { ...current, draft } : null)} onCancel={() => closeEdit(false)} onCommit={() => closeEdit(true)} />}
     {helpOpen && <CalculatorHelp touch={isTouchViewport} onClose={closeHelp} />}
     </div>
-    {polarisNoticeOpen && <CalculatorPolarisNotice onClose={closePolarisNotice} />}
+    {polarisNoticeOpen && <CalculatorPolarisNotice onClose={closePolarisNotice} message={noticeReason === 'date-required' ? '请先选择日期' : noticeReason === 'date-expired' ? '所选日期已过期，请重新选择日期' : noticeReason === 'calculation-error' ? '计算出现问题，请重试' : undefined} />}
   </>
 }
 

@@ -52,10 +52,10 @@
 .calculator-panel__gift--selected .calculator-panel__gift-checkbox { background: #615238; }
 .calculator-panel__gift--selected .calculator-panel__gift-check { display: block; }
 .calculator-panel__gift--selected::before { content: attr(data-count); position: absolute; left: calc(8 * var(--cp-unit)); top: calc(8 * var(--cp-unit)); width: calc(26 * var(--cp-unit)); height: calc(26 * var(--cp-unit)); display: flex; justify-content: center; align-items: center; border-radius: calc(13 * var(--cp-unit)); background: #f6e7bf; color: #202337; font-size: calc(16 * var(--cp-unit)); line-height: calc(24 * var(--cp-unit)); font-weight: 500; }
-.calculator-panel__gift-action, .calculator-panel__gift-clear, .calculator-panel__reset-hit { pointer-events: auto; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.calculator-panel__gift-action, .calculator-panel__gift-clear, .calculator-panel__reset-hit, .calculator-panel__calculate-hit { pointer-events: auto; border: 0; padding: 0; background: transparent; cursor: pointer; }
 .calculator-panel__gift-action { inset: 0; width: 100%; height: 100%; }
 .calculator-panel__gift-clear { left: calc(111 * var(--cp-unit)); top: calc(125 * var(--cp-unit)); width: calc(31 * var(--cp-unit)); height: calc(31 * var(--cp-unit)); }
-.calculator-panel__gift-action:focus-visible, .calculator-panel__gift-clear:focus-visible, .calculator-panel__reset-hit:focus-visible { outline: calc(2 * var(--cp-unit)) solid #f5d494; outline-offset: calc(-3 * var(--cp-unit)); }
+.calculator-panel__gift-action:focus-visible, .calculator-panel__gift-clear:focus-visible, .calculator-panel__reset-hit:focus-visible, .calculator-panel__calculate-hit:focus-visible { outline: calc(2 * var(--cp-unit)) solid #f5d494; outline-offset: calc(-3 * var(--cp-unit)); }
 
 /* Coordinates are local to Figma frame 6787:8; the parent is the 1920-wide scene container. */
 .calculator-panel {
@@ -245,3 +245,11 @@
 .calculator-panel__wish-choice--selected { background: #ebd5a2; }
 .calculator-panel__activity-hit:focus-visible, .calculator-panel__wish-hit:focus-visible, .calculator-panel__wish-choice:focus-visible, .calculator-panel__minus-hit:focus-visible, .calculator-panel__plus-hit:focus-visible { outline: calc(2 * var(--cp-unit)) solid #ebd5a2; }
 .calculator-panel__minus-hit, .calculator-panel__plus-hit { appearance: none; border: 0; padding: 0; background: transparent; pointer-events: auto; cursor: pointer; }
+
+.calculator-panel__calculate-hit:disabled { cursor: default; }
+
+.calculator-panel__loading { left: calc(799 * var(--cp-unit)); top: calc(854 * var(--cp-unit)); width: calc(329 * var(--cp-unit)); height: calc(59 * var(--cp-unit)); display: flex; align-items: center; justify-content: center; gap: calc(16 * var(--cp-unit)); color: #ebd5a2; font-size: calc(36 * var(--cp-unit)); line-height: calc(52 * var(--cp-unit)); font-weight: 600; text-shadow: 0 0 calc(5.95 * var(--cp-unit)) #ffb85780; }
+.calculator-panel__loading .calculator-loading__spinner { width: calc(28 * var(--cp-unit)); height: calc(28 * var(--cp-unit)); flex: none; }
+@keyframes calculator-loading-spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+.calculator-loading__spinner { animation: calculator-loading-spin 2s cubic-bezier(.5, 0, .5, 1) infinite; }
+@media (prefers-reduced-motion: reduce) { .calculator-loading__spinner { animation: none; } }

@@ -165,7 +165,7 @@
   top: calc(298.59896 * var(--ct-unit));
   width: calc(175.35701 * var(--ct-unit));
   height: calc(31.447 * var(--ct-unit));
-  border: var(--ct-unit) solid #ebd5a2;
+  border: calc(1.599 * var(--ct-unit)) solid #ebd5a2;
   border-radius: calc(15.99 * var(--ct-unit));
   background: linear-gradient(90deg, #6d5742, #a88964 50%, #6d5742);
   box-shadow:
@@ -333,3 +333,10 @@
 .touch-results__icon { left: 0; top: 0; width: calc(58 * var(--ct-unit)); height: calc(58 * var(--ct-unit)); object-fit: contain; }
 .touch-results__name { left: calc(62 * var(--ct-unit)); top: calc(3.5 * var(--ct-unit)); width: max-content; height: calc(20 * var(--ct-unit)); color: #f2f0fc; font-family: 'Bar Noto Serif SC', 'Noto Serif SC', serif; font-size: calc(12 * var(--ct-unit)); font-weight: 400; line-height: calc(20 * var(--ct-unit)); white-space: nowrap; }
 .touch-results__value { left: calc(62 * var(--ct-unit)); top: calc(21 * var(--ct-unit)); width: calc(66 * var(--ct-unit)); height: calc(36 * var(--ct-unit)); color: #ebd5a2; font-family: 'Playfair Display', serif; font-size: calc(var(--result-size) * var(--ct-unit)); font-weight: var(--result-weight); line-height: calc(36 * var(--ct-unit)); letter-spacing: 0; transform: matrix(1, 0, -.12, .99, 0, 0); transform-origin: top left; text-shadow: 0 0 calc(4.71 * var(--ct-unit)) #ffb857a6, 0 0 calc(14.12 * var(--ct-unit)) #ffb85740; }
+
+.calculator-touch-panel__calculate.calculator-touch-panel__calculate-hit { appearance: none; padding: 0; border: 0; background: transparent; box-shadow: none; pointer-events: auto; cursor: pointer; }
+.calculator-touch-panel__calculate-hit:focus-visible { outline: calc(2 * var(--ct-unit)) solid #ebd5a2; }
+.calculator-touch-panel__calculate-hit:disabled { cursor: default; }
+
+.calculator-touch-panel__loading { display: flex; align-items: center; justify-content: center; gap: calc(8.528 * var(--ct-unit)); font-weight: 400; }
+.calculator-touch-panel__loading .calculator-loading__spinner { width: calc(14.924 * var(--ct-unit)); height: calc(14.924 * var(--ct-unit)); flex: none; }

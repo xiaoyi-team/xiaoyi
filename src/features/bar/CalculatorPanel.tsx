@@ -14,7 +14,7 @@ import buttonSparkle from '../../assets/bar/source/calculator/button-sparkle.png
 import buttonReset from '../../assets/bar/source/calculator/button-reset.png'
 import './CalculatorPanel.css'
 import { gifts, type GiftState } from './gifts'
-import { resources, type ResourceKey, type ResourceState } from './resources'
+import { resources, type ResourceKey, type ResourceCounts, type ResourceState } from './resources'
 
 const results = [
   { key: 'ticket', x: 101, nameWidth: 110, valueWidth: 33, weight: 400, size: 54 },
@@ -41,7 +41,7 @@ const sparkles = [
   [577.0572509765625, 56.9517822265625, 18], [157.0572509765625, 57.9517822265625, 18],
 ] as const
 
-export default function CalculatorPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void }) {
+export default function CalculatorPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit, onReset, onCalculate, calculating, result }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void; onReset: () => void; onCalculate: () => void; calculating: boolean; result: { resources: ResourceCounts; predictionEnd: string } | null }) {
   const giftCounts = gift.counts
   const giftWindowRef = useRef<HTMLDivElement>(null)
   const giftScrollFrame = useRef<number | null>(null)
@@ -170,21 +170,21 @@ export default function CalculatorPanel({ onClose, onHelp, activity, gift, resou
       <div className="calculator-panel__result-label-back" />
       <div className="calculator-panel__result-label"><span className="calculator-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> 预测结果</div>
       <div className="calculator-panel__result-date-back" />
-      <div className="calculator-panel__result-date"><span className="calculator-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> {resultDateText}</div>
+      <div className="calculator-panel__result-date"><span className="calculator-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> {result ? `至 ${result.predictionEnd} 可获得总资源` : resultDateText}</div>
       {results.map(({ key, x, nameWidth, valueWidth, weight, size }) => {
         const { label, image } = resources.find(item => item.key === key)!
         return <div key={key} className="calculator-panel__result" style={{ '--result-x': x, '--result-name-width': nameWidth, '--result-value-width': valueWidth, '--result-weight': weight, '--result-size': size } as CSSProperties}>
           <img className="calculator-panel__result-icon" src={image} alt="" />
           <span className="calculator-panel__result-name">{label}</span>
-          <span className="calculator-panel__result-value">0</span>
+          <span className="calculator-panel__result-value" style={{ fontSize: `calc(${Math.min(size, 280 / String(result?.resources[key as ResourceKey] ?? 0).length)} * var(--cp-unit))` }}>{result?.resources[key as ResourceKey] ?? 0}</span>
         </div>
       })}
       <div className="calculator-panel__reset-back" />
       <div className="calculator-panel__reset-text"><span className="calculator-panel__button-icon calculator-panel__button-icon--reset"><img src={buttonReset} alt="" /></span>{'  重置'}</div>
-      <button type="button" className="calculator-panel__reset-hit" aria-label="重置" tabIndex={calendarOpen ? -1 : 0} onClick={() => { gift.reset(); activity.reset(); resource.reset() }} />
+      <button type="button" className="calculator-panel__reset-hit" aria-label="重置" tabIndex={calendarOpen ? -1 : 0} onClick={onReset} />
       <div className="calculator-panel__calculate-back" />
-      <div className="calculator-panel__calculate-text"><span className="calculator-panel__button-icon calculator-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span>{'  开始计算  '}<span className="calculator-panel__button-icon calculator-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span></div>
-      <div className="calculator-panel__calculate-hit" aria-hidden="true" />
+      {calculating ? <div className="calculator-panel__loading" aria-hidden="true"><svg className="calculator-loading__spinner" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 2 A12 12 0 1 1 2 14" fill="none" stroke="#FFE8B8" strokeWidth="3" strokeLinecap="round" /></svg><span>正在计算…</span></div> : <div className="calculator-panel__calculate-text"><span className="calculator-panel__button-icon calculator-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span>{'  开始计算  '}<span className="calculator-panel__button-icon calculator-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span></div>}
+      <button className="calculator-panel__calculate-hit" type="button" aria-label="开始计算" disabled={calculating || calendarOpen} aria-busy={calculating} onClick={onCalculate} />
       <img className="calculator-panel__decoration-bottom-left" src={decorationBottomLeft} alt="" />
       <img className="calculator-panel__decoration-bottom-right" src={decorationBottomRight} alt="" />
       <img className="calculator-panel__decoration-top-left" src={decorationTopLeft} alt="" />

@@ -112,7 +112,7 @@ export function useCalculatorDate(focusContext?: unknown) {
   const prev = moveMonth(visibleMonth.year, visibleMonth.month, -1)
   const next = moveMonth(visibleMonth.year, visibleMonth.month, 1)
   const monthKey = (d: { year: number; month: number }) => d.year * 12 + d.month
-  return { selectedDate, selectDate, dateText, resultDateText, calendarOpen, visibleMonth, setVisibleMonth, today, triggerRef, calendarRef, end, openCalendar, closeCalendar, trapFocus, firstWeekday, count, prev, next, monthKey }
+  return { reset: () => { setSelectedDate(null); setCalendarOpen(false) }, selectedDate, selectDate, dateText, resultDateText, calendarOpen, visibleMonth, setVisibleMonth, today, triggerRef, calendarRef, end, openCalendar, closeCalendar, trapFocus, firstWeekday, count, prev, next, monthKey }
 }
 export type CalculatorDateState = ReturnType<typeof useCalculatorDate>
-export { dateKey }
+export { dateKey, shanghaiToday }

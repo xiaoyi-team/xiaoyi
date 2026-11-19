@@ -4,7 +4,7 @@ import giftCrystal from '../../assets/bar/source/calculator/gift-blue-flower-cry
 // Figma imageHash: ribbon be875a6cf6ffd6bca410ce8a237992f0b9474f8f;
 // crystal 961997788a9be56bfbf55c78e20636bfcc4e7269.
 export const gifts = [
-  { id: '6810:34', title: "1元礼包", price: "¥ 1", image: giftRibbon, weight: 700, lineHeight: 30 },
+  { id: '6810:34', title: "1元礼包", price: "¥ 1", image: giftRibbon, weight: 600, lineHeight: 36 },
   { id: '6810:69', title: "超值十连①", price: "¥ 98", image: giftRibbon, weight: 600, lineHeight: 36 },
   { id: '6810:98', title: "超值十连②", price: "¥ 198", image: giftRibbon, weight: 600, lineHeight: 36 },
   { id: '6810:129', title: "超值十连③", price: "¥ 198", image: giftRibbon, weight: 600, lineHeight: 36 },

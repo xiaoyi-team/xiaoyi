@@ -1,5 +1,5 @@
 import type { QuantityField } from './CalculatorQuantityInput'
-import type { CSSProperties } from 'react'
+import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 import activityCeremony from '../../assets/bar/source/calculator/activity-ceremony.png'
 import activityMonthlyCard from '../../assets/bar/source/calculator/activity-monthly-card.png'
 import activityPremiumCard from '../../assets/bar/source/calculator/activity-premium-card.png'
@@ -10,7 +10,7 @@ import decorationBottomRight from '../../assets/bar/source/calculator/panel-deco
 import decorationTopLeft from '../../assets/bar/source/calculator/panel-decoration-top-left.png'
 import { gifts, type GiftState } from './gifts'
 import type { ActivityKey, ActivityState, WishChoice } from './useActivityState'
-import { resources, type ResourceKey, type ResourceState } from './resources'
+import { resources, type ResourceKey, type ResourceCounts, type ResourceState } from './resources'
 import buttonSparkle from '../../assets/bar/source/calculator/button-sparkle.png'
 import buttonReset from '../../assets/bar/source/calculator/button-reset.png'
 import './CalculatorTouchPanel.css'
@@ -24,10 +24,24 @@ const contentRegions = [
   { name: '预测结果', height: 108 },
 ] as const
 
-export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void }) {
+export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, resource, calculatorDate, onEdit, onReset, onCalculate, calculating, result }: { onClose: () => void; onHelp: (trigger: HTMLButtonElement) => void; activity: ActivityState; gift: GiftState; resource: ResourceState; calculatorDate: CalculatorDateState; onEdit: (field: QuantityField, label: string) => void; onReset: () => void; onCalculate: () => void; calculating: boolean; result: { resources: ResourceCounts; predictionEnd: string } | null }) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const previousResult = useRef(result)
+  useLayoutEffect(() => {
+    if (previousResult.current === result) return
+    previousResult.current = result
+    const container = scrollRef.current
+    if (!container) return
+    if (!result) { container.scrollTop = 0; return }
+    const target = container.querySelector<HTMLElement>('.touch-results')
+    if (target) container.scrollTo({
+      top: container.scrollTop + target.getBoundingClientRect().bottom - container.getBoundingClientRect().bottom,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    })
+  }, [result])
   const { selectedDate, selectDate, dateText, resultDateText, calendarOpen, visibleMonth, setVisibleMonth, today, triggerRef, calendarRef, end, openCalendar, closeCalendar, trapFocus, firstWeekday, count, prev, next, monthKey } = calculatorDate
   return (
-    <section className="calculator-touch-panel" aria-label="资源计算器" data-result-date-description={resultDateText}>
+    <section className="calculator-touch-panel" aria-label="资源计算器" data-result-date-description={result ? `至 ${result.predictionEnd} 可获得总资源` : resultDateText}>
       <div className="calculator-touch-panel__base" aria-hidden="true" />
       <div className="calculator-touch-panel__inner-gold" aria-hidden="true" />
       <div className="calculator-touch-panel__inner-light" aria-hidden="true" />
@@ -47,7 +61,7 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
         </svg>
       ))}
 
-      <div className="calculator-touch-panel__scroll" role="region" aria-label="计算器内容" tabIndex={calendarOpen ? -1 : 0}>
+      <div ref={scrollRef} className="calculator-touch-panel__scroll" role="region" aria-label="计算器内容" tabIndex={calendarOpen ? -1 : 0}>
         <div className="calculator-touch-panel__content">
           {contentRegions.map(({ name, height }) => (
             <div
@@ -114,7 +128,7 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
                 <div className="touch-results__title-back" aria-hidden="true" />
                 <div className="touch-results__title"><span className="calculator-touch-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> 预测结果</div>
                 <div className="touch-results__date-back" aria-hidden="true" />
-                <div className="touch-results__date"><span className="calculator-touch-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> {resultDateText}</div>
+                <div className="touch-results__date"><span className="calculator-touch-panel__unresolved" aria-hidden="true">✦<img src={buttonSparkle} alt="" /></span> {result ? `至 ${result.predictionEnd} 可获得总资源` : resultDateText}</div>
                 {([
                   { key: 'ticket', x: 12, valueSize: 27, valueWeight: 400 },
                   { key: 'polaris', x: 152, valueSize: 27, valueWeight: 400 },
@@ -125,7 +139,7 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
                   return <div key={key} className="touch-results__item" style={{ '--result-x': x, '--result-size': valueSize, '--result-weight': valueWeight } as CSSProperties}>
                     <img className="touch-results__icon" src={resourceItem.image} alt="" />
                     <span className="touch-results__name">{resourceItem.label}</span>
-                    <span className="touch-results__value" aria-hidden="true">0</span>
+                    <span className="touch-results__value" style={{ fontSize: `calc(${Math.min(valueSize, 100 / String(result?.resources[key] ?? 0).length)} * var(--ct-unit))` }}>{result?.resources[key] ?? 0}</span>
                   </div>
                 })}
               </div>}
@@ -146,12 +160,11 @@ export default function CalculatorTouchPanel({ onClose, onHelp, activity, gift, 
       <div className="calculator-touch-panel__reset" aria-hidden="true">
         <span className="calculator-touch-panel__button-icon calculator-touch-panel__button-icon--reset"><img src={buttonReset} alt="" /></span>{'  重置'}
       </div>
-      <button type="button" className="calculator-touch-panel__reset-hit" aria-label="重置" tabIndex={calendarOpen ? -1 : 0} onClick={() => { activity.reset(); gift.reset(); resource.reset() }} />
+      <button type="button" className="calculator-touch-panel__reset-hit" aria-label="重置" tabIndex={calendarOpen ? -1 : 0} onClick={() => { onReset(); scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }) }} />
       <div className="calculator-touch-panel__calculate" aria-hidden="true">
-        <span className="calculator-touch-panel__button-icon calculator-touch-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span>
-        {'  开始计算  '}
-        <span className="calculator-touch-panel__button-icon calculator-touch-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span>
+        {calculating ? <span className="calculator-touch-panel__loading"><svg className="calculator-loading__spinner" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 2 A12 12 0 1 1 2 14" fill="none" stroke="#FFE8B8" strokeWidth="3" strokeLinecap="round" /></svg><span>正在计算…</span></span> : <><span className="calculator-touch-panel__button-icon calculator-touch-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span>{'  开始计算  '}<span className="calculator-touch-panel__button-icon calculator-touch-panel__button-icon--sparkle"><img src={buttonSparkle} alt="" /></span></>}
       </div>
+      <button className="calculator-touch-panel__calculate calculator-touch-panel__calculate-hit" type="button" aria-label="开始计算" disabled={calculating || calendarOpen} aria-busy={calculating} onClick={onCalculate} />
 
       <button
         type="button"
