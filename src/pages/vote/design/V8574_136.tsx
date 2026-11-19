@@ -9,7 +9,7 @@ const imgDetailSailSticker = new URL('./art/375ad544-cdf2-466f-8511-131a55a7e75a
 const imgListLighthouse = new URL('./art/0d200122-b701-4419-817b-d46ea4a17d3d.png', import.meta.url).href;
 const imgChatGpt2026111600085851 = new URL('./art/0527bc48-cc50-46ff-9ded-fcfff9b30fd1.png', import.meta.url).href;
 
-export default function Component667375({ title, rows }: VoteFrameContent) {
+export default function Component667375({ title, rows, cutoff, totalVotes, resultMessage, ended }: VoteFrameContent) {
   return (
     <div className="bg-[#d1dbe5] relative h-full w-full" data-node-id="8574:136" data-name="移动端 667×375 / 单选结果">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="8591:257" data-name="1110_2 1">
@@ -46,15 +46,15 @@ export default function Component667375({ title, rows }: VoteFrameContent) {
         {title}
       </p>
       <div className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[0] left-[48px] text-[#44546e] text-[13px] top-[161px] w-[218px]" data-node-id="8574:147">
-        <p className="leading-[19px] mb-0">投票成功，谢谢你的参与！</p>
-        <p className="leading-[19px]">以下为当前结果，投票截止前仍会更新。</p>
+        <p className="leading-[19px] mb-0">{resultMessage}</p>
+        <p className="leading-[19px]">{ended ? "投票已结束，以下为最终结果。" : "以下为当前结果，投票截止前仍会更新。"}</p>
       </div>
       <div className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[0] left-[177px] text-[#44546e] text-[13px] top-[232px] w-[93px]" data-node-id="8591:266">
         <p className="leading-[19.5px] mb-0">投票截止：</p>
-        <p className="leading-[19.5px]">11月30日 23:59</p>
+        <p className="leading-[19.5px]">{cutoff}</p>
       </div>
       <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[21px] left-[177px] text-[#44546e] text-[14px] top-[279px] whitespace-nowrap" data-node-id="8574:149">
-        已投：237人
+        已参与：{totalVotes}人
       </p>
       <div className="school-vote-rows absolute flex flex-col gap-[7px] items-start left-[300px] overflow-hidden top-[87px]" data-node-id="8574:150" data-name="选项 / 44px以上触控高度">{rows}</div>
       <div className="absolute contents left-[15px] top-[232px]" data-node-id="8591:267">

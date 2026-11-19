@@ -1,4 +1,4 @@
-import type { VoteListContent } from '../VoteRows';
+import type { VoteCardContent, VoteListContent } from '../VoteRows';
 const img111021 = new URL('./art/0091a317-b255-4af6-b63b-bd9ff0b635a6.png', import.meta.url).href;
 const img = new URL('./art/096a03a8-58f2-4d22-b8ff-d4f611143fea.png', import.meta.url).href;
 const imgListFlag = new URL('./art/1349424b-d90f-4ccf-9471-11df46794167.png', import.meta.url).href;
@@ -19,9 +19,9 @@ function MobileParticipatedBadge() {
   );
 }
 
-export function MobileVoteCard({ title, description, participated }: VoteListContent) {
+export function MobileVoteCard({ title, description, participated, cutoff, totalVotes, ended, guest, onOpen }: VoteCardContent) {
   return (
-    <button className="bg-[#fffdf8] block border border-[#b5c5da] border-solid cursor-pointer h-[116px] overflow-hidden relative rounded-[12px] shrink-0 w-[565px]" data-node-id="8591:78" data-vote-entry="true" data-participated={participated} data-name="投票 / 下一次社团活动的主题？">
+    <button className="bg-[#fffdf8] block border border-[#b5c5da] border-solid cursor-pointer h-[116px] overflow-hidden relative rounded-[12px] shrink-0 w-[565px]" data-node-id="8591:78" type="button" onClick={onOpen} data-vote-entry="true" data-ended={ended} data-participated={participated} data-name="投票 / 下一次社团活动的主题？">
             <div className="absolute h-[60px] left-[9px] rounded-[5px] top-[12px] w-[90px]" data-node-id="8591:79" data-name="独立缩略插画">
               <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[5px] h-full w-full" src={img1} />
             </div>
@@ -32,18 +32,18 @@ export function MobileVoteCard({ title, description, participated }: VoteListCon
               {description}
             </p>
             <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[111px] text-[#44546e] text-[12px] text-left top-[82px] whitespace-nowrap" data-node-id="8591:82">
-              截止：11月20日 23:59
+              截止：{cutoff}
             </p>
             <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[305px] text-[#44546e] text-[12px] text-left top-[82px] whitespace-nowrap" data-node-id="8591:83">
-              已参与 {participated ? 129 : 128} 人
+              已参与 {totalVotes} 人
             </p>
             <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[19px] text-[#7388a5] text-[13px] text-left top-[80px] whitespace-nowrap" data-node-id="8591:84">
-              进行中
+              {ended ? "已结束" : "进行中"}
             </p>
             {participated ? <MobileParticipatedBadge /> : (
             <div className="absolute bg-[#5b80b6] h-[44px] left-[452px] overflow-hidden rounded-[22px] top-[36px] w-[102px]" data-node-id="8591:85" data-name="立即投票">
               <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[24px] left-[19px] text-[16px] text-left text-white top-[10px] whitespace-nowrap" data-node-id="8591:86">
-                立即投票
+                {ended ? "查看结果" : guest ? "登录后参与" : "立即投票"}
               </p>
             </div>
             )}
@@ -51,7 +51,7 @@ export function MobileVoteCard({ title, description, participated }: VoteListCon
   );
 }
 
-export default function Component667375({ title, description, participated }: VoteListContent) {
+export default function Component667375({ cards }: VoteListContent) {
   return (
     <div className="bg-[#d1dbe5] relative h-full w-full" data-node-id="8575:1662" data-name="移动端 667×375 / 列表筛选 / 进行中">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="8591:56" data-name="1110_2 1">
@@ -102,30 +102,7 @@ export default function Component667375({ title, description, participated }: Vo
         </p>
       </button>
       <div className="absolute h-[180px] left-[48px] overflow-x-clip overflow-y-auto top-[151px] w-[571px]" data-node-id="8591:76" data-name="投票列表 / 上下滑动">
-        <div className="absolute flex flex-col gap-[10px] items-start left-0 overflow-hidden top-0" data-node-id="8591:77" data-name="投票卡片内容">
-          <MobileVoteCard title={title} description={description} participated={participated} />
-          <div className="bg-[#fffdf8] border border-[#b5c5da] border-solid h-[116px] overflow-hidden relative rounded-[12px] shrink-0 w-[565px]" data-node-id="8591:87" data-name="投票 / 文化节摊位布置风格投票">
-            <div className="absolute h-[60px] left-[9px] rounded-[5px] top-[12px] w-[90px]" data-node-id="8591:88" data-name="独立缩略插画">
-              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[5px] h-full w-full" src={img1} />
-            </div>
-            <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[25.5px] left-[111px] text-[#44546e] text-[17px] top-[7px] w-[330px]" data-node-id="8591:89">
-              文化节摊位布置风格投票
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[111px] text-[#44546e] text-[13px] top-[35px] w-[335px]" data-node-id="8591:90">
-              为本次文化节的摊位选择你更喜欢的布置风格！…
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[111px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8591:91">
-              截止：11月18日 23:59
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[305px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8591:92">
-              已参与 215 人
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[19px] text-[#7388a5] text-[13px] top-[80px] whitespace-nowrap" data-node-id="8591:93">
-              进行中
-            </p>
-            <MobileParticipatedBadge />
-          </div>
-        </div>
+        <div className="school-vote-cards">{cards}</div>
       </div>
       <div className="absolute bg-[#e0e3e8] h-[172px] left-[623px] rounded-[2px] top-[155px] w-[3px]" data-node-id="8591:105" data-name="滚动条底轨" />
       <div className="absolute bg-[#9bafcb] h-[88px] left-[623px] rounded-[2px] top-[155px] w-[3px]" data-node-id="8591:106" data-name="滚动条" />

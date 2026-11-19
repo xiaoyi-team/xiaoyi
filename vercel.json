@@ -5,6 +5,14 @@
       "destination": "http://115.159.121.83/api/v1/rights-records"
     },
     {
+      "source": "/api/v1/votes",
+      "destination": "http://115.159.121.83/api/v1/votes"
+    },
+    {
+      "source": "/api/v1/votes/:id/submit",
+      "destination": "http://115.159.121.83/api/v1/votes/:id/submit"
+    },
+    {
       "source": "/api/:path*",
       "destination": "http://115.159.121.83:8001/:path*"
     },

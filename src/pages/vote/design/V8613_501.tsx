@@ -1,4 +1,4 @@
-import type { VoteListContent } from '../VoteRows';
+import type { VoteCardContent, VoteListContent } from '../VoteRows';
 const imgGroup = new URL('./art/2b95ad2c-d696-4c14-8500-35f7b5251dfc.svg', import.meta.url).href;
 const imgGroup1 = new URL('./art/3a7221d7-f1b2-49a1-9946-f835047294d0.svg', import.meta.url).href;
 const img = new URL('./art/02fde3b7-331e-4730-81c3-e56e67041d62.png', import.meta.url).href;
@@ -23,7 +23,6 @@ const imgGroup4 = new URL('./art/3abe2dc7-f03a-4225-9fbc-08f67b484e1d.svg', impo
 const imgGroup5 = new URL('./art/1fa4c315-ef0e-4446-a9e0-9916b8e11cf9.svg', import.meta.url).href;
 const imgGroup6 = new URL('./art/0790c851-7ce1-4315-8a08-25edc61af336.svg', import.meta.url).href;
 const img4 = new URL('./art/bd239e02-099d-4d79-a2c7-fcbbe75fbb90.svg', import.meta.url).href;
-const imgGroup7 = new URL('./art/0ba1dcb7-8a72-476c-8ad8-e38e0f4add6a.svg', import.meta.url).href;
 const imgGroup8 = new URL('./art/1970ce4f-a9a8-4d9a-bf44-63f43de22dec.svg', import.meta.url).href;
 const imgGroup9 = new URL('./art/057da7ba-0348-4969-bfc9-f6b6b6d50e0a.svg', import.meta.url).href;
 const img6 = new URL('./art/65c1e182-108d-4eca-9809-559dca6b428b.svg', import.meta.url).href;
@@ -113,9 +112,9 @@ function DesktopParticipatedBadge() {
   );
 }
 
-export function DesktopVoteCard({ title, description, participated }: VoteListContent) {
+export function DesktopVoteCard({ title, description, participated, cutoff, totalVotes, ended, guest, onOpen }: VoteCardContent) {
   return (
-    <button className="absolute block cursor-pointer h-[135.9px] left-[156.6px] top-[405.9px] w-[967.5px]" data-node-id="8613:544" data-vote-entry="true" data-participated={participated} data-name="投票卡片 / 下一次社团活动的主题？">
+    <button className="relative block shrink-0 cursor-pointer h-[135.9px] w-[967.5px]" data-node-id="8613:544" type="button" onClick={onOpen} data-vote-entry="true" data-ended={ended} data-participated={participated} data-name="投票卡片 / 下一次社团活动的主题？">
           <div className="absolute bg-[rgba(255,255,255,0.35)] border-[#b0bed5] border-[1.17px] border-solid h-[135.9px] left-0 rounded-[15.3px] top-0 w-[967.5px]" data-node-id="8613:545" data-name="卡片 / 纸色底" />
           <div className="absolute border-[0.9px] border-solid border-white h-[132.3px] left-[1.8px] rounded-[14.4px] top-[1.8px] w-[963.9px]" data-node-id="8613:546" data-name="卡片 / 内高光" />
           <div className="absolute h-[52.2px] left-[36px] top-[-9px] w-[33.3px]" data-node-id="8613:547" data-name="装饰 / list-paperclip">
@@ -137,7 +136,7 @@ export function DesktopVoteCard({ title, description, participated }: VoteListCo
             </div>
           </div>
           <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Regular'] font-normal leading-[26.1px] left-[270.9px] text-[#384766] text-[18px] text-left top-[89.1px] whitespace-nowrap" data-node-id="8613:555">
-            截止：11月20日 23:59
+            截止：{cutoff}
           </p>
           <div className="absolute left-[486px] overflow-hidden h-[25.2px] w-[25.2px] top-[90.9px]" data-node-id="8613:556" data-name="图标 / people">
             <div className="absolute inset-[16.67%_8.33%_8.33%_8.33%]" data-node-id="8613:557" data-name="Group">
@@ -147,13 +146,13 @@ export function DesktopVoteCard({ title, description, participated }: VoteListCo
             </div>
           </div>
           <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[26.1px] left-[521.1px] text-[#384766] text-[18px] text-left top-[89.1px] whitespace-nowrap" data-node-id="8613:559">
-            已参与 {participated ? 129 : 128} 人
+            已参与 {totalVotes} 人
           </p>
           <div className="absolute contents left-[709.2px] top-[18px]" data-node-id="8613:560">
             {participated ? <DesktopParticipatedBadge /> : (
             <div className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.8px] border-solid border-white cursor-pointer drop-shadow-[1.8px_2.7px_0.9px_rgba(52,64,91,0.14)] flex gap-[12.6px] h-[49.5px] items-center justify-center left-[732.6px] rounded-[24.75px] top-[50.4px] w-[198px]" data-node-id="8613:561" style={{ backgroundImage: `url("${img}")` }} data-name="状态按钮">
               <p className="[word-break:break-word] font-['Noto_Serif_SC:Bold'] font-bold leading-[35.235px] relative shrink-0 text-[24.3px] text-left text-white whitespace-nowrap" data-node-id="I8613:561;8343:10">
-                立即投票
+                {ended ? "查看结果" : guest ? "登录后参与" : "立即投票"}
               </p>
               <div className="overflow-hidden relative shrink-0 h-[24.3px] w-[24.3px]" data-node-id="I8613:561;8343:11" data-name="图标 / chevron">
                 <div className="absolute inset-[16.67%_33.33%]" data-node-id="I8613:561;8343:12" data-name="Group">
@@ -174,7 +173,7 @@ export function DesktopVoteCard({ title, description, participated }: VoteListCo
             </div>
             <div className="absolute flex h-[56.223px] items-center justify-center left-[896px] top-[-5.2px] w-[70.207px]" data-node-id="8613:566">
               <div className="flex-none rotate-27">
-                <p className="[word-break:break-word] font-['Noto_Serif_SC:Regular'] font-normal leading-[30.015px] relative text-[20.7px] text-left text-white whitespace-nowrap">进行中</p>
+                <p className="[word-break:break-word] font-['Noto_Serif_SC:Regular'] font-normal leading-[30.015px] relative text-[20.7px] text-left text-white whitespace-nowrap">{ended ? "已结束" : "进行中"}</p>
               </div>
             </div>
           </div>
@@ -195,7 +194,7 @@ export function DesktopVoteCard({ title, description, participated }: VoteListCo
   );
 }
 
-export default function Component4({ title, description, participated }: VoteListContent) {
+export default function Component4({ cards }: VoteListContent) {
   return (
     <div className="bg-white relative h-full w-full" data-node-id="8613:501" data-name="网页端 / 列表筛选 / 进行中">
       <div className="absolute h-[1080px] left-0 top-0 w-[1920px]" data-node-id="8613:502" data-name="1110_2 1">
@@ -245,61 +244,7 @@ export default function Component4({ title, description, participated }: VoteLis
         <Component1 className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[650.7px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[220.5px]" />
         <Component className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[887.4px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[234px]" />
         <div className="absolute bg-[#859ec6] h-[1.35px] left-[151.2px] top-[376.2px] w-[979.2px]" data-node-id="8613:543" data-name="标签底部分隔线" />
-        <DesktopVoteCard title={title} description={description} participated={participated} />
-        <div className="absolute h-[133.2px] left-[156.6px] top-[559.9px] w-[967.5px]" data-node-id="8613:571" data-name="投票卡片 / 文化节摊位布置风格投票">
-          <div className="absolute bg-[rgba(255,255,255,0.35)] border-[#b0bed5] border-[1.17px] border-solid h-[133.2px] left-0 rounded-[15.3px] top-0 w-[967.5px]" data-node-id="8613:572" data-name="卡片 / 纸色底" />
-          <div className="absolute border-[0.9px] border-solid border-white h-[129.6px] left-[1.8px] rounded-[14.4px] top-[1.8px] w-[963.9px]" data-node-id="8613:573" data-name="卡片 / 内高光" />
-          <div className="absolute contents left-[5px] top-[-32.1px]" data-node-id="8613:574">
-            <div className="absolute bg-[#fcfcfc] border-[#b6c4dc] border-[0.9px] border-solid h-[116.1px] left-[10.8px] rounded-[9px] shadow-[1.8px_2.7px_1.8px_0px_rgba(52,64,91,0.17)] top-[10px] w-[202.5px]" data-node-id="8613:575" data-name="缩略图 / 相纸边框" />
-            <div className="absolute h-[103.5px] left-[16.2px] rounded-[3.6px] top-[15.4px] w-[191.7px]" data-node-id="8613:576" data-name="装饰 / list-thumb-lighthouse">
-              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[3.6px] h-full w-full" src={imgListThumbLighthouse} />
-            </div>
-            <div className="absolute flex items-center justify-center left-[5px] h-[92.615px] w-[92.615px] top-[-32.1px]" data-node-id="8613:577">
-              <div className="flex-none rotate-[-12.03deg]">
-                <div className="relative h-[78.057px] w-[78.057px]" data-name="ChatGPT 图像 2026年11月16日 00_08_37-2 1">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none h-full w-full" src={imgChatGpt2026111600083721} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="[word-break:break-word] absolute flex flex-col gap-[0.9px] items-start left-[232.2px] top-[9.9px] whitespace-nowrap" data-node-id="8613:578" data-name="标题与摘要">
-            <p className="font-['Noto_Serif_SC:Bold'] font-bold leading-[36.54px] relative shrink-0 text-[#17243e] text-[25.2px]" data-node-id="8613:579">
-              文化节摊位布置风格投票
-            </p>
-            <p className="font-['Noto_Serif_SC:Regular'] font-normal leading-[26.1px] relative shrink-0 text-[#515a73] text-[18px] tracking-[0.9px]" data-node-id="8613:580">
-              为本次文化节的摊位选择你更喜欢的布置风格！…
-            </p>
-          </div>
-          <div className="absolute left-[239.4px] overflow-hidden h-[23.4px] w-[23.4px] top-[91.8px]" data-node-id="8613:581" data-name="图标 / calendar">
-            <div className="absolute inset-[8.33%_12.5%]" data-node-id="8613:582" data-name="Group">
-              <div className="absolute inset-[-4.5%_-5%]">
-                <img alt="" className="block max-w-none h-full w-full" src={imgGroup7} />
-              </div>
-            </div>
-          </div>
-          <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Regular'] font-normal leading-[26.1px] left-[270.9px] text-[#384766] text-[18px] top-[89.1px] whitespace-nowrap" data-node-id="8613:585">
-            截止：11月18日 23:59
-          </p>
-          <div className="absolute left-[486px] overflow-hidden h-[25.2px] w-[25.2px] top-[90.9px]" data-node-id="8613:586" data-name="图标 / people">
-            <div className="absolute inset-[16.67%_8.33%_8.33%_8.33%]" data-node-id="8613:587" data-name="Group">
-              <div className="absolute inset-[-5%_-4.5%]">
-                <img alt="" className="block max-w-none h-full w-full" src={imgGroup5} />
-              </div>
-            </div>
-          </div>
-          <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[26.1px] left-[521.1px] text-[#384766] text-[18px] top-[89.1px] whitespace-nowrap" data-node-id="8613:589">
-            已参与 215 人
-          </p>
-          <DesktopParticipatedBadge />
-          <div className="absolute h-[58.5px] left-[855.9px] top-0 w-[111.6px]" data-node-id="8613:591" data-name="状态角标 / 可编辑色块">
-            <img alt="" className="absolute block inset-0 max-w-none h-full w-full" src={img4} />
-          </div>
-          <div className="absolute flex h-[56.223px] items-center justify-center left-[896px] top-[-5.1px] w-[70.207px]" data-node-id="8613:593">
-            <div className="flex-none rotate-27">
-              <p className="[word-break:break-word] font-['Noto_Serif_SC:Regular'] font-normal leading-[30.015px] relative text-[20.7px] text-white whitespace-nowrap">进行中</p>
-            </div>
-          </div>
-        </div>
+        <div className="school-vote-cards school-vote-cards--desktop">{cards}</div>
         <div className="absolute left-[115.6px] h-[177px] w-[177px] top-[792.7px]" data-node-id="8613:617" data-name="蓝色复古帆船徽章贴纸 1">
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none h-full w-full" src={img5} />
         </div>

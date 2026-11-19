@@ -24,7 +24,7 @@ const imgGroup2 = new URL('./art/2691b0f4-259b-4ad3-813a-9dbad2baddc3.svg', impo
 const img9 = new URL('./art/620d0e72-c8ac-4fd8-b916-4d2462568e9e.svg', import.meta.url).href;
 const imgGroup3 = new URL('./art/21db0446-4f80-4ba6-a954-70bd3960d1cf.svg', import.meta.url).href;
 
-export default function Component01({ title, description, rows }: VoteFrameContent) {
+export default function Component01({ title, description, rows, cutoff, totalVotes }: VoteFrameContent) {
   return (
     <div className="bg-white relative h-full w-full" data-node-id="8550:50" data-name="多选投票 / 01 详情">
       <div className="absolute h-[1080px] left-0 top-0 w-[1920px]" data-node-id="8550:51" data-name="1110_2 1">
@@ -101,7 +101,7 @@ export default function Component01({ title, description, rows }: VoteFrameConte
           </div>
         </div>
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[30.015px] left-[404.1px] text-[#536079] text-[20.7px] top-[406.8px] whitespace-nowrap" data-node-id="8550:95">
-          投票截止：11月30日 23:59
+          投票截止：{cutoff}
         </p>
         <div className="absolute left-[777.6px] overflow-hidden h-[27px] w-[27px] top-[408.6px]" data-node-id="8550:96" data-name="图标 / people">
           <div className="absolute inset-[16.67%_8.33%_8.33%_8.33%]" data-node-id="8550:97" data-name="Group">
@@ -111,7 +111,7 @@ export default function Component01({ title, description, rows }: VoteFrameConte
           </div>
         </div>
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[30.015px] left-[819.9px] text-[#536079] text-[20.7px] top-[406.8px] whitespace-nowrap" data-node-id="8550:99">
-          已投：236人
+          已参与：{totalVotes}人
         </p>
         <div className="school-vote-rows absolute cursor-pointer flex flex-col gap-[13.5px] items-start left-[325.8px] top-[468px]" data-node-id="8550:100" data-name="选项列表">{rows}</div>
         <div className="absolute h-[27.9px] left-[965.7px] top-[441px] w-[33.3px]" data-node-id="8550:105" data-name="装饰 / detail-choice-marks">

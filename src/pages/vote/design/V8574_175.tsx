@@ -10,7 +10,7 @@ const imgListLighthouse = new URL('./art/0d200122-b701-4419-817b-d46ea4a17d3d.pn
 const imgChatGpt2026111600085851 = new URL('./art/0527bc48-cc50-46ff-9ded-fcfff9b30fd1.png', import.meta.url).href;
 const img4 = new URL('./art/3bf29a90-0687-462a-bee3-d75dbd920c07.svg', import.meta.url).href;
 
-export default function Component667375({ title, description, rows }: VoteFrameContent) {
+export default function Component667375({ title, description, rows, cutoff, totalVotes }: VoteFrameContent) {
   return (
     <div className="bg-[#d1dbe5] relative h-full w-full" data-node-id="8574:175" data-name="移动端 667×375 / 多选详情">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="8591:274" data-name="1110_2 1">
@@ -52,10 +52,10 @@ export default function Component667375({ title, description, rows }: VoteFrameC
       </div>
       <div className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[0] left-[177px] text-[#44546e] text-[13px] top-[232px] w-[93px]" data-node-id="8591:283">
         <p className="leading-[19.5px] mb-0">投票截止：</p>
-        <p className="leading-[19.5px]">11月30日 23:59</p>
+        <p className="leading-[19.5px]">{cutoff}</p>
       </div>
       <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[21px] left-[177px] text-[#44546e] text-[14px] top-[311px] whitespace-nowrap" data-node-id="8574:192">
-        已投：236人
+        已参与：{totalVotes}人
       </p>
       <div className="school-vote-rows absolute cursor-pointer flex flex-col gap-[7px] items-start left-[300px] overflow-hidden top-[87px]" data-node-id="8574:193" data-name="选项 / 44px以上触控高度">{rows}</div>
       <button className="absolute bg-[#5b80b6] block cursor-pointer h-[44px] left-[375px] overflow-hidden rounded-[22px] top-[296px] w-[170px]" data-node-id="8574:208" data-name="提交投票">

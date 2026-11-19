@@ -21,7 +21,7 @@ const imgGroup = new URL('./art/5f0d1b58-93af-48d3-af2d-7e94dfcd3fad.svg', impor
 const imgGroup1 = new URL('./art/15ad7e79-ae06-41de-b468-e9ab59428ff1.svg', import.meta.url).href;
 const img7 = new URL('./art/0cb6ba4d-3776-41f8-b928-afa8c146e22a.svg', import.meta.url).href;
 
-export default function Component02({ title, rows }: VoteFrameContent) {
+export default function Component02({ title, rows, cutoff, totalVotes, resultMessage, ended }: VoteFrameContent) {
   return (
     <div className="bg-white relative h-full w-full" data-node-id="8547:49" data-name="单选投票 / 02 结果">
       <div className="absolute h-[1080px] left-0 top-0 w-[1920px]" data-node-id="8547:50" data-name="1110_2 1">
@@ -86,8 +86,8 @@ export default function Component02({ title, rows }: VoteFrameContent) {
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none h-full w-full" src={imgDetailUnderline} />
         </div>
         <div className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[0] left-[447.3px] text-[#505b74] text-[20.7px] top-[332.1px] tracking-[0.9px] whitespace-nowrap" data-node-id="8547:88">
-          <p className="leading-[30.015px] mb-0">投票成功，谢谢你的参与！</p>
-          <p className="leading-[30.015px]">以下为当前结果，投票截止前仍会更新。</p>
+          <p className="leading-[30.015px] mb-0">{resultMessage}</p>
+          <p className="leading-[30.015px]">{ended ? "投票已结束，以下为最终结果。" : "以下为当前结果，投票截止前仍会更新。"}</p>
         </div>
         <div className="absolute bg-[#e5e4e9] h-[42.3px] left-[342px] opacity-[90%] rounded-[20.7px] top-[400.5px] w-[622.8px]" data-node-id="8547:89" data-name="投票信息 / 胶带底" />
         <div className="absolute left-[369px] overflow-hidden h-[26.1px] w-[26.1px] top-[408.6px]" data-node-id="8547:90" data-name="图标 / clock">
@@ -98,7 +98,7 @@ export default function Component02({ title, rows }: VoteFrameContent) {
           </div>
         </div>
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[30.015px] left-[404.1px] text-[#536079] text-[20.7px] top-[406.8px] whitespace-nowrap" data-node-id="8547:94">
-          投票截止：11月30日 23:59
+          投票截止：{cutoff}
         </p>
         <div className="absolute left-[777.6px] overflow-hidden h-[27px] w-[27px] top-[408.6px]" data-node-id="8547:95" data-name="图标 / people">
           <div className="absolute inset-[16.67%_8.33%_8.33%_8.33%]" data-node-id="8547:96" data-name="Group">
@@ -108,7 +108,7 @@ export default function Component02({ title, rows }: VoteFrameContent) {
           </div>
         </div>
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[30.015px] left-[819.9px] text-[#536079] text-[20.7px] top-[406.8px] whitespace-nowrap" data-node-id="8547:98">
-          已投：237人
+          已参与：{totalVotes}人
         </p>
         <button type="button" className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.8px] border-solid border-white cursor-pointer drop-shadow-[1.8px_2.7px_0.9px_rgba(52,64,91,0.14)] flex gap-[12.6px] h-[64.8px] items-center justify-center left-[491.4px] rounded-[32.4px] top-[774px] w-[311.4px]" data-node-id="8547:105" style={{ backgroundImage: `url("${img6}")` }} data-name="返回列表">
           <p className="[word-break:break-word] font-['Noto_Serif_SC:Bold'] font-bold leading-[46.98px] relative shrink-0 text-[32.4px] text-left text-white whitespace-nowrap" data-node-id="I8547:105;8343:27">
@@ -140,7 +140,7 @@ export default function Component02({ title, rows }: VoteFrameContent) {
         </button>
         <div className="school-vote-rows school-vote-rows--desktop">{rows}</div>
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[normal] left-[355px] text-[#78839a] text-[15px] top-[744px] whitespace-nowrap" data-node-id="8547:149">
-          单选投票 · 每人 1 票，共 237 票
+          单选投票 · 每人选 1 项
         </p>
       </div>
     </div>

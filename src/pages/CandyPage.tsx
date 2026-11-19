@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ArchivePage from "../../osborn-archive/src/ArchivePage";
-import { configureCandyApi } from "../../osborn-archive/src/candy-runtime";
+import ArchivePage from "./candy/ArchivePage";
+import { configureCandyApi } from "./candy/candy-runtime";
 import { getAccessToken, clearAuthToken, AUTH_UNAUTHORIZED_EVENT } from "../api/client";
 import { buildLoginPath } from "../auth/navigation";
 import { useAuth } from "../auth/AuthContext";

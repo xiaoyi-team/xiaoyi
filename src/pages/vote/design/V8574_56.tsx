@@ -1,16 +1,14 @@
-import { MobileVoteCard } from './V8575_1662';
 import type { VoteListContent } from '../VoteRows';
 const img111021 = new URL('./art/0091a317-b255-4af6-b63b-bd9ff0b635a6.png', import.meta.url).href;
 const img = new URL('./art/096a03a8-58f2-4d22-b8ff-d4f611143fea.png', import.meta.url).href;
 const imgListFlag = new URL('./art/1349424b-d90f-4ccf-9471-11df46794167.png', import.meta.url).href;
 const imgListLighthouse = new URL('./art/0d200122-b701-4419-817b-d46ea4a17d3d.png', import.meta.url).href;
-const img1 = new URL('./art/00a38fba-4552-4f31-91c8-6c4ef28503e1.png', import.meta.url).href;
 const img2 = new URL('./art/044db354-dc67-4e36-9b7e-43bca37e5298.png', import.meta.url).href;
 const imgListUnderline = new URL('./art/078681f7-5065-4a6c-bd4a-588ec288fe5d.png', import.meta.url).href;
 const imgChatGpt2026111600083411 = new URL('./art/2707b4cc-f458-42f7-a844-8b4e24bafd7b.png', import.meta.url).href;
 const imgGroup = new URL('./art/7c359131-22ff-4b26-be73-37848796ea92.svg', import.meta.url).href;
 
-export default function Component667375({ title, description, participated }: VoteListContent) {
+export default function Component667375({ cards }: VoteListContent) {
   return (
     <div className="bg-[#d1dbe5] relative h-full w-full" data-node-id="8574:56" data-name="移动端 667×375 / 投票列表">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="8574:57" data-name="1110_2 1">
@@ -61,59 +59,7 @@ export default function Component667375({ title, description, participated }: Vo
         </p>
       </button>
       <div className="absolute h-[180px] left-[48px] overflow-x-clip overflow-y-auto top-[151px] w-[571px]" data-node-id="8574:75" data-name="投票列表 / 上下滑动">
-        <div className="absolute flex flex-col gap-[10px] items-start left-0 overflow-hidden top-0" data-node-id="8574:76" data-name="投票卡片内容">
-          <MobileVoteCard title={title} description={description} participated={participated} />
-          <div className="bg-[#fffdf8] border border-[#b5c5da] border-solid h-[116px] overflow-hidden relative rounded-[12px] shrink-0 w-[565px]" data-node-id="8574:86" data-name="投票 / 文化节摊位布置风格投票">
-            <div className="absolute h-[60px] left-[9px] rounded-[5px] top-[12px] w-[90px]" data-node-id="8574:87" data-name="独立缩略插画">
-              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[5px] h-full w-full" src={img1} />
-            </div>
-            <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[25.5px] left-[111px] text-[#44546e] text-[17px] top-[7px] w-[330px]" data-node-id="8574:88">
-              文化节摊位布置风格投票
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[111px] text-[#44546e] text-[13px] top-[35px] w-[335px]" data-node-id="8574:89">
-              为本次文化节的摊位选择你更喜欢的布置风格！…
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[111px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8574:90">
-              截止：11月18日 23:59
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[305px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8574:91">
-              已参与 215 人
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[19px] text-[#7388a5] text-[13px] top-[80px] whitespace-nowrap" data-node-id="8574:92">
-              进行中
-            </p>
-            <div className="absolute bg-[#a0acbf] h-[44px] left-[452px] overflow-hidden rounded-[22px] top-[36px] w-[102px]" data-node-id="8574:93" data-name="已参与">
-              <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[24px] left-[27px] text-[16px] text-white top-[10px] whitespace-nowrap" data-node-id="8574:94">
-                已参与
-              </p>
-            </div>
-          </div>
-          <div className="bg-[#fffdf8] border border-[#b5c5da] border-solid h-[116px] overflow-hidden relative rounded-[12px] shrink-0 w-[565px]" data-node-id="8574:95" data-name="投票 / 期末自习室开放时间调整">
-            <div className="absolute h-[60px] left-[9px] rounded-[5px] top-[12px] w-[90px]" data-node-id="8574:96" data-name="独立缩略插画">
-              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[5px] h-full w-full" src={img1} />
-            </div>
-            <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[25.5px] left-[111px] text-[#44546e] text-[17px] top-[7px] w-[330px]" data-node-id="8574:97">
-              期末自习室开放时间调整
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[111px] text-[#44546e] text-[13px] top-[35px] w-[335px]" data-node-id="8574:98">
-              关于期末阶段自习室的开放时段，欢迎投票选择 …
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[111px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8574:99">
-              截止：11月10日 23:59
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[18px] left-[305px] text-[#44546e] text-[12px] top-[82px] whitespace-nowrap" data-node-id="8574:100">
-              已参与 342 人
-            </p>
-            <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[19.5px] left-[19px] text-[#7388a5] text-[13px] top-[80px] whitespace-nowrap" data-node-id="8574:101">
-              已结束
-            </p>
-            <div className="absolute bg-[#a0acbf] h-[44px] left-[452px] overflow-hidden rounded-[22px] top-[36px] w-[102px]" data-node-id="8574:102" data-name="已结束">
-              <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[24px] left-[27px] text-[16px] text-white top-[10px] whitespace-nowrap" data-node-id="8574:103">
-                已结束
-              </p>
-            </div>
-          </div>
-        </div>
+        <div className="school-vote-cards">{cards}</div>
       </div>
       <div className="absolute bg-[#e0e3e8] h-[172px] left-[623px] rounded-[2px] top-[155px] w-[3px]" data-node-id="8574:104" data-name="滚动条底轨" />
       <div className="absolute bg-[#9bafcb] h-[88px] left-[623px] rounded-[2px] top-[155px] w-[3px]" data-node-id="8574:105" data-name="滚动条" />

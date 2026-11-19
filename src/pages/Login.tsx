@@ -77,7 +77,15 @@ interface InputFieldProps {
    基础配置
    ============================================================ */
 
-const asset = (name: string) => `/figma-auth/${name}`;
+const sharedAuthAssets: Record<string, string> = {
+  "register-top-left.png": "login-top-left.png",
+  "register-flower.png": "login-flower.png",
+  "register-bottom-right.png": "login-bottom-right.png",
+  "register-bottom-left.png": "login-bottom-left.png",
+  "register-right-small.png": "login-right-small.png",
+};
+const asset = (name: string) =>
+  `/figma-auth/${sharedAuthAssets[name] ?? name}`;
 
 const QUESTION_OPTIONS: [string[], string[], string[]] = [
   [

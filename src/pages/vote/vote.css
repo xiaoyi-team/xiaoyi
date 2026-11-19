@@ -9,6 +9,32 @@
 .school-vote-canvas { transform-origin: top left; }
 .school-vote-canvas button:focus-visible { outline: 3px solid #426ca5; outline-offset: -3px; }
 
+.school-vote-back {
+  position: absolute;
+  z-index: 1;
+  left: 76px;
+  top: 25px;
+  width: 170px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 7px;
+  border-radius: 22px;
+  color: white;
+  font-size: 30px;
+  font-weight: 500;
+  text-shadow: 0 0 2px black;
+  filter: drop-shadow(0 4px 3.75px black);
+}
+.school-vote-back:focus-visible { outline: 3px solid white; outline-offset: -3px; }
+.school-vote-canvas[data-mobile="true"] .school-vote-back {
+  left: 16px;
+  top: 8px;
+  transform: scale(.65);
+  transform-origin: top left;
+}
+
 .school-vote, .school-vote * {
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif !important;
 }
@@ -106,9 +132,38 @@
 .school-vote [data-vote-entry][data-participated="true"] [data-name="装饰 / list-button-marks"] {
   display: none;
 }
-.school-vote [data-node-id="8613:647"]:has([data-vote-entry]) [data-name="投票卡片 / 文化节摊位布置风格投票"] {
-  transform: translateY(153.9px);
+.school-vote-cards { display: flex; flex-direction: column; gap: 10px; }
+.school-vote-cards--desktop {
+  position: absolute;
+  top: 397px;
+  left: 156.6px;
+  width: 980px;
+  height: 449px;
+  padding-top: 9px;
+  gap: 18px;
+  overflow-y: auto;
 }
+.school-vote-cards [data-name="标题与摘要"] { max-width: 475px; }
+.school-vote-cards [data-name="标题与摘要"] p { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.school-vote [data-ended="true"] [data-name="状态角标 / 可编辑色块"] { filter: grayscale(1); }
+.school-vote-empty { padding: 14px; color: #44546e; text-align: center; }
+.school-vote-notice {
+  position: absolute;
+  z-index: 2;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 80%;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: #243752;
+  color: white;
+  font-size: 18px;
+  text-align: center;
+}
+.school-vote-canvas[data-mobile="true"] .school-vote-notice { bottom: 5px; font-size: 14px; }
+.school-vote-notice button { margin-left: 8px; text-decoration: underline; }
 .school-vote [data-name^="装饰 /"] {
   pointer-events: none;
 }

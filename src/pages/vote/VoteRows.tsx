@@ -1,36 +1,45 @@
 import type { ReactNode } from 'react';
-import type { VoteConfig } from './voteConfig';
+import type { Vote } from './voteApi';
 
-export type VoteFrameContent = Pick<VoteConfig, 'title' | 'description'> & { rows: ReactNode };
-export type VoteListContent = Pick<VoteConfig, 'title' | 'description'> & { participated: boolean };
+export type VoteFrameContent = Pick<Vote, 'title' | 'description'> & {
+  rows: ReactNode;
+  cutoff: string;
+  totalVotes: number;
+  resultMessage: string;
+  ended: boolean;
+};
+export type VoteListContent = { cards: ReactNode };
+export type VoteCardContent = Pick<VoteFrameContent, 'title' | 'description' | 'cutoff' | 'totalVotes' | 'ended'> & {
+  participated: boolean;
+  guest: boolean;
+  onOpen: () => void;
+};
 
 interface VoteRowsProps {
-  vote: VoteConfig;
+  vote: Vote;
   selected: readonly number[];
   showResult: boolean;
-  onSelect: (index: number) => void;
+  pending: boolean;
+  onSelect: (id: number) => void;
 }
 
-export default function VoteRows({ vote, selected, showResult, onSelect }: VoteRowsProps) {
-  const sampleCounts = vote.mode === 'multi' ? [155, 97, 74, 48] : [97, 65, 43, 31];
-
-  return vote.options.map((option, index) => {
-    const checked = selected.includes(index);
+export default function VoteRows({ vote, selected, showResult, pending, onSelect }: VoteRowsProps) {
+  return vote.options.map(({ id, content, vote_count }) => {
+    const checked = selected.includes(id);
     if (showResult) {
-      const count = (sampleCounts[index] ?? 0) + Number(checked);
-      const percent = count / 237 * 100;
-      return <div className="school-vote-row school-vote-result" data-selected={checked} key={index}>
-        <div className="school-vote-result-title">{option}{checked && <span aria-label="已投">✓</span>}</div>
+      const percent = vote.total_votes ? Math.min(100, vote_count / vote.total_votes * 100) : 0;
+      return <div className="school-vote-row school-vote-result" data-selected={checked} key={id}>
+        <div className="school-vote-result-title">{content}{checked && <span aria-label="已投">✓</span>}</div>
         <div className="school-vote-result-stats">
           <span className="school-vote-result-track" aria-hidden="true"><span style={{ width: `${percent}%` }} /></span>
-          <span>{count}票 · {percent.toFixed(1)}%</span>
+          <span>{vote_count} 人</span>
         </div>
       </div>;
     }
     return <button type="button" className="school-vote-row school-vote-choice" aria-pressed={checked}
-      key={index} onClick={() => onSelect(index)}>
-      <span className="school-vote-choice-mark" aria-hidden="true">{checked && vote.mode === 'multi' ? '✓' : ''}</span>
-      <span>{option}</span>
+      key={id} disabled={pending} onClick={() => onSelect(id)}>
+      <span className="school-vote-choice-mark" aria-hidden="true">{checked && vote.selection_mode === 'multiple' ? '✓' : ''}</span>
+      <span>{content}</span>
     </button>;
   });
 }

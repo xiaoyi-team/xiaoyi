@@ -2,8 +2,9 @@ const fs = require('fs');
 const vm = require('vm');
 const esbuild = require('esbuild');
 const assert = require('node:assert/strict');
+const path = require('node:path');
 function load(file, context = {}) {
- let source = fs.readFileSync(file, 'utf8').replace('import.meta.env.VITE_API_BASE_URL', '"https://api.test"');
+ let source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8').replace('import.meta.env.VITE_API_BASE_URL', '"https://api.test"');
  const code = esbuild.transformSync(source, {loader:'ts',format:'cjs',target:'es2022'}).code;
  const exports = {};
  const module = {exports};
@@ -38,4 +39,3 @@ function storage() { const data = new Map(); return {getItem:k=>data.get(k)??nul
  await assert.rejects(auth.getCurrentUserApi());
  console.log('PASS: redirect validation, encoding roundtrip, malformed 401 cleanup, stale 401 isolation, 403 retention');
 })().catch(e=>{console.error(e);process.exitCode=1;});
-
