@@ -1,18 +1,22 @@
 import { useLocation, useNavigate } from "react-router";
 
-// URLSearchParams decodes the redirect query parameter exactly once.
-export function getSafeRedirect(target: string | null | undefined): string {
-  if (!target || !target.startsWith("/") || target.startsWith("//")) return "/home";
-  if (Array.from(target).some(c => c.charCodeAt(0) <= 32 || c.charCodeAt(0) === 127 || c === "\\")) return "/home";
+export function getSafeRedirect(raw: string | null | undefined): string {
+  if (!raw) return "/home";
+  const invalid = (value: string) => Array.from(value).some(c => c.charCodeAt(0) <= 32 || c.charCodeAt(0) === 127 || c === "\\");
   try {
-    const url = new URL(target, "https://auth.invalid");
-    const path = decodeURIComponent(url.pathname).replace(/\\/g, "/");
+    const decoded = decodeURIComponent(raw);
+    if (!raw.startsWith("/") || raw.startsWith("//") || invalid(raw) || invalid(decoded)) return "/home";
+    const url = new URL(raw, "https://auth.invalid");
+    const path = decodeURIComponent(url.pathname);
     if (url.origin !== "https://auth.invalid" || path.startsWith("//") || /^\/login(?:\/|$)/i.test(path)) return "/home";
     return url.pathname + url.search + url.hash;
   } catch { return "/home"; }
 }
+export function buildLoginPath(location: Pick<Location, "pathname" | "search" | "hash">): string {
+  const target = `${location.pathname}${location.search}${location.hash}`;
+  return `/login?redirect=${encodeURIComponent(target)}`;
+}
 export function useGoLogin() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  return () => navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search + location.hash)}`);
+  const location = useLocation(); const navigate = useNavigate();
+  return () => navigate(buildLoginPath(location));
 }
