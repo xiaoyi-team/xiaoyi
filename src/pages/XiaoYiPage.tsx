@@ -5,6 +5,7 @@ import backArrow from "../assets/xiao-yi-scene/back-arrow.svg";
 import signInCalendar from "../assets/xiao-yi-scene/sign-in-calendar.png";
 import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
+import XiaoYiCharacter from "./XiaoYiCharacter";
 import "./xiao-yi-page.css";
 
 const SCENE_WIDTH = 1920;
@@ -58,6 +59,7 @@ function XiaoYiPage() {
               alt=""
               draggable={false}
             />
+            <XiaoYiCharacter />
             <Link className="xiao-yi-page__back" to="/home" aria-label="返回首页">
               <img src={backArrow} width={74} height={64} alt="" draggable={false} />
               <span>返回</span>
