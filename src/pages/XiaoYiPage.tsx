@@ -18,6 +18,7 @@ import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
 import { useSignInAdd } from "../features/xiaoYiSignIn/useSignInAdd";
 import type { SignInAddResponse } from "../features/xiaoYiSignIn/sign-in-add";
 import { createSignInDateState, getBeijingDate, getNextBeijingMidnight, signInDateReducer } from "../features/xiaoYiSignIn/sign-in-dates";
+import XiaoYiCharacter from "./XiaoYiCharacter";
 import "./xiao-yi-page.css";
 
 const SCENE_WIDTH = 1920;
@@ -168,6 +169,7 @@ function XiaoYiPage() {
               alt=""
               draggable={false}
             />
+            <XiaoYiCharacter />
             <Link className="xiao-yi-page__back" to="/home" aria-label="返回首页">
               <img src={backArrow} width={74} height={64} alt="" draggable={false} />
               <span>返回</span>

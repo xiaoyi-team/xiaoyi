@@ -42,6 +42,52 @@
   user-select: none;
 }
 
+.xiao-yi-page__character {
+  position: absolute;
+  z-index: 2;
+  left: 63%;
+  bottom: 3%;
+  width: 26%;
+  height: 66%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.xiao-yi-page__character[data-dragging] {
+  cursor: grabbing;
+}
+
+.xiao-yi-page__character::before {
+  content: "";
+  position: absolute;
+  left: 28%;
+  bottom: 7%;
+  width: 44%;
+  height: 4%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(30 22 15 / 32%), transparent 72%);
+  pointer-events: none;
+}
+
+.xiao-yi-page__character-player {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.xiao-yi-page__character:focus {
+  outline: none;
+}
+
+.xiao-yi-page__character:disabled {
+  cursor: default;
+}
+
 .xiao-yi-page__back {
   position: absolute;
   top: 25px;
