@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
+import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import WishBoxLoading from "./WishBoxLoading";
 
 const toSceneCqw = (designPixels: number) =>
@@ -78,7 +79,10 @@ function ViewerContent({
         className="absolute z-40 overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
         onClick={onClose}
       >
-        <img src={backDoubleChevron} alt="" aria-hidden="true" />
+        <picture>
+          <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+          <img src={backDoubleChevron} alt="" aria-hidden="true" />
+        </picture>
         <span>返回</span>
       </button>
 

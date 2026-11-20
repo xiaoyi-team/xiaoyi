@@ -1,5 +1,6 @@
 import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
+import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import bow from "../../assets/wish-box/activity-review-bow.png";
 import bouquetRibbon from "../../assets/wish-box/activity-review-bouquet-ribbon.png";
 import bouquetVertical from "../../assets/wish-box/activity-review-bouquet-vertical.png";
@@ -985,12 +986,10 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
             visibility: viewerOpen ? "hidden" : undefined,
           }}
         >
-          <img
-            src={backDoubleChevron}
-            alt=""
-            aria-hidden="true"
-            className="absolute"
-          />
+          <picture className="absolute">
+            <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+            <img src={backDoubleChevron} alt="" aria-hidden="true" className="h-full w-full" />
+          </picture>
           <span
             className="absolute text-left text-white"
             style={{

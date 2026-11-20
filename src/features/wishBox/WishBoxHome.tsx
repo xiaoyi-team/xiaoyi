@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import AnnouncementBoard from "./AnnouncementBoard";
 import type { AnnouncementViewData } from "./announcementSample";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
+import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import gardenBackground from "../../assets/wish-box/wish-box-home-background.png";
 import wishlandSign from "../../assets/wish-box/wishland-sign.png";
 import mobileHatchLeft from "../../assets/wish-box/mobile-wishland-hatch-left.svg";
@@ -98,17 +99,14 @@ function WishBoxHome({
             aria-label="返回首页"
             className="wish-box-home-return absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             style={{
-              left: "var(--wish-box-home-return-left, 3.95833%)",
-              top: "var(--wish-box-home-return-top, 2.31481%)",
-              width: "var(--wish-box-home-return-width, 8.85417%)",
-              height: "var(--wish-box-home-return-height, 6.85185%)",
+              left: "var(--wish-box-home-return-left, 3.4375%)",
+              top: "var(--wish-box-home-return-top, 2.12962963%)",
+              width: "var(--wish-box-home-return-width, 8.85416667%)",
+              height: "var(--wish-box-home-return-height, 6.85185185%)",
               borderRadius: "var(--wish-box-home-return-radius, 1.14583cqw)",
             }}
           >
-            <img
-              src={backDoubleChevron}
-              alt=""
-              aria-hidden="true"
+            <picture
               className="absolute"
               style={{
                 left: "var(--wish-box-home-return-icon-left, 4.11765%)",
@@ -116,7 +114,10 @@ function WishBoxHome({
                 width: "var(--wish-box-home-return-icon-width, 43.52941%)",
                 height: "var(--wish-box-home-return-content-height, 86.48649%)",
               }}
-            />
+            >
+              <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+              <img src={backDoubleChevron} alt="" aria-hidden="true" className="h-full w-full" />
+            </picture>
             <span
               className="absolute text-white"
               style={{
