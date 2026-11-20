@@ -704,7 +704,9 @@ function PolicyLinks() {
   );
 }
 
-export default function Login() {
+type LoginProps = { onComplete?: () => void; onDismiss?: () => void; entrance?: boolean };
+
+export default function Login({ onComplete, onDismiss, entrance = false }: LoginProps = {}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -904,6 +906,10 @@ const forgotRequestVersionRef = useRef(0);
   const loginResultRef = useRef<Awaited<ReturnType<typeof login>> | null>(null);
 
   const redirectPath = getSafeRedirect(new URLSearchParams(location.search).get("redirect"));
+  const finishEntry = useCallback(() => {
+    if (onComplete) onComplete();
+    else navigate(redirectPath, { replace: true });
+  }, [onComplete, navigate, redirectPath]);
 
   /* ==========================================================
      响应式画布
@@ -1120,7 +1126,7 @@ const forgotRequestVersionRef = useRef(0);
       !dialog &&
       mode === "login"
     ) {
-      navigate(redirectPath, { replace: true });
+      finishEntry();
     }
   }, [
     initializing,
@@ -1129,6 +1135,7 @@ const forgotRequestVersionRef = useRef(0);
     mode,
     navigate,
     redirectPath,
+    finishEntry,
   ]);
 
   /* ==========================================================
@@ -1174,9 +1181,7 @@ const forgotRequestVersionRef = useRef(0);
           if (needsProfile) {
             setMode("profile");
           } else {
-            navigate(redirectPath, {
-              replace: true,
-            });
+            finishEntry();
           }
 
           break;
@@ -1198,13 +1203,12 @@ const forgotRequestVersionRef = useRef(0);
           break;
 
         case "profile-success":
-          navigate(redirectPath, {
-            replace: true,
-          });
+          finishEntry();
           break;
 
         case "guest-success":
-          setGuestEntered(true);
+          if (onComplete) onComplete();
+          else setGuestEntered(true);
           break;
 
         default:
@@ -1214,6 +1218,8 @@ const forgotRequestVersionRef = useRef(0);
       dialog,
       navigate,
       redirectPath,
+      finishEntry,
+      onComplete,
     ]);
 
   useEffect(() => {
@@ -1583,9 +1589,7 @@ const forgotRequestVersionRef = useRef(0);
      * 不阻止进入主页。
      */
 
-    navigate(redirectPath, {
-      replace: true,
-    });
+    finishEntry();
   };
 
   /* ==========================================================
@@ -2022,7 +2026,7 @@ const handleForgotStepTwo = async (
 
   return (
     <main
-      className="figma-auth-page"
+      className={`figma-auth-page${entrance ? " figma-auth-page--entrance" : ""}`}
       style={isMobileLayout ? ({
         "--auth-mobile-scale": mobileScale,
         "--auth-mobile-result-scale": mobileResultTransformScale,
@@ -2104,7 +2108,8 @@ const handleForgotStepTwo = async (
               ) {
                 switchMode("login");
               } else {
-                navigate(-1);
+                if (onDismiss) onDismiss();
+                else navigate(-1);
               }
             }}
           >

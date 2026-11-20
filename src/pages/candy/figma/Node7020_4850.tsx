@@ -430,3 +430,4 @@ export default function Component({category,size,material,name,imageUrl,series,q
     </div>
   );
 }
+

@@ -104,7 +104,12 @@ export default function Home() {
             <p className="mt-1 text-sm text-slate-500">
               项目主页
             </p>
-            <Link to="/candy" className="mt-2 inline-block text-sm text-blue-700 underline">糖果屋</Link>
+            <nav aria-label="功能导航" className="mt-2 flex flex-wrap gap-4 text-sm text-blue-700 underline">
+              <Link to="/candy">糖果屋</Link>
+              <Link to="/xiaoyi">萧逸家</Link>
+              <Link to="/pit-signal">加油站</Link>
+              <Link to="/school-vote">海事高中投票</Link>
+            </nav>
           </div>
 
           {isLogin ? <button

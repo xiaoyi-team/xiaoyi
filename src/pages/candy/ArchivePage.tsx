@@ -34,7 +34,7 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
   const [mobileSearchOpen,setMobileSearchOpen]=useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState('默认排序');
-  const { records: visible, selected, select: setSelected, save: updateRecord, error: storageError, loading, loadMore } = useCandyArchive({open,category,query,status,sort}, items, onLoginRequired);
+  const { records: visible, selected, select: setSelected, save: updateRecord, toggleFavorite, error: storageError, loading, loadMore } = useCandyArchive({open,category,query,status,sort}, items, onLoginRequired);
   function statusClick(event: React.MouseEvent) {
     const name = (event.target as HTMLElement).closest('button')?.dataset.name?.split(' / ')[0];
     if (name && ['全部', '已拥有', '未拥有', '已收藏'].includes(name)) setStatus(name);
@@ -60,7 +60,7 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
         <div className="absolute left-[16.919px] top-[189.092px] h-[692.672px] w-[82.603px]" onClick={statusClick}><Tabs selected={status} /></div>
         <img alt="" src="/assets/figma/0f59f9f8-ff18-4428-98d8-2e1bac4e7d88.png" className="pointer-events-none absolute left-[86.584px] top-[155.254px] h-[851.907px] w-[873.802px]" />
         <img alt="" src="/assets/anchor-wave-corner.png" className="pointer-events-none absolute left-[0px] top-[622px] h-[460px] w-[414px] max-w-none z-20" />
-        <div className="absolute left-[94.584px] top-[176.058px] h-[780px] w-[857.802px] overflow-y-auto px-[22.852px] py-[20px] [scrollbar-width:none]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} /></div>
+        <div className="absolute left-[94.584px] top-[176.058px] h-[780px] w-[857.802px] overflow-y-auto px-[22.852px] py-[20px] [scrollbar-width:none]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void toggleFavorite(item).catch(()=>{});}} /></div>
         {selected && <RecordEditor key={selected.id} item={selected} canEdit={canEdit} onSave={updateRecord} onClose={()=>setSelected(null)} />}
       </section>
       <section aria-label="移动端官谷图鉴" className="relative top-[6px] ml-auto h-[375px] w-[505.525px] min-[1024px]:hidden">
@@ -76,7 +76,7 @@ export default function ArchivePage({ items, onBack, onLoginRequired, initialOpe
         </div>}
         <img alt="" src="/assets/figma/0f59f9f8-ff18-4428-98d8-2e1bac4e7d88.png" className="pointer-events-none absolute left-[30px] top-[84px] h-[259px] w-[289px]" />
         <img alt="" src="/assets/anchor-wave-corner.png" className="pointer-events-none absolute left-0 top-[215px] z-20 h-[160px] w-[144px]" />
-        <div className="absolute left-[37.525px] top-[90.5px] h-[249px] w-[281px] overflow-y-auto px-[7px]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void updateRecord({...item,favorite:!item.favorite,owned:false}).catch(()=>{});}} mobile /></div>
+        <div className="absolute left-[37.525px] top-[90.5px] h-[249px] w-[281px] overflow-y-auto px-[7px]" onScroll={event=>{const el=event.currentTarget;if(el.scrollHeight-el.scrollTop-el.clientHeight<40)loadMore();}}><ItemGrid items={visible} loading={loading} error={storageError} onSelect={setSelected} onFavorite={item=>{if (!canEdit()) return; void toggleFavorite(item).catch(()=>{});}} mobile /></div>
         {selected && <RecordEditor key={selected.id} item={selected} canEdit={canEdit} onSave={updateRecord} onClose={()=>setSelected(null)} mobile />}
       </section>
     </>}
@@ -126,12 +126,13 @@ function RecordEditor({item,mobile,onSave,canEdit}:RecordEditorProps){
   const owned = ownedOverride ?? item.owned;
   const [error,setError]=useState('');
   if (!mobile) return <aside onClickCapture={guardClick} onFocusCapture={guardFocus} className="absolute left-[934.429px] top-[165.206px] h-[887.194px] w-[520.345px]">
-    <DetailArtwork category={item.category} size={item.size} material={item.material} onPriceChange={setPrice} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onSave={()=>{if(!Number.isSafeInteger(quantity)||quantity<0||!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写非负整数数量和有效金额');return;}void onSave({...item,quantity,price,owned,favorite:owned?false:item.favorite}).then(()=>{setOwned(null);setError('');}).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
+    <DetailArtwork category={item.category} size={item.size} material={item.material} onPriceChange={setPrice} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onSave={()=>{if(!Number.isSafeInteger(quantity)||quantity<0||!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写非负整数数量和有效金额');return;}void onSave({...item,quantity,price,owned}).then(()=>{setOwned(null);setError('');}).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
     {error && <p role="status" className="absolute bottom-[35px] left-[60px] text-[#161811]">{error}</p>}
   </aside>;
   return <aside onClickCapture={guardClick} onFocusCapture={guardFocus} className="absolute left-[319.525px] top-[85.5px] h-[269px] w-[179px] overflow-hidden">
-    <MobileDetailArtwork category={item.category} size={item.size} material={item.material} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onPriceChange={setPrice} onSave={()=>{if(!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写有效金额');return;}void onSave({...item,quantity,price,owned,favorite:owned?false:item.favorite}).then(()=>{setOwned(null);setError('');}).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
+    <MobileDetailArtwork category={item.category} size={item.size} material={item.material} name={item.name} imageUrl={item.imageUrl} series={item.series} quantity={quantity} price={price} owned={owned} onOwned={setOwned} onQuantity={setQuantity} onPriceChange={setPrice} onSave={()=>{if(!/^\d+(\.\d{1,2})?$/.test(price)){setError('请填写有效金额');return;}void onSave({...item,quantity,price,owned}).then(()=>{setOwned(null);setError('');}).catch(reason=>setError(reason instanceof Error?reason.message:'保存失败'));}} />
     {error && <p role="status" className="absolute bottom-0 bg-[#f2e5cc] text-[8px] text-[#161811]">{error}</p>}
     {/* save input {id:item.id,owned,quantity,price}; output {record,updatedAt}; host integration required */}
   </aside>;
 }
+

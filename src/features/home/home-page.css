@@ -1,0 +1,109 @@
+.home-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  font-family: "Noto Serif SC", serif;
+}
+.home-page__window { position: relative; overflow: hidden; }
+.home-page__scene { position: relative; transform-origin: top left; isolation: isolate; }
+.home-page__content, .home-map, .home-map__artwork { position: absolute; inset: 0; }
+.home-map { z-index: 0; }
+.home-map__artwork { pointer-events: none; }
+.home-map__artwork > div { width: 100%; height: 100%; overflow: hidden; }
+#root .home-map__artwork [class*="Cormorant_Garamond"],
+#root .home-map__artwork [class*="Cormorant_Garamond"] * {
+  font-family: "Cormorant Garamond", serif !important;
+}
+.home-map__artwork [data-name$="标题"] { overflow: visible; }
+.home-map__artwork [data-name$="标题"] p.bg-clip-text {
+  padding-block: .45em;
+  margin-block: -.45em;
+}
+.home-map__artwork [data-name$="标题"] p > span {
+  display: inline-block;
+  background-image: inherit;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.home-map__artwork [data-name$="标题"] div.bg-clip-text > p > span {
+  line-height: 1.15;
+  background-image: linear-gradient(180deg, #fffdf6, #efebd2);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.home-map__artwork [data-name="萧逸家标题"] > p.bg-clip-text {
+  height: auto;
+  min-height: 1.3em;
+  line-height: 1.3;
+  padding-block: 0;
+  margin-block: 0;
+}
+.home-map__artwork [data-name="萧逸家标题"] > p:nth-of-type(2) {
+  top: 60px;
+}
+.home-page__scene[data-mobile="true"] .home-map__artwork [data-name="萧逸家标题"] > p:nth-of-type(2) {
+  top: 20.85px;
+}
+.home-map__artwork [data-name="遮罩"] { opacity: 0; transition: opacity 200ms ease; }
+.home-map[data-active] .home-map__artwork [data-name="遮罩"] { opacity: 1; }
+.home-map__artwork [data-name="心愿盒"] > div,
+.home-map__artwork [data-name="糖果屋"] > div,
+.home-map__artwork [data-name="杂草酒吧"] > div,
+.home-map__artwork [data-name="萧逸家"] > div,
+.home-map__artwork [data-name="加油站"] > div,
+.home-map__artwork [data-name="海事高中"] > div { opacity: 0; transition: opacity 200ms ease; }
+.home-map[data-active="心愿盒"] .home-map__artwork [data-name="心愿盒"] > div,
+.home-map[data-active="糖果屋"] .home-map__artwork [data-name="糖果屋"] > div,
+.home-map[data-active="杂草酒吧"] .home-map__artwork [data-name="杂草酒吧"] > div,
+.home-map[data-active="萧逸家"] .home-map__artwork [data-name="萧逸家"] > div,
+.home-map[data-active="加油站"] .home-map__artwork [data-name="加油站"] > div,
+.home-map[data-active="海事高中"] .home-map__artwork [data-name="海事高中"] > div { opacity: 1; }
+.home-map__clear { position: absolute; inset: 0; width: 100%; height: 100%; background: none; border: 0; }
+.home-map__entry { position: absolute; display: block; cursor: pointer; }
+.home-map__entry:focus-visible { outline: 2px solid #fff8dd; outline-offset: -2px; }
+.home-page__announcements { position: absolute; z-index: 3; left: 470px; top: 33px; width: 980px; }
+.home-page__announcements .announcement { margin: 0; width: 980px; max-width: 980px; }
+.home-page__announcements .announcement-bar { width: 960px; max-width: 960px; }
+.home-page__content:has(.home-map[data-active]) .home-page__announcements { visibility: hidden; }
+.announcement__item-open { position: relative; width: 100%; display: grid; gap: 4px; padding-right: 64px; text-align: left; }
+.announcement__item-description { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 22px; color: #58698c; }
+.announcement__item-date { position: absolute; right: 0; top: 0; font-size: 14px; color: #58698c; }
+.home-page .announcement-popup-layer { position: absolute; padding: 0; background: rgb(0 0 0 / 35%); }
+.home-page .announcement-popup { width: 800px; min-height: 0; max-height: 850px; padding: 42px 44px 30px; }
+.home-page .announcement-popup__body { flex: 0 1 auto; max-height: 540px; }
+.home-page .announcement-popup__flame { opacity: .22; }
+.home-page__scene[data-mobile="true"] .home-page__announcements {
+  left: 163.27px;
+  top: 11.46px;
+  transform: scale(.3473958333);
+  transform-origin: top left;
+}
+.home-page__scene[data-mobile="true"] .announcement-popup {
+  width: 560px;
+  max-height: 281.2px;
+  padding: 29.4px 30.8px 21px;
+  border-width: .7px;
+  border-radius: 18.2px;
+}
+.home-page__scene[data-mobile="true"] .announcement-popup::before { inset: 3.5px; border-width: 1.4px; border-radius: 15.4px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__header { padding-right: 14px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__header h2,
+.home-page__scene[data-mobile="true"] .announcement-popup__headline { font-size: 19.6px; line-height: 28px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__english { margin-top: 2.8px; font-size: 8.4px; line-height: 14px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__body { padding: 19.6px 0 18.2px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__content { margin-top: 11.2px; font-size: 11.2px; line-height: 19.6px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__content p + p { margin-top: 11.2px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__date { margin-top: 11.2px; font-size: 11.2px; line-height: 16.8px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__confirm { height: 35px; border-radius: 6.3px; font-size: 11.2px; line-height: 16.8px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__hint { margin-top: 8.4px; font-size: 9.8px; line-height: 15.4px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__close { top: 16.1px; right: 18.9px; width: 25.2px; height: 25.2px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__close img { width: 9.8px; height: 9.8px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__iris { top: -2.8px; right: 48.3px; width: 95.2px; height: 95.2px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__sailboat { top: .7px; left: 2.8px; width: 63px; height: 63px; }
+.home-page__scene[data-mobile="true"] .announcement-popup__orbit { top: 51.1px; right: 55.3px; width: 231px; height: 35px; max-width: none; }
+.home-page__scene[data-mobile="true"] .announcement-popup__flame { right: 4.2px; bottom: 14px; width: 66.5px; height: 66.5px; }
+@media (prefers-reduced-motion: reduce) {
+  .home-map__artwork * { transition: none !important; }
+}

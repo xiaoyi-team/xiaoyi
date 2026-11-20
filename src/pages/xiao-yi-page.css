@@ -1,0 +1,258 @@
+.xiao-yi-page {
+  min-height: 100dvh;
+  background: #000;
+}
+
+.xiao-yi-page__viewport {
+  display: grid;
+  width: 100%;
+  height: 100dvh;
+  place-items: center;
+}
+
+.xiao-yi-page__slot {
+  position: relative;
+  width: var(--scene-width);
+  height: var(--scene-height);
+  overflow: clip;
+}
+
+.xiao-yi-page__scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  isolation: isolate;
+  width: 1920px;
+  height: 1080px;
+  overflow: clip;
+  transform: scale(var(--scene-scale));
+  transform-origin: top left;
+}
+
+.xiao-yi-page__background {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 0;
+  display: block;
+  width: 1920px;
+  max-width: none;
+  height: 1081px;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.xiao-yi-page__character {
+  position: absolute;
+  z-index: 2;
+  left: 63%;
+  bottom: 3%;
+  width: 26%;
+  height: 66%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.xiao-yi-page__character[data-dragging] {
+  cursor: grabbing;
+}
+
+.xiao-yi-page__character::before {
+  content: "";
+  position: absolute;
+  left: 28%;
+  bottom: 7%;
+  width: 44%;
+  height: 4%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(30 22 15 / 32%), transparent 72%);
+  pointer-events: none;
+}
+
+.xiao-yi-page__character-player {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.xiao-yi-page__character:focus {
+  outline: none;
+}
+
+.xiao-yi-page__character:disabled {
+  cursor: default;
+}
+
+.xiao-yi-page__back {
+  position: absolute;
+  top: 25px;
+  left: 76px;
+  z-index: 1;
+  width: 170px;
+  height: 74px;
+  overflow: hidden;
+  border-radius: 22px;
+  color: #fff;
+  font-family: "Noto Serif SC", serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: normal;
+  text-decoration: none;
+  filter: drop-shadow(0 4px 3.75px #000);
+}
+
+.xiao-yi-page__back img {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  display: block;
+  width: 74px;
+  height: 64px;
+  pointer-events: none;
+}
+
+.xiao-yi-page__back span {
+  position: absolute;
+  top: 15px;
+  left: 89px;
+  white-space: nowrap;
+  text-shadow: 0 0 2px #000;
+}
+
+.xiao-yi-page__sign-in {
+  position: absolute;
+  top: 793px;
+  left: 703px;
+  z-index: 1;
+  width: 354px;
+  height: 115px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.xiao-yi-page__sign-in img {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.xiao-yi-page__calendar {
+  top: 11px;
+  left: 0;
+  width: 83px;
+  height: 104px;
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+
+.xiao-yi-page__wordmark {
+  top: 0;
+  left: 92px;
+  width: 262px;
+  height: 108px;
+}
+
+.xiao-yi-page__sign-in:focus-visible .xiao-yi-page__calendar {
+  transform: scale(1.06);
+}
+
+@media (hover: hover) {
+  .xiao-yi-page__sign-in[aria-expanded="false"]:hover .xiao-yi-page__calendar {
+    transform: scale(1.06);
+  }
+}
+
+.xiao-yi-page__back:focus-visible,
+.xiao-yi-page__sign-in:focus-visible {
+  outline: 3px solid #f5dda0;
+  outline-offset: 5px;
+}
+
+/* Local scene boundary only; the sign-in dialogs keep their existing mode.
+ * Background fits the 667 x 375 composition; controls retain readable sizes. */
+@media (max-width: 1024px) {
+  .xiao-yi-page__slot {
+    width: min(100%, calc(100dvh * 667 / 375));
+    height: min(100dvh, calc(100vw * 375 / 667));
+  }
+
+  .xiao-yi-page__scene {
+    width: 100%;
+    height: 100%;
+    transform: none;
+  }
+
+  .xiao-yi-page__background {
+    width: 100%;
+    height: 100%;
+  }
+
+  .xiao-yi-page__back {
+    top: calc(100% * 4 / 375);
+    left: calc(100% * 8 / 667);
+    width: 93.925px;
+    /* Transparent hit area extends the 40.885px design frame to 44px. */
+    height: 44px;
+    border-radius: 12.155px;
+    font-size: 15.3px;
+    font-weight: 600;
+    line-height: 22.1px;
+    filter: drop-shadow(0 2.21px 2.072px #000);
+  }
+
+  .xiao-yi-page__back img {
+    top: 2.7625px;
+    left: 3.8674px;
+    width: 40.885px;
+    height: 35.36px;
+  }
+
+  .xiao-yi-page__back span {
+    top: 9.3927px;
+    left: 44.7524px;
+    text-shadow: 0 0 1.105px #000;
+  }
+
+  .xiao-yi-page__back:focus-visible {
+    outline-width: 2px;
+    outline-offset: 1px;
+  }
+
+  .xiao-yi-page__sign-in {
+    top: calc(100% * 271.72 / 375);
+    left: calc(100% * 242 / 667);
+    width: 169.92px;
+    height: 55.2px;
+  }
+
+  .xiao-yi-page__calendar {
+    top: 5.28px;
+    width: 32px;
+    height: 40px;
+  }
+
+  .xiao-yi-page__wordmark {
+    left: 44.16px;
+    width: 125.76px;
+    height: 51.84px;
+  }
+
+  .xiao-yi-page__sign-in[aria-expanded="false"]:is(:active, [data-pressed]) .xiao-yi-page__calendar {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xiao-yi-page__calendar {
+    transition: none;
+  }
+}

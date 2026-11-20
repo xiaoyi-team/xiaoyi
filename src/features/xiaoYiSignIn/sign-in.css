@@ -1,0 +1,1142 @@
+@import "../../fonts/noto-serif-sc.css";
+@import "../../fonts/dancing-script.css";
+@import "../../fonts/cormorant-garamond.css";
+@import "../../fonts/playfair-display.css";
+
+.xiao-yi-sign-in-preview {
+  display: grid;
+  min-height: 100dvh;
+  place-content: center;
+  justify-items: start;
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  background: #f3f4f6;
+  color: #1f2937;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.xiao-yi-sign-in-preview__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.xiao-yi-sign-in-dialog {
+  box-sizing: border-box;
+  width: min(1765px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  overflow: visible;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #1f2937;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.xiao-yi-sign-in-dialog::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+
+.xiao-yi-sign-in-shell {
+  position: relative;
+}
+
+.xiao-yi-sign-in-viewport {
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* The slot owns scaled layout dimensions; only its canvas is transformed. */
+.xiao-yi-sign-in-dialog[data-pc-fit] .xiao-yi-sign-in-viewport {
+  position: relative;
+  max-height: none;
+  overflow: visible;
+}
+
+.xiao-yi-sign-in-dialog[data-pc-fit] .xiao-yi-sign-in-scale-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.xiao-yi-sign-in-viewport:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 3px;
+}
+
+.xiao-yi-sign-in-button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.xiao-yi-sign-in-button:hover {
+  background: #e5e7eb;
+}
+
+.xiao-yi-sign-in-button:active {
+  background: #d1d5db;
+}
+
+.xiao-yi-sign-in-button:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 3px;
+}
+
+.xiao-yi-sign-in-close {
+  position: absolute;
+  z-index: 10;
+  top: 8px;
+  right: 8px;
+}
+
+.xiao-yi-sign-in-close__icon {
+  display: none;
+}
+
+/* PC Figma fixture: 1765 × 909. */
+.sign-in-board {
+  position: relative;
+  width: 1765px;
+  min-width: 1765px;
+  height: 909px;
+  overflow: hidden;
+  color: #101d49;
+  font-family: "Noto Serif SC", serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.sign-in-board p,
+.sign-in-board h2,
+.sign-in-board h3 {
+  margin: 0;
+}
+
+.sign-in-board__art {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  left: var(--art-x);
+  top: var(--art-y);
+  width: var(--art-width);
+  height: var(--art-height);
+}
+
+.sign-in-board__calendar {
+  position: absolute;
+  top: 141px;
+  left: 225px;
+  width: 672px;
+  height: 470px;
+}
+
+.sign-in-board__calendar-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-3deg);
+  transform-origin: 0 0;
+}
+
+.sign-in-board__month {
+  position: absolute;
+  top: 91px;
+  left: 36px;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.sign-in-board__return-today {
+  position: absolute;
+  top: 79px;
+  left: 447px;
+  width: 163px;
+  height: 46px;
+  font-size: 24px;
+}
+
+.sign-in-board__return-today > span {
+  position: absolute;
+  top: 6px;
+  left: 30px;
+  white-space: nowrap;
+}
+
+.sign-in-board__return-today,
+.sign-in-board__date-button,
+.sign-in-board__sign-in-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+.sign-in-board__return-today:focus-visible,
+.sign-in-board__date-button:focus-visible,
+.sign-in-board__sign-in-button:focus-visible,
+.sign-in-board__quote-content:focus-visible {
+  outline: 2px solid #304bcc;
+  outline-offset: 2px;
+}
+
+.sign-in-board__month-rule {
+  position: absolute;
+  top: 142px;
+  left: 30px;
+  width: 610px;
+  height: 1px;
+  background: rgb(194 167 126 / 40%);
+}
+
+.sign-in-board__calendar-table {
+  position: absolute;
+  top: 150px;
+  left: 30px;
+  width: 610px;
+}
+
+.sign-in-board__weekdays,
+.sign-in-board__week {
+  display: grid;
+  grid-template-columns: repeat(7, 87px);
+}
+
+.sign-in-board__weekdays {
+  height: 34px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.sign-in-board__day {
+  position: relative;
+  display: grid;
+  height: 54px;
+  place-items: center;
+  font-size: 25px;
+}
+
+.sign-in-board__day::after {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgb(194 167 126 / 15%);
+  content: "";
+  pointer-events: none;
+}
+
+.sign-in-board__date-button {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  font-size: inherit;
+}
+
+.sign-in-board__selection-ring {
+  position: absolute;
+  top: 4px;
+  left: 21px;
+  width: 45px;
+  height: 45px;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sign-in-board__day-number--hidden {
+  visibility: hidden;
+}
+
+.sign-in-board__stamp {
+  position: absolute;
+  top: -2px;
+  left: 11px;
+  width: 66px;
+  height: 61px;
+  max-width: none;
+  opacity: 0.52;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sign-in-board__today-art {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sign-in-board__today-copy {
+  position: absolute;
+  top: 346px;
+  left: 287px;
+  width: 140px;
+  height: 104px;
+  pointer-events: none;
+}
+
+.sign-in-board__today-stamp {
+  position: absolute;
+  z-index: 1;
+  top: -1px;
+  left: 22px;
+  width: 66px;
+  height: 61px;
+  max-width: none;
+  opacity: 0.55;
+  user-select: none;
+}
+
+.sign-in-board__today-number {
+  position: absolute;
+  top: 9px;
+  left: 36px;
+  color: #fffaf0;
+  font-size: 30px;
+}
+
+.sign-in-board__sign-in-label {
+  position: absolute;
+  top: 67.281px;
+  left: 11px;
+  width: 115px;
+  height: 32px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.sign-in-board__sign-in-button {
+  position: absolute;
+  top: 409px;
+  left: 293px;
+  width: 125px;
+  height: 40px;
+}
+
+.sign-in-board__title {
+  position: absolute;
+  top: 70px;
+  left: 228px;
+  width: 369px;
+  height: 158px;
+}
+
+.sign-in-board__title-copy {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-5deg);
+  transform-origin: 0 0;
+  white-space: nowrap;
+}
+
+.sign-in-board__daily {
+  position: absolute;
+  top: -44.093px;
+  left: 17.911px;
+  font-family: "Dancing Script", cursive;
+  font-size: 91px;
+  font-weight: 400;
+}
+
+.sign-in-board__check-in {
+  position: absolute;
+  top: 38.59px;
+  left: 39.79px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 69px;
+  font-weight: 700;
+}
+
+.sign-in-board__heading {
+  position: absolute;
+  top: 102.907px;
+  left: 60.911px;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.sign-in-board__quote {
+  position: absolute;
+  top: 118px;
+  left: 899px;
+  width: 653px;
+  height: 655px;
+}
+
+.sign-in-board__quote-border,
+.sign-in-board__rewards-border {
+  position: absolute;
+  border: 1px solid #c2a77e;
+  pointer-events: none;
+}
+
+.sign-in-board__quote-border {
+  top: 12px;
+  left: 12px;
+  width: 629px;
+  height: 626px;
+  opacity: 0.25;
+}
+
+.sign-in-board__photo-shade {
+  position: absolute;
+  top: 249px;
+  left: 26px;
+  width: 490px;
+  height: 46px;
+  background: rgb(41 54 80 / 35%);
+}
+
+.sign-in-board__photo-caption {
+  position: absolute;
+  top: 249px;
+  left: 39px;
+  color: #fffaf0;
+  font-family: "Dancing Script", cursive;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.sign-in-board__review-date-number,
+.sign-in-board__review-weekday {
+  position: absolute;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.sign-in-board__review-date-number {
+  top: 302px;
+  left: 70px;
+  width: 176px;
+  height: 96px;
+  font-family: "Playfair Display", serif;
+  font-size: 72px;
+}
+
+.sign-in-board__review-weekday {
+  top: 350px;
+  left: 290px;
+  width: 52px;
+  height: 35px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 29px;
+}
+
+.sign-in-board__quote-content {
+  position: absolute;
+  /* Long text stays readable where decorative artwork overlaps this region. */
+  z-index: 1;
+  top: 409px;
+  left: 115px;
+  display: flex;
+  flex-direction: column;
+  width: 490px;
+  height: 190px;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  text-align: center;
+}
+
+.sign-in-board__quote-content::-webkit-scrollbar {
+  display: none;
+}
+
+.sign-in-board__quote-content p {
+  width: 486px;
+  max-width: 100%;
+  flex-shrink: 0;
+  margin-block: auto;
+  font-size: 30px;
+  line-height: 45px;
+  white-space: pre-line;
+}
+
+.sign-in-board__quote-footer {
+  position: absolute;
+  top: 609px;
+  left: 117px;
+  width: 490px;
+  color: #8d7758;
+  font-size: 18px;
+  text-align: center;
+}
+
+.sign-in-board__quote-label {
+  position: absolute;
+  top: 247px;
+  left: 391px;
+  width: 244px;
+  height: 58px;
+  transform: rotate(-5deg);
+  transform-origin: 0 0;
+}
+
+.sign-in-board__quote-label h3 {
+  position: absolute;
+  top: 8px;
+  left: 75px;
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sign-in-board__rewards {
+  position: absolute;
+  top: 613px;
+  left: 147px;
+  width: 855px;
+  height: 235px;
+}
+
+.sign-in-board__rewards-border {
+  top: 9px;
+  left: 9px;
+  width: 837px;
+  height: 217px;
+  opacity: 0.35;
+}
+
+.sign-in-board__total,
+.sign-in-board__next-reward {
+  position: absolute;
+  inset: 0;
+  white-space: pre;
+}
+
+.sign-in-board__total > *,
+.sign-in-board__next-reward > * {
+  position: absolute;
+}
+
+.sign-in-board__total > :first-child {
+  top: 49px;
+  left: 51px;
+  font-size: 28px;
+}
+
+.sign-in-board__total strong {
+  top: 29px;
+  left: 192px;
+  width: 100px;
+  height: 66px;
+  color: #304bcc;
+  font-size: 46px;
+  text-align: center;
+}
+
+.sign-in-board__total > :last-child {
+  top: 50px;
+  left: 300px;
+  font-size: 28px;
+}
+
+.sign-in-board__progress {
+  position: absolute;
+  top: 101px;
+  left: 65px;
+  width: 348px;
+  height: 7px;
+  background: #97979b;
+}
+
+.sign-in-board__progress > span {
+  display: block;
+  width: 162.4px;
+  height: 100%;
+  border-radius: 4px;
+  background: #304bcc;
+}
+
+.sign-in-board__next-reward {
+  font-weight: 400;
+}
+
+.sign-in-board__next-reward > :first-child {
+  top: 132px;
+  left: 52px;
+  font-size: 23px;
+}
+
+.sign-in-board__next-reward strong {
+  top: 123px;
+  left: 262px;
+  width: 66px;
+  height: 44px;
+  color: #304bcc;
+  font-size: 29px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sign-in-board__next-reward > :last-child {
+  top: 133px;
+  left: 335px;
+  font-size: 24px;
+}
+
+.sign-in-board__reward-hint {
+  position: absolute;
+  top: 178px;
+  left: 94px;
+  font-size: 19px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.sign-in-board__reward-list {
+  position: absolute;
+  top: 12px;
+  left: 431px;
+  display: grid;
+  grid-template-columns: repeat(3, 124px);
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sign-in-board__reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.sign-in-board__gift {
+  width: 108px;
+  height: 76px;
+}
+
+.sign-in-board__reward-days {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.sign-in-board__reward-preview {
+  width: 91px;
+  height: 65px;
+  border-radius: 10px;
+}
+
+.sign-in-board__locked {
+  width: 98px;
+  height: 28px;
+  margin-top: 2px;
+  border-radius: 5px;
+  background: #e7dac2;
+  color: #867761;
+  font-size: 15px;
+  line-height: 28px;
+  text-align: center;
+}
+
+/* 956 × 440 mounted mobile Browse A. The existing JS boundary owns this mode.
+   Only decoration geometry uses 0.47; HTML text and controls use mobile sizes.
+   Smaller layouts remain scroll-accessible until B3-B. */
+.xiao-yi-sign-in-dialog[data-mobile] {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-shell {
+  width: 100%;
+  height: 100%;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-viewport {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-scale-layer {
+  position: relative;
+  width: 829.55px;
+  height: 427.23px;
+  margin: 0 auto;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close {
+  top: max(5px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right), calc((100% - 956px) / 2 + 48px));
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #d1b171;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close__icon {
+  display: block;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board {
+  --art-scale: 0.47;
+  width: 829.55px;
+  min-width: 829.55px;
+  height: 427.23px;
+  overflow: visible;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__art {
+  left: calc(var(--art-x) * var(--art-scale));
+  top: calc(var(--art-y) * var(--art-scale));
+  width: calc(var(--art-width) * var(--art-scale));
+  height: calc(var(--art-height) * var(--art-scale));
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar {
+  top: 66.27px;
+  left: 105.75px;
+  width: 315.84px;
+  height: 220.9px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month {
+  top: 42.77px;
+  left: 16.92px;
+  font-size: 16.92px;
+  line-height: normal;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today {
+  top: 37.13px;
+  left: 210.09px;
+  width: 76.61px;
+  height: 21.62px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today > span {
+  top: -0.16px;
+  left: 9.13px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month-rule {
+  top: 66.74px;
+  left: 14.1px;
+  width: 286.7px;
+  height: 0.47px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-table {
+  top: 70.5px;
+  left: 14.1px;
+  width: 286.7px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays,
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__week {
+  grid-template-columns: repeat(7, 40.89px);
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays {
+  height: 15.98px;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day {
+  height: 25.38px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day::after {
+  top: 20.68px;
+  height: 0.47px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__stamp {
+  top: -0.94px;
+  left: 5.17px;
+  width: 31.02px;
+  height: 28.67px;
+}
+
+/* Date controls keep priority where the mobile paper overlaps their hit areas. */
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__date-button:not([aria-current="date"]) {
+  z-index: 1;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-copy {
+  top: 162.62px;
+  left: 134.89px;
+  width: 61.1px;
+  height: 52.64px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-number {
+  top: 2.245px;
+  left: 14.38px;
+  width: 22px;
+  height: 27px;
+  font-size: 18px;
+  line-height: 27px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-stamp {
+  z-index: auto;
+  top: -0.47px;
+  left: 10.34px;
+  width: 31.02px;
+  height: 28.67px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-label {
+  top: 34.5px;
+  left: -2.62px;
+  width: 56px;
+  height: 21px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-button {
+  top: 189.62px;
+  left: 124.27px;
+  width: 72px;
+  height: 36px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-gold {
+  position: absolute;
+  top: 153.988px;
+  left: 153.641px;
+  width: 31.49px;
+  height: 31.49px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring {
+  top: 2.1155px;
+  left: 9.8705px;
+  width: 21.15px;
+  height: 21.15px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring--today {
+  top: 0;
+  left: 7.7545px;
+  width: 31.49px;
+  height: 31.49px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-blue {
+  top: 155.868px;
+  left: 155.521px;
+  width: 27.73px;
+  height: 27.73px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-paper {
+  top: 182.144px;
+  left: 131.414px;
+  width: 81.827px;
+  height: 40.19px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-star {
+  top: 155.663px;
+  left: 138.572px;
+  width: 17.289px;
+  height: 17.289px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__title {
+  top: 32.9px;
+  left: 107.16px;
+  width: 173.43px;
+  height: 74.26px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__daily {
+  top: -20.724px;
+  left: 8.418px;
+  font-size: 42.77px;
+  line-height: normal;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__check-in {
+  top: 18.137px;
+  left: 18.7px;
+  font-size: 32.43px;
+  line-height: normal;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__heading {
+  top: 48.366px;
+  left: 28.628px;
+  font-size: 12.69px;
+  line-height: normal;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote {
+  top: 55.46px;
+  left: 422.53px;
+  width: 306.91px;
+  height: 307.85px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-border {
+  top: 5.64px;
+  left: 5.64px;
+  width: 295.63px;
+  height: 294.22px;
+  border-width: 0.47px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-shade {
+  top: 117.03px;
+  left: 12.22px;
+  width: 230.3px;
+  height: 21.62px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-caption {
+  top: 117.03px;
+  left: 18.331px;
+  font-size: 14.1px;
+  line-height: normal;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-date-number {
+  top: 141.94px;
+  left: 32.9007px;
+  width: 83px;
+  height: 45px;
+  font-size: 33.84px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-weekday {
+  top: 164.5px;
+  left: 136.3007px;
+  width: 24px;
+  height: 17px;
+  font-size: 13.63px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content {
+  top: 192px;
+  left: 54px;
+  display: block;
+  width: 230px;
+  height: 81px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content p {
+  width: 228px;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  line-height: 27px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-footer {
+  top: 284px;
+  left: 54.99px;
+  width: 230px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label {
+  top: 116.09px;
+  left: 183.77px;
+  width: 114.68px;
+  height: 27.26px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label h3 {
+  top: 1.63px;
+  left: 35.248px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards {
+  top: 288.11px;
+  left: 69.09px;
+  width: 401.85px;
+  height: 134px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-paper {
+  top: -0.94px;
+  left: -2.82px;
+  width: 410.31px;
+  height: 142.46px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-border {
+  top: 4.23px;
+  left: 4.23px;
+  width: 393.39px;
+  height: 124px;
+  border-width: 0.47px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :first-child {
+  top: 21px;
+  left: 24px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total strong {
+  top: 8px;
+  left: 102px;
+  width: 46px;
+  height: 35px;
+  font-size: 24px;
+  line-height: 35px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :last-child {
+  top: 21px;
+  left: 150px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress {
+  top: 47.47px;
+  left: 30.55px;
+  width: 163.56px;
+  height: 3.29px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress > span {
+  width: 76.328px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :first-child {
+  top: 61px;
+  left: 24px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward strong {
+  top: 57px;
+  left: 132px;
+  width: 32px;
+  height: 24px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :last-child {
+  top: 61px;
+  left: 169px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift-icon {
+  top: 89px;
+  left: 24px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-hint {
+  top: 88px;
+  left: 43px;
+  width: 156px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-list {
+  top: 5.64px;
+  left: 202.57px;
+  grid-template-columns: repeat(3, 58.28px);
+  gap: 6.58px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward {
+  position: relative;
+  gap: 2.35px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift {
+  width: 50.76px;
+  height: 35.72px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-days {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-preview {
+  width: 42.77px;
+  height: 30.55px;
+  border-radius: 4.7px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__locked {
+  position: absolute;
+  top: 97.36px;
+  left: -0.36px;
+  display: grid;
+  width: 59px;
+  height: 22px;
+  margin: 0;
+  place-items: center;
+  border-radius: 2.35px;
+  font-size: 11.5px;
+  line-height: 17px;
+}

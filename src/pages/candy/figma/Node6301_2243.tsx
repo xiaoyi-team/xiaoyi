@@ -420,3 +420,4 @@ export default function Component07({category,size,material,name,imageUrl,series
     </div>
   );
 }
+

@@ -122,3 +122,4 @@ export default function Component03({ selectedCategory }: { selectedCategory: st
     </div>
   );
 }
+

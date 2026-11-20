@@ -98,3 +98,4 @@ export default function Component({ selectedCategory }: { selectedCategory: stri
     </div>
   );
 }
+

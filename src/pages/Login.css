@@ -2886,14 +2886,20 @@
     row-gap: 4px;
   }
   .figma-auth-card--profile .figma-auth-profile-notice {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
     grid-column: 1 / 3;
     grid-row: 1;
     height: 28px;
     margin: 0;
     padding: 3px 6px;
     border-radius: 3px;
+    font-size: 7px;
+    line-height: 10px;
   }
-  .figma-auth-profile-notice strong { font-size: 8px; line-height: 10px; }
+  .figma-auth-profile-notice strong { display: block; font-size: 8px; line-height: 10px; }
   .figma-auth-profile-notice p { margin: 0; font-size: 7px; line-height: 10px; }
   .figma-auth-card--profile .figma-auth-profile-section {
     min-width: 0;
@@ -2921,13 +2927,14 @@
   .figma-auth-profile-skip {
     position: absolute;
     right: 3px;
-    top: 17px;
+    top: 4px;
     z-index: 5;
     width: auto;
     min-height: 0;
     margin: 0;
     padding: 0;
     font-size: 7px;
+    line-height: 10px;
   }
 
   /* 05 — forgot: UID and three question-answer columns. */

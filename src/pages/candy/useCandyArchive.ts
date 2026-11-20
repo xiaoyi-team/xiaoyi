@@ -5,7 +5,7 @@ import type { ArchiveItem } from './ArchivePage';
 
 interface Criteria { open: boolean; category: string; query: string; status: string; sort: string; }
 export function mapGoods(item: CandyGoods): ArchiveItem {
-  return { id: String(item.id), name: item.goods_name, category: item.category, series: item.series_name || '', size: item.size, material: item.material, imageUrl: item.cover_img.img_url || item.cover_img.thumbnail_url, owned: item.own_status === 1, favorite: item.own_status === 2, quantity: item.count, price: String(item.total_value) };
+  return { id: String(item.id), name: item.goods_name, category: item.category, series: item.series_name || '', size: item.size, material: item.material, imageUrl: item.cover_img.img_url || item.cover_img.thumbnail_url, owned: item.own_status === 1, favorite: item.is_collect === true, quantity: item.count, price: String(item.total_value) };
 }
 export function useCandyArchive(criteria: Criteria, initial?: ArchiveItem[], onLoginRequired?: () => void) {
   const [records,setRecords]=useState<ArchiveItem[]>(initial || []);
@@ -40,10 +40,24 @@ export function useCandyArchive(criteria: Criteria, initial?: ArchiveItem[], onL
   async function save(item: ArchiveItem) {
     if(saving.current.has(item.id))throw new Error('正在保存，请稍候');
     saving.current.add(item.id);
-    try {await candyApi.updateOwn({goods_id:Number(item.id),own_status:item.owned?1:item.favorite?2:0,count:item.quantity,total_value:Number(item.price)});
-      setRecords(old=>old.map(x=>x.id===item.id?item:x));setSelected(old=>old?.id===item.id?item:old);setError('');setPage(1);refresh(x=>x+1);
+    try {await candyApi.updateOwn({goods_id:Number(item.id),own_status:item.owned?1:0,count:item.quantity,total_value:Number(item.price)});
+      const update = (current: ArchiveItem): ArchiveItem => ({...current,owned:item.owned,quantity:item.quantity,price:item.price});
+      detail.current?.abort();
+      setRecords(old=>old.map(x=>x.id===item.id?update(x):x));setSelected(old=>old?.id===item.id?update(old):old);setError('');setPage(1);refresh(x=>x+1);
     } catch(reason){if(reason instanceof CandyApiError && reason.status===401) onLoginRequired?.();setError(reason instanceof Error?reason.message:'保存失败');throw reason;}
     finally {saving.current.delete(item.id);}
   }
-  return {records,selected,select,save,error,loading,loadMore:()=>{if(!busy.current&&page<pages.current){busy.current=true;setPage(x=>x+1);}}};
+  async function toggleFavorite(item: ArchiveItem) {
+    if(saving.current.has(item.id))throw new Error('正在保存，请稍候');
+    saving.current.add(item.id);
+    try {
+      await candyApi.toggleCollect(Number(item.id));
+      detail.current?.abort();
+      const update = (current: ArchiveItem): ArchiveItem => ({...current,favorite:!current.favorite});
+      setRecords(old=>old.map(x=>x.id===item.id?update(x):x));setSelected(old=>old?.id===item.id?update(old):old);
+      setError('');setPage(1);refresh(x=>x+1);
+    } catch(reason){if(reason instanceof CandyApiError && reason.status===401) onLoginRequired?.();setError(reason instanceof Error?reason.message:'收藏操作失败');throw reason;}
+    finally {saving.current.delete(item.id);}
+  }
+  return {records,selected,select,save,toggleFavorite,error,loading,loadMore:()=>{if(!busy.current&&page<pages.current){busy.current=true;setPage(x=>x+1);}}};
 }

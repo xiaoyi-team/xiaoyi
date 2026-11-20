@@ -1,9 +1,9 @@
 /** Contracts from 糖果屋.md and 萧与逸之恋（糖果屋）.docx. */
 export interface CandyCover { img_key: string; img_url: string; thumbnail_url: string; pos_x: number; pos_y: number; }
-export interface CandyGoods { id: number; goods_name: string; category: string; series_name: string; size: string; material: string; cover_img: CandyCover; sort_time: string; own_status: 0 | 1 | 2; count: number; total_value: number; }
+export interface CandyGoods { id: number; goods_name: string; category: string; series_name: string; size: string; material: string; cover_img: CandyCover; sort_time: string; own_status: 0 | 1 | 2; is_collect: boolean; count: number; total_value: number; }
 export interface CandyPage { list: CandyGoods[]; total: number; page: number; size: number; pages: number; }
 export interface CandyQuery { keyword?: string; category?: string; sort?: 'newest' | 'oldest' | 'own_first' | 'collect_first'; filter_mode?: 'all' | 'owned' | 'not_owned' | 'collected'; page?: number; }
-export interface CandyOwnInput { goods_id: number; own_status: 0 | 1 | 2; count: number; total_value: number; }
+export interface CandyOwnInput { goods_id: number; own_status: 0 | 1; count: number; total_value: number; }
 export interface CandyAdminInput { goods_name: string; category: string; series_name?: string; size?: string; material?: string; cover_img: CandyCover; sort_time: string; }
 export interface CandyResult { code: number; msg: string; goods_id?: number; }
 export interface CandyApiOptions { baseUrl: string; getToken: () => string | null | Promise<string | null>; updateOwnPath: string; }
@@ -46,9 +46,13 @@ export function createCandyApi(options: CandyApiOptions) {
       return page;
     },
     detail: (id: number, signal?: AbortSignal) => request<CandyGoods>(idPath(id), { signal }, 'optional'),
+    toggleCollect(id: number) {
+      idPath(id);
+      return request<CandyResult>(`/candy/collect?${new URLSearchParams({ goods_id: String(id) })}`, { method: 'POST' });
+    },
     updateOwn(input: CandyOwnInput) {
       idPath(input.goods_id);
-      if (![0, 1, 2].includes(input.own_status) || !Number.isSafeInteger(input.count) || input.count < 0 || !Number.isSafeInteger(input.total_value) || input.total_value < 0) throw new Error('状态、数量和总价值必须符合接口整数约束');
+      if (![0, 1].includes(input.own_status) || !Number.isSafeInteger(input.count) || input.count < 0 || !Number.isSafeInteger(input.total_value) || input.total_value < 0) throw new Error('状态、数量和总价值必须符合接口整数约束');
       if (!options.updateOwnPath) throw new Error('尚未确认更新持有状态的接口路径');
       return request<CandyResult>(options.updateOwnPath, { method: 'POST', body: JSON.stringify(input) });
     },

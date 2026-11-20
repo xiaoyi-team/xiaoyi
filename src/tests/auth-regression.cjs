@@ -39,3 +39,4 @@ function storage() { const data = new Map(); return {getItem:k=>data.get(k)??nul
  await assert.rejects(auth.getCurrentUserApi());
  console.log('PASS: redirect validation, encoding roundtrip, malformed 401 cleanup, stale 401 isolation, 403 retention');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+
