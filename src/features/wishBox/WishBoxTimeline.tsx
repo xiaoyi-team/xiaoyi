@@ -39,7 +39,7 @@ const TIMELINE_FILTER_OPTIONS = {
   form: ["全部", "线上", "线下", "周边制品"],
 } as const;
 const TIMELINE_FILTER_LABELS = { year: "年份", kind: "活动类型", form: "活动分类" };
-const TIMELINE_MOBILE_MEDIA = "(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)";
+const TIMELINE_MOBILE_MEDIA = "(max-width: 1024px)";
 
 type TimelineYearOption = "全部" | "2026" | "2025" | "2024";
 type TimelineKindOption = (typeof TIMELINE_KIND_OPTIONS)[number];
@@ -296,6 +296,7 @@ function WishBoxTimeline({
 }: WishBoxTimelineProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
+  const wasCenterLoadingRef = useRef(false);
   const filterButtonRefs = useRef<Record<keyof TimelineFilters, HTMLButtonElement | null>>({ year: null, kind: null, form: null });
   const menuEntryRef = useRef<"first" | "last" | null>(null);
   const filterLayoutRef = useRef<string | null>(null);
@@ -356,8 +357,8 @@ function WishBoxTimeline({
   const showActivityGroup = presentation !== null && !blockingFeedback;
   const pendingWaiting = query.isPending && !hasError && !blockingFeedback;
   const showCenterLoading = pendingWaiting && presentation === null;
-  const showCornerLoading = showingPreviousResults && !blockingFeedback
-    && (query.isFetching || pendingWaiting);
+  const showCornerLoading = presentation !== null && !blockingFeedback
+    && (query.isFetching || (showingPreviousResults && pendingWaiting));
   const loadingLabel = query.fetchStatus === "paused" ? "连接中" : "加载中";
   const showEmpty = currentPresentation?.cards.length === 0 && !blockingFeedback;
   const showSwipeTip = !blockingFeedback;
@@ -391,10 +392,12 @@ function WishBoxTimeline({
     const updateLayout = () => {
       if (!media.matches) return;
       const bounds = scene.getBoundingClientRect();
+      const scale = scene.offsetWidth > 0 ? bounds.width / scene.offsetWidth : 1;
+      if (!scale) return;
       // Fit the shared 350x238 prototype to the 667 track, leaving 106px above and 14px below.
       const cardEnvelope = 115.826172 + 97.92;
-      const cardScale = Math.max(0, Math.min(1, bounds.width / 667, (bounds.height - 120) / cardEnvelope));
-      const cardFit = bounds.width > 0 ? 1920 * 144 * cardScale / (bounds.width * 350) : 0;
+      const cardScale = Math.max(0, Math.min(1, scene.offsetWidth / 667, (scene.offsetHeight - 120) / cardEnvelope));
+      const cardFit = scene.offsetWidth > 0 ? 1920 * 144 * cardScale / (scene.offsetWidth * 350) : 0;
       scene.style.setProperty("--timeline-667-scale", `${cardScale}`);
       scene.style.setProperty("--timeline-handset-card-scale", `${cardFit}`);
       if (openMenu) {
@@ -405,11 +408,11 @@ function WishBoxTimeline({
         if (trigger && paper) {
           const border = scene.querySelector<HTMLElement>("[data-timeline-filters]")!.clientLeft;
           const menuWidth = handsetFilters ? 180 : 160;
-          const menuLeft = handsetFilters && openMenu === "form" ? trigger.right - menuWidth + 2 : trigger.left;
-          const menuTop = trigger.bottom + (handsetFilters ? 3 : 1);
-          scene.style.setProperty("--timeline-menu-left", `${Math.max(bounds.left + 12, Math.min(menuLeft, bounds.right - menuWidth - 12)) - paper.left - border}px`);
-          scene.style.setProperty("--timeline-menu-top", `${menuTop - paper.top - border}px`);
-          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, bounds.bottom - menuTop - (handsetFilters ? 7 : 12))}px`);
+          const menuLeft = handsetFilters && openMenu === "form" ? trigger.right - (menuWidth - 2) * scale : trigger.left;
+          const menuTop = trigger.bottom + (handsetFilters ? 3 : 1) * scale;
+          scene.style.setProperty("--timeline-menu-left", `${(Math.max(bounds.left + 12 * scale, Math.min(menuLeft, bounds.right - (menuWidth + 12) * scale)) - paper.left) / scale - border}px`);
+          scene.style.setProperty("--timeline-menu-top", `${(menuTop - paper.top) / scale - border}px`);
+          scene.style.setProperty("--timeline-menu-max-height", `${Math.max(0, (bounds.bottom - menuTop) / scale - (handsetFilters ? 7 : 12))}px`);
         }
       }
     };
@@ -450,9 +453,11 @@ function WishBoxTimeline({
       updateLayout();
     });
     observer.observe(scene);
+    window.addEventListener("resize", updateLayout);
     media.addEventListener("change", handleModeChange);
     return () => {
       observer.disconnect();
+      window.removeEventListener("resize", updateLayout);
       media.removeEventListener("change", handleModeChange);
     };
   }, [openMenu, presentation]);
@@ -517,7 +522,9 @@ function WishBoxTimeline({
     }
 
     if (event.cancelable) event.preventDefault();
-    event.currentTarget.scrollLeft = drag.startScrollLeft - deltaX;
+    const scene = sceneRef.current;
+    const scale = scene && scene.offsetWidth ? scene.getBoundingClientRect().width / scene.offsetWidth : 1;
+    event.currentTarget.scrollLeft = drag.startScrollLeft - deltaX / (scale || 1);
   };
 
   const handleTimelinePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -628,7 +635,9 @@ function WishBoxTimeline({
 
   useEffect(() => {
     const viewport = timelineViewportRef.current;
-    backButtonRef.current?.focus();
+    if (sceneRef.current?.dataset.timelineCenterLoading !== "true" || !window.matchMedia("(max-width: 1024px)").matches) {
+      backButtonRef.current?.focus();
+    }
 
     return () => {
       const drag = timelinePointerDragRef.current;
@@ -655,6 +664,18 @@ function WishBoxTimeline({
     };
   }, []);
 
+  useLayoutEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const touch = window.matchMedia("(max-width: 1024px)").matches;
+    if (showCenterLoading && touch && !wasCenterLoadingRef.current) {
+      scene.focus({ preventScroll: true });
+    } else if (!showCenterLoading && wasCenterLoadingRef.current && document.activeElement === scene) {
+      backButtonRef.current?.focus({ preventScroll: true });
+    }
+    wasCenterLoadingRef.current = showCenterLoading;
+  }, [showCenterLoading]);
+
   const scrollToEnd = (end: "left" | "right") => {
     cancelPendingScrollIntent();
     const viewport = timelineViewportRef.current;
@@ -678,9 +699,16 @@ function WishBoxTimeline({
     <>
     <div
       ref={sceneRef}
+      tabIndex={-1}
+      aria-busy={showCenterLoading || undefined}
+      aria-label={showCenterLoading ? loadingLabel : undefined}
+      data-timeline-center-loading={showCenterLoading ? "true" : undefined}
       className="wish-box-timeline absolute inset-0 isolate overflow-hidden bg-white"
       style={{ opacity: showCenterLoading ? 0.55 : 1 }}
       onKeyDown={(event) => {
+        if (showCenterLoading && window.matchMedia("(max-width: 1024px)").matches && event.key === "Tab") {
+          event.preventDefault();
+        }
         if (openMenu && event.key === "Escape") {
           event.stopPropagation();
           closeFilterMenu();
@@ -709,7 +737,7 @@ function WishBoxTimeline({
         aria-label="活动时间轴"
         data-timeline-viewport
         aria-busy={showCenterLoading || showCornerLoading}
-        inert={openMenu !== null}
+        inert={openMenu !== null || showCenterLoading}
         tabIndex={0}
         onPointerDown={handleTimelinePointerDown}
         onPointerMove={handleTimelinePointerMove}
@@ -762,7 +790,7 @@ function WishBoxTimeline({
           />
           {showActivityGroup ? <div
             data-timeline-activity-group
-            inert={showingPreviousResults}
+            inert={showingPreviousResults || showCornerLoading}
             className="absolute top-0 h-full"
           >
             {presentation.cards.map((card) => (
@@ -938,6 +966,7 @@ function WishBoxTimeline({
           type="button"
           aria-label={`关闭${TIMELINE_FILTER_LABELS[openMenu]}选单`}
           data-timeline-menu-dismiss
+          disabled={showCenterLoading}
           onClick={() => closeFilterMenu()}
           tabIndex={-1}
           className="absolute inset-0 z-10 cursor-default border-0 bg-transparent p-0"
@@ -946,6 +975,7 @@ function WishBoxTimeline({
 
       <div
         data-timeline-filters
+        inert={showCenterLoading}
         className="absolute"
         onFocusCapture={(event) => {
           const element = (event.target as HTMLElement).closest<HTMLButtonElement>("button");
@@ -1173,6 +1203,7 @@ function WishBoxTimeline({
 
       <div
         data-timeline-navigation
+        inert={showCenterLoading}
         className="absolute overflow-hidden"
       >
         <button
@@ -1207,7 +1238,7 @@ function WishBoxTimeline({
         className="absolute overflow-hidden border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4c392b]"
       >
         <picture className="absolute">
-          <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+          <source media="(max-width: 1024px)" srcSet={backTouch} />
           <img src={backDoubleChevron} alt="" aria-hidden="true" className="h-full w-full" />
         </picture>
         <span

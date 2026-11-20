@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useWishBoxViewport } from "../features/wishBox/hooks/useWishBoxViewport";
 import AnnouncementView from "../features/wishBox/AnnouncementView";
 import WishBoxActivityReview, {
   type ActivityReviewPhotoSelection,
@@ -45,6 +46,7 @@ const photoViewerPreviewRequested =
   new URLSearchParams(window.location.search).get("photoViewerPreview") === "1";
 
 function WishBoxPage() {
+  const viewportRef = useWishBoxViewport();
   const [currentView, setCurrentView] = useState<WishBoxView>(() => {
     if (photoViewerPreviewRequested) return "photoViewerPreview";
     if (activityReviewPreviewRequested) return "activityReviewPreview";
@@ -63,6 +65,9 @@ function WishBoxPage() {
   const timelineScrollIntentIdRef = useRef(0);
   const timelineFilterKey = getTimelineFilterKey(timelineFilters);
   const announcementButtonRef = useRef<HTMLButtonElement>(null);
+  const announcementFocusFrameRef = useRef<number | null>(null);
+  const announcementOpenRef = useRef(announcementOpen);
+  const currentViewRef = useRef(currentView);
   const wishlandButtonRef = useRef<HTMLButtonElement>(null);
   const restoreWishlandFocusRef = useRef(false);
   const globalNoticeQuery = useGlobalNotice(currentView === "home");
@@ -92,9 +97,49 @@ function WishBoxPage() {
     }
   }, [currentView]);
 
+  useLayoutEffect(() => {
+    announcementOpenRef.current = announcementOpen;
+    currentViewRef.current = currentView;
+  }, [announcementOpen, currentView]);
+
+  useEffect(() => () => {
+    if (announcementFocusFrameRef.current !== null) {
+      cancelAnimationFrame(announcementFocusFrameRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    const restoreKeyboardFocusStyle = (event: KeyboardEvent) => {
+      if (["Tab", "Enter", " ", "Escape", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+        viewportRef.current?.removeAttribute("data-wish-box-pointer-focus");
+      }
+    };
+    window.addEventListener("keydown", restoreKeyboardFocusStyle, true);
+    return () => window.removeEventListener("keydown", restoreKeyboardFocusStyle, true);
+  }, [viewportRef]);
+
+  function openAnnouncement() {
+    if (announcementFocusFrameRef.current !== null) {
+      cancelAnimationFrame(announcementFocusFrameRef.current);
+      announcementFocusFrameRef.current = null;
+    }
+    announcementOpenRef.current = true;
+    setAnnouncementOpen(true);
+  }
+
   function closeAnnouncement() {
+    announcementOpenRef.current = false;
     setAnnouncementOpen(false);
-    requestAnimationFrame(() => announcementButtonRef.current?.focus());
+    if (announcementFocusFrameRef.current !== null) cancelAnimationFrame(announcementFocusFrameRef.current);
+    announcementFocusFrameRef.current = requestAnimationFrame(() => {
+      announcementFocusFrameRef.current = null;
+      const target = announcementButtonRef.current;
+      const active = document.activeElement;
+      if (currentViewRef.current !== "home" || announcementOpenRef.current || !target?.isConnected ||
+        target.getClientRects().length === 0 || target.closest("[inert], [aria-hidden='true']") ||
+        (active && active !== document.body && active !== target && active instanceof HTMLElement && active.isConnected)) return;
+      target.focus({ preventScroll: true });
+    });
   }
 
   function returnToHome() {
@@ -106,8 +151,7 @@ function WishBoxPage() {
 
   function openTimeline() {
     timelineScrollSnapshotRef.current = null;
-    setTimelineFilters(DEFAULT_TIMELINE_FILTERS);
-    createLatestTimelineIntent(getTimelineFilterKey(DEFAULT_TIMELINE_FILTERS));
+    createLatestTimelineIntent(timelineFilterKey);
     setCurrentView("timeline");
   }
 
@@ -168,11 +212,28 @@ function WishBoxPage() {
   }
 
   return (
-    <main className="grid h-dvh w-full place-items-center overflow-hidden bg-black">
+    <main
+      ref={viewportRef}
+      data-wish-box-focus-scope
+      className="relative grid h-dvh w-full place-items-center overflow-hidden bg-black"
+      onPointerDownCapture={() => { viewportRef.current?.setAttribute("data-wish-box-pointer-focus", ""); }}
+    >
+      {currentView === "home" ? (
+        <WishBoxHome
+          announcement={announcementResult.data}
+          announcementStatus={announcementResult.status}
+          onOpenAnnouncement={openAnnouncement}
+          announcementButtonRef={announcementButtonRef}
+          onOpenTimeline={openTimeline}
+          wishlandButtonRef={wishlandButtonRef}
+          inactive={announcementOpen}
+        />
+      ) : null}
       <section
         aria-label="心愿盒场景"
         data-wish-box-view={currentView}
-        className="wish-box-scene relative w-full overflow-hidden bg-white"
+        className={`wish-box-scene relative w-full overflow-hidden ${currentView === "home" ? "z-10" : "bg-white"}`}
+        hidden={currentView === "home" && !announcementOpen}
         style={{
           aspectRatio: "var(--wish-box-scene-aspect-ratio, 16 / 9)",
           maxWidth: "var(--wish-box-scene-max-width, 177.7778dvh)",
@@ -180,36 +241,25 @@ function WishBoxPage() {
         }}
       >
         {currentView === "home" ? (
-          <>
-            <WishBoxHome
-              announcement={announcementResult.data}
-              announcementStatus={announcementResult.status}
-              onOpenAnnouncement={() => setAnnouncementOpen(true)}
-              announcementButtonRef={announcementButtonRef}
-              onOpenTimeline={openTimeline}
-              wishlandButtonRef={wishlandButtonRef}
-              inactive={announcementOpen}
-            />
-            {announcementOpen ? (
-              <div className="absolute inset-0 z-10 grid place-items-center">
-                <div
-                  className="wish-box-announcement-legacy relative w-full overflow-hidden"
-                  style={{
-                    aspectRatio: "var(--wish-box-announcement-aspect-ratio, 16 / 9)",
-                    maxWidth: "var(--wish-box-announcement-max-width, 177.7778dvh)",
-                    containerType: "inline-size",
-                  }}
-                >
-                  <AnnouncementView
-                    announcement={announcementResult.data}
-                    announcementStatus={announcementResult.status}
-                    onRetryAnnouncement={() => { void globalNoticeQuery.refetch(); }}
-                    onClose={closeAnnouncement}
-                  />
-                </div>
+          announcementOpen ? (
+            <div className="absolute inset-0 z-10 grid place-items-center">
+              <div
+                className="wish-box-announcement-legacy relative w-full overflow-hidden"
+                style={{
+                  aspectRatio: "var(--wish-box-announcement-aspect-ratio, 16 / 9)",
+                  maxWidth: "var(--wish-box-announcement-max-width, 177.7778dvh)",
+                  containerType: "inline-size",
+                }}
+              >
+                <AnnouncementView
+                  announcement={announcementResult.data}
+                  announcementStatus={announcementResult.status}
+                  onRetryAnnouncement={() => globalNoticeQuery.refetch()}
+                  onClose={closeAnnouncement}
+                />
               </div>
-            ) : null}
-          </>
+            </div>
+          ) : null
         ) : currentView === "timeline" ? (
           selectedActivity ? (
             <WishBoxActivityReview

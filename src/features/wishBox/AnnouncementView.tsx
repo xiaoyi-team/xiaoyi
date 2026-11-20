@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import AnnouncementBoard from "./AnnouncementBoard";
@@ -7,25 +7,74 @@ import type { AnnouncementViewData } from "./announcementSample";
 type AnnouncementViewProps = {
   announcement: AnnouncementViewData | null;
   announcementStatus: "loading" | "error" | "ready";
-  onRetryAnnouncement: () => void;
+  onRetryAnnouncement: () => Promise<unknown>;
   onClose: () => void;
 };
 
 function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncement, onClose }: AnnouncementViewProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const detailRef = useRef<HTMLElement>(null);
+  const wasCenterLoadingRef = useRef(false);
+  const retryInFlightRef = useRef(false);
+  const closingRef = useRef(false);
+  const [retryInFlight, setRetryInFlight] = useState(false);
+  const showCenterLoading = announcementStatus === "loading" && !retryInFlight;
+
+  useLayoutEffect(() => {
+    const detail = detailRef.current;
+    if (!detail) return;
+    if (showCenterLoading && !wasCenterLoadingRef.current && window.matchMedia("(max-width: 1024px)").matches) {
+      detail.focus({ preventScroll: true });
+    } else if (!showCenterLoading && wasCenterLoadingRef.current && document.activeElement === detail) {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    }
+    wasCenterLoadingRef.current = showCenterLoading;
+  }, [showCenterLoading]);
 
   useEffect(() => {
-    closeButtonRef.current?.focus();
+    if (detailRef.current?.dataset.announcementCenterLoading !== "true" || !window.matchMedia("(max-width: 1024px)").matches) {
+      closeButtonRef.current?.focus();
+    }
   }, []);
+
+  const retryAnnouncement = () => {
+    if (retryInFlightRef.current) return;
+    retryInFlightRef.current = true;
+    setRetryInFlight(true);
+    void onRetryAnnouncement().finally(() => {
+      retryInFlightRef.current = false;
+      setRetryInFlight(false);
+    });
+  };
+
+  const closeAnnouncement = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    onClose();
+  };
 
   return (
     <section
+      ref={detailRef}
+      tabIndex={-1}
+      aria-busy={showCenterLoading || undefined}
+      data-announcement-center-loading={showCenterLoading ? "true" : undefined}
       aria-label="当期活动公告详情"
       className="wish-box-announcement-detail notice-zoom absolute inset-0 z-10 overflow-hidden"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.stopPropagation();
+          closeAnnouncement();
+          return;
+        }
+        if (showCenterLoading && window.matchMedia("(max-width: 1024px)").matches && event.key === "Tab") {
+          event.preventDefault();
+        }
+      }}
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={closeAnnouncement}
         tabIndex={-1}
         aria-label="关闭公告返回心愿盒"
         className="wish-box-announcement-dismiss absolute inset-0"
@@ -33,12 +82,12 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
       <button
         ref={closeButtonRef}
         type="button"
-        onClick={onClose}
+        onClick={closeAnnouncement}
         aria-label="返回心愿盒"
         className="wish-box-announcement-return absolute z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         <picture>
-          <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+          <source media="(max-width: 1024px)" srcSet={backTouch} />
           <img src={backDoubleChevron} alt="" aria-hidden="true" />
         </picture>
         <span className="absolute text-white">
@@ -63,7 +112,7 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
               <div className="flex flex-col items-center gap-3">
                 <p>{announcementStatus === "error" ? "公告加载失败" : "公告加载中"}</p>
                 {announcementStatus === "error" ? (
-                  <button type="button" onClick={onRetryAnnouncement} className="rounded border px-3 py-1">
+                  <button type="button" onClick={retryAnnouncement} disabled={retryInFlight} className="rounded border px-3 py-1">
                     重试
                   </button>
                 ) : null}

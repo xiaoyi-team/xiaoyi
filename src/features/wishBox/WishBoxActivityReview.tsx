@@ -184,7 +184,7 @@ const PHOTO_BOARD_LAYOUTS: Partial<Record<number, PhotoBoardLayout>> = {
 type PhotoBoardGeometry = Omit<PhotoBoardSlot, "rotation"> & { rotation?: number };
 
 const PHOTO_BOARD_MOBILE_MEDIA =
-  "(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)";
+  "(max-width: 1024px)";
 
 const PHOTO_BOARD_IMAGE_STYLES = `
   [data-activity-review-photo-board] [data-activity-photo-key] > img {
@@ -475,6 +475,8 @@ function BoardThumbnail({ url, posX, posY }: { url: string; posX: number; posY: 
 
 function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }: ReviewControls & { data: ReviewData }) {
   const visualRef = useRef<HTMLDivElement>(null);
+  const wasCenterLoadingRef = useRef(false);
+  const [viewerDimmed, setViewerDimmed] = useState(false);
   const previousViewerSelectionRef = useRef<ActivityReviewPhotoSelection | null>(null);
   const isPreview = data.source === "preview";
   const viewModel = data.source === "record" ? data.viewModel : null;
@@ -529,7 +531,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
 
   useLayoutEffect(() => {
     const previous = previousViewerSelectionRef.current;
-    if (previous && !viewerOpen) {
+    if (previous && !viewerOpen && !showCenterLoading) {
       const opener = Array.from(visualRef.current?.querySelectorAll<HTMLButtonElement>("button[data-activity-photo-key]") ?? []).find((button) =>
         previous.source === "record"
           ? button.dataset.activityPhotoRecordId === String(previous.recordId) && button.dataset.activityPhotoKey === previous.imgKey
@@ -538,16 +540,40 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
       (opener ?? visualRef.current?.querySelector<HTMLButtonElement>("button[data-activity-review-return]"))?.focus({ preventScroll: true });
     }
     previousViewerSelectionRef.current = viewerOpen ? selectedPhoto : null;
-  }, [viewerOpen, selectedPhoto]);
+  }, [viewerOpen, selectedPhoto, showCenterLoading]);
+
+  useLayoutEffect(() => {
+    const visual = visualRef.current;
+    if (!visual || viewerOpen) {
+      wasCenterLoadingRef.current = showCenterLoading;
+      return;
+    }
+    const touch = window.matchMedia("(max-width: 1024px)").matches;
+    if (showCenterLoading && touch && !wasCenterLoadingRef.current) {
+      visual.focus({ preventScroll: true });
+    } else if (!showCenterLoading && wasCenterLoadingRef.current && document.activeElement === visual) {
+      visual.querySelector<HTMLButtonElement>("button[data-activity-review-return]")?.focus({ preventScroll: true });
+    }
+    wasCenterLoadingRef.current = showCenterLoading;
+  }, [showCenterLoading, viewerOpen]);
 
   return (
     <>
     <div
       ref={visualRef}
+      tabIndex={-1}
+      aria-label={showCenterLoading ? "活动回顾加载中" : undefined}
+      aria-busy={showCenterLoading || undefined}
+      data-review-center-loading={showCenterLoading ? "true" : undefined}
       className="wish-box-review-visual absolute inset-0"
       inert={viewerOpen}
       aria-hidden={viewerOpen ? true : undefined}
-      style={{ opacity: viewerOpen ? 0.32 : 1, pointerEvents: viewerOpen ? "none" : undefined }}
+      style={{ opacity: viewerOpen && viewerDimmed ? 0.32 : 1, pointerEvents: viewerOpen ? "none" : undefined }}
+      onKeyDown={(event) => {
+        if (showCenterLoading && window.matchMedia("(max-width: 1024px)").matches && event.key === "Tab") {
+          event.preventDefault();
+        }
+      }}
     >
     <section
       aria-label="活动回顾"
@@ -987,7 +1013,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
           }}
         >
           <picture className="absolute">
-            <source media="(orientation: landscape) and (max-width: 1100px) and (max-height: 600px) and (any-pointer: coarse)" srcSet={backTouch} />
+            <source media="(max-width: 1024px)" srcSet={backTouch} />
             <img src={backDoubleChevron} alt="" aria-hidden="true" className="h-full w-full" />
           </picture>
           <span
@@ -1004,7 +1030,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
     {showCenterLoading ? <WishBoxLoading variant="center" className="z-40" /> : null}
     </div>
     {viewerMedia && selectedPhoto ? (
-      <WishBoxPhotoViewer media={viewerMedia} onClose={() => onClosePhoto(selectedPhoto)} />
+      <WishBoxPhotoViewer media={viewerMedia} onTransitionChange={setViewerDimmed} onClose={() => onClosePhoto(selectedPhoto)} />
     ) : null}
     </>
   );
