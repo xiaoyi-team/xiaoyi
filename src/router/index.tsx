@@ -3,6 +3,7 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Login";
 import PolicyPage from "../pages/PolicyPage";
 import SplashPage from "../pages/SplashPage";
+import XiaoYiPage from "../pages/XiaoYiPage";
 
 const router = createBrowserRouter([
   { path: "/terms", element: <PolicyPage kind="terms" /> },
@@ -21,11 +22,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/xiaoyi",
-    hydrateFallbackElement: <p>正在加载萧逸家…</p>,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/XiaoYiPage");
-      return { Component };
-    },
+    element: <XiaoYiPage />,
   },
 ]);
 

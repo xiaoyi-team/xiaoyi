@@ -7,8 +7,10 @@ export type SignInQuote = {
 };
 
 const DAILY_QUOTES_API_BASE_URL =
-  import.meta.env.VITE_DAILY_QUOTES_API_BASE_URL?.trim().replace(/\/$/, "") ||
-  "http://115.159.121.83";
+  import.meta.env.PROD ? "" : (
+    import.meta.env.VITE_DAILY_QUOTES_API_BASE_URL?.trim().replace(/\/$/, "") ||
+    "http://115.159.121.83"
+  );
 
 export function isValidSignInQuoteDate(date: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;

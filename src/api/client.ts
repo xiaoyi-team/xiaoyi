@@ -202,6 +202,7 @@ export interface ApiRequestOptions
 
   /**
    * Optional service-specific base URL. Existing requests keep using VITE_API_BASE_URL.
+   * An explicit empty string requests a same-origin path.
    */
   baseUrl?: string;
 
@@ -416,8 +417,8 @@ export async function apiRequest<T>(
     ...fetchOptions
   } = options;
 
-  const requestBaseUrl = baseUrl?.trim().replace(/\/$/, "") || API_BASE;
-  if (!requestBaseUrl) {
+  const requestBaseUrl = baseUrl === "" ? "" : baseUrl?.trim().replace(/\/$/, "") || API_BASE;
+  if (!requestBaseUrl && baseUrl !== "") {
     throw new ApiError(
       "暂未配置后端接口地址，请检查 .env 中的 VITE_API_BASE_URL。",
       0
