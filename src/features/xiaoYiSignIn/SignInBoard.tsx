@@ -1,10 +1,14 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { DEMO_MONTH, DEMO_REWARD_TARGET, DEMO_TODAY, getDemoDay, type SignInDemoState } from "./sign-in-demo";
+import { getAwardProgress, getRemainingAwardDays } from "./sign-in-award-countdown";
+import type { SignInAwardClaim } from "./useSignInAwardGet";
+import type { SignInAwardListView } from "./useSignInAwardList";
+import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import YearMonthPicker from "./YearMonthPicker";
-import { createSignInMonth, isSupportedSignInDate, SIGN_IN_DEMO_DATE } from "./sign-in-dates";
+import { createSignInMonth, isSupportedSignInDate } from "./sign-in-dates";
 import type { SignInCalendarView } from "./useSignInCalendar";
 import type { SignInStatView } from "./useSignInStat";
 import type { SignInQuoteView } from "./useSignInQuote";
+import type { useSignInAdd } from "./useSignInAdd";
+import { SIGN_IN_QUOTE_PENDING_MESSAGE } from "./DrawCardOverlay";
 import bindingHole from "../../assets/xiao-yi-sign-in/binding-hole.svg";
 import bindingRing from "../../assets/xiao-yi-sign-in/binding-ring.svg";
 import bottomFlourish from "../../assets/xiao-yi-sign-in/bottom-flourish.svg";
@@ -26,9 +30,9 @@ import plantLines from "../../assets/xiao-yi-sign-in/plant-lines.svg";
 import progressDot from "../../assets/xiao-yi-sign-in/progress-dot.svg";
 import quoteLabelPaper from "../../assets/xiao-yi-sign-in/quote-label-paper.png";
 import quotePaper from "../../assets/xiao-yi-sign-in/quote-paper.png";
-import reward30 from "../../assets/xiao-yi-sign-in/reward-30-preview.png";
-import reward111 from "../../assets/xiao-yi-sign-in/reward-111-preview.png";
-import reward365 from "../../assets/xiao-yi-sign-in/reward-365-preview.png";
+import rewardPlaceholderPc from "../../assets/xiao-yi-sign-in/reward-placeholder-pc.png";
+import rewardPlaceholderTouch from "../../assets/xiao-yi-sign-in/reward-placeholder-touch.png";
+
 import rewardRivet from "../../assets/xiao-yi-sign-in/reward-rivet.svg";
 import rewardsPaper from "../../assets/xiao-yi-sign-in/rewards-paper.png";
 import rewardsPaperMobile from "../../assets/xiao-yi-sign-in/rewards-paper-mobile.png";
@@ -50,13 +54,7 @@ import todayGoldRing from "../../assets/xiao-yi-sign-in/today-gold-ring.svg";
 import todayTagPaper from "../../assets/xiao-yi-sign-in/today-tag-paper.png";
 import todayTagPaperMobile from "../../assets/xiao-yi-sign-in/today-tag-paper-mobile.png";
 
-// DEV and the retained today treatment use September 2026 prototype fixtures.
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const rewards = [
-  { days: 30, gift: gift30, preview: reward30 },
-  { days: 111, gift: gift111, preview: reward111 },
-  { days: 365, gift: gift365, preview: reward365 },
-];
 
 type ArtworkProps = {
   className?: string;
@@ -93,45 +91,45 @@ export type SignInCalendarBinding = {
   onChangeMonth: (yearMonth: string) => void;
   onSelectDate: (date: string) => void;
   onReturnToday: () => void;
-  onSelectDemoDate: () => void;
 };
+
+export type FormalSignInBinding = Pick<ReturnType<typeof useSignInAdd>,
+  "status" | "result" | "error" | "operation" | "verifying" | "verificationError" | "refresh" |
+  "submitSignIn" | "verifyPendingSignIn" | "refreshSignInData"> & { authenticated: boolean };
 
 type SignInBoardProps = {
+  awardClaim?: SignInAwardClaim;
+  onOpenAward?: (awardId: number) => void;
   titleId: string;
   mobile: boolean;
-  demo: SignInDemoState;
-  statView?: SignInStatView;
+  statView: SignInStatView;
+  awardListView: SignInAwardListView;
   quoteView?: SignInQuoteView;
-  calendar?: SignInCalendarBinding;
-  onSignIn: () => void;
+  calendar: SignInCalendarBinding;
+  signIn: FormalSignInBinding;
+  quoteResult?: FormalSignInBinding["result"];
 };
 
-function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onSignIn }: SignInBoardProps) {
-  const [demoSelectedDay, setDemoSelectedDay] = useState(DEMO_TODAY);
-  const yearMonth = calendar?.yearMonth ?? "2026-09";
+function SignInBoard({ titleId, mobile, statView, awardListView, awardClaim, onOpenAward, quoteView, quoteResult, calendar, signIn }: SignInBoardProps) {
+  const yearMonth = calendar.yearMonth;
   const grid = createSignInMonth(yearMonth);
   const dateForDay = (day: number) => `${yearMonth}-${String(day).padStart(2, "0")}`;
-  const selectedDate = calendar ? calendar.selectedDate : dateForDay(demoSelectedDay);
+  const selectedDate = calendar.selectedDate;
   const selectedDay = selectedDate ? Number(selectedDate.slice(-2)) : null;
-  const demoToday = SIGN_IN_DEMO_DATE;
-  const todayDate = calendar?.todayDate ?? demoToday;
-  const showingDemoMonth = yearMonth === demoToday.slice(0, 7);
   function selectDate(date: string) {
-    if (calendar) calendar.onSelectDate(date);
-    else setDemoSelectedDay(Number(date.slice(-2)));
+    calendar.onSelectDate(date);
   }
   function signedForDay(day: number): boolean | undefined {
-    if (!calendar) return getDemoDay(day, demo.todaySigned).signed;
     return calendar.view.kind === "ready" && calendar.view.data.yearMonth === yearMonth
       ? calendar.view.data.list.find((item) => item.day === day)?.is_signed
       : undefined;
   }
   function statusForDay(day: number) {
-    if (!calendar) return getDemoDay(day, demo.todaySigned).status;
     const signed = signedForDay(day);
     return signed === undefined ? "签到状态待获取" : signed ? "已签到" : "未签到";
   }
-  const showingDemoQuote = !!calendar && !quoteView && selectedDate === demoToday && demo.todayQuote !== null;
+  const todayDate = calendar.todayDate;
+  const selectedSignInResult = quoteResult?.sign_date === selectedDate ? quoteResult : null;
   const quoteViewText = quoteView?.kind === "ready" ? quoteView.data.content : quoteView ? ({
     idle: "请选择日期查看语录。",
     initializing: "正在确认登录状态…",
@@ -168,22 +166,48 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
     error: "加载失败",
   }[quoteView.kind]) : null;
   const quoteRef = useRef<HTMLDivElement>(null);
-  const selected = calendar ? {
+  const selected = {
     weekday: selectedDate ? ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date(`${selectedDate}T00:00:00Z`).getUTCDay()] : "",
     quoteFontSize: 30, quoteLineHeight: 45,
-    quote: quoteViewText ?? (showingDemoQuote ? demo.todayQuote! : "历史语录尚未接入。\n签到与抽卡仅为本地演示。"),
-    footer: quoteViewStatus
-      ? `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · ${quoteViewStatus}`
-      : showingDemoQuote ? "本地演示语录 · 不代表真实日期语录" : `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · 暂无语录数据`,
-  } : getDemoDay(selectedDay ?? DEMO_TODAY, demo.todaySigned, demo.todayQuote);
-  const remainingDays = Math.max(0, DEMO_REWARD_TARGET - demo.totalDays);
-  const signInLabel = calendar ? demo.todaySigned ? "演示完成" : "演示签到" : demo.todaySigned ? "已签到" : "点击签到";
-  const totalDays = statView ? statView.kind === "ready" ? statView.totalDays : "—" : demo.totalDays;
+    quote: selectedSignInResult
+      ? selectedSignInResult.quote?.content ?? SIGN_IN_QUOTE_PENDING_MESSAGE
+      : quoteViewText ?? "暂无语录数据。",
+    footer: selectedSignInResult
+      ? selectedSignInResult.quote_status === "ready" ? "已签到 · 当次语录" : "已签到 · 语录暂不可用"
+      : `${selectedDay === null ? "未选择日期" : statusForDay(selectedDay)} · ${quoteViewStatus ?? "暂无语录数据"}`,
+  };
+  const awardProgress = statView.kind === "ready" && awardListView.kind === "ready"
+      ? getAwardProgress(statView.totalDays, awardListView.awards)
+      : null;
+  const remainingDays = statView.kind === "ready" && awardListView.kind === "ready"
+      ? getRemainingAwardDays(statView.totalDays, awardListView.awards)
+      : null;
+  const nextAward = awardListView.kind === "ready" && statView.kind === "ready"
+    ? awardListView.awards.reduce<typeof awardListView.awards[number] | null>((next, award) =>
+        award.day_count > statView.totalDays && (!next || award.day_count < next.day_count) ? award : next, null)
+    : null;
+  const awaitingVerification = signIn.status === "pending-verification" || signIn.status === "verification-failed";
+  const signInBusy = signIn.status === "submitting" || signIn.verifying || signIn.refresh.pending;
+  const signInBlocked = !signIn.authenticated || signInBusy;
+  const confirmedToday = signIn.result?.sign_date === todayDate ||
+    (signIn.status === "verified-signed" && signIn.operation?.requestDate === todayDate);
+  const calendarTodaySigned = calendar.view.kind === "ready" && calendar.view.data.yearMonth === todayDate.slice(0, 7)
+    ? calendar.view.data.list.find((item) => item.day === Number(todayDate.slice(-2)))?.is_signed : undefined;
+  const signInLabel = signIn.status === "submitting" ? "签到中…" : confirmedToday || calendarTodaySigned === true ? "已签到" : "点击签到";
+  const totalDays = statView.kind === "ready" ? statView.totalDays : "—";
 
   function handleSignIn() {
-    if (calendar) calendar.onSelectDemoDate();
-    else setDemoSelectedDay(DEMO_TODAY);
-    onSignIn();
+    if (signInBlocked) return;
+    // An uncertain write must be verified before another POST is allowed.
+    if (awaitingVerification) {
+      void signIn.verifyPendingSignIn();
+      return;
+    }
+    if (signIn.refresh.statError || signIn.refresh.calendarError) {
+      void signIn.refreshSignInData();
+      return;
+    }
+    void signIn.submitSignIn();
   }
 
   // Date or content changes restart reading; closing the mounted board does not.
@@ -192,8 +216,8 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
   }, [selectedDate, selected.quote]);
 
   return (
-    <div className="sign-in-board" data-calendar-rows={grid.rowCount}>
-      {calendar && !isSupportedSignInDate(todayDate) && <p className="sign-in-board__year-limit" role="status">签到日历自2026年11月起提供。</p>}
+    <div className="sign-in-board" data-calendar-rows={grid.rowCount} data-formal-calendar="true">
+      {!isSupportedSignInDate(todayDate) && <p className="sign-in-board__year-limit" role="status">签到日历自2026年11月起提供。</p>}
       {/* Final-render assets already contain their Figma rotation and shadow. */}
       <Artwork className="sign-in-board__root-art" src={coverLeft} x={99} y={32.286} width={909.708} height={831.347} />
       <Artwork className="sign-in-board__root-art" src={coverRight} x={836.632} y={79.259} width={744.423} height={765.874} />
@@ -210,8 +234,8 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
         <p className="sign-in-board__photo-caption">Good things take time.</p>
         <Artwork src={starGold} x={35} y={306} width={30} height={30} />
         <Artwork src={starGoldLarge} x={48} y={436} width={40} height={40} />
-        {selectedDate && (calendar || selectedDay !== DEMO_TODAY || demo.todayQuote !== null) && (
-          <div className="sign-in-board__review-date" aria-label={`${showingDemoQuote ? "本地演示日期 " : ""}${grid.year}年${grid.month}月${selectedDay}日 ${selected.weekday}`}>
+        {selectedDate && (
+          <div className="sign-in-board__review-date" aria-label={`${grid.year}年${grid.month}月${selectedDay}日 ${selected.weekday}`}>
             <span className="sign-in-board__review-date-number">{grid.month} / {selectedDay}</span>
             <span className="sign-in-board__review-weekday">{selected.weekday}</span>
           </div>
@@ -229,17 +253,17 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
           }}>
             {selected.quote}
           </p>
-          {quoteView?.kind === "error" && (
+          {!selectedSignInResult && quoteView?.kind === "error" && (
             <button type="button" className="sign-in-board__quote-retry" onClick={quoteView.retry}>重试</button>
           )}
         </div>
-        <p className="sign-in-board__quote-footer" aria-live="polite" aria-atomic="true">
-          {selected.footer}
+        <p className="sign-in-board__quote-footer">
+          与你相伴，收藏每一天的心动。
         </p>
         <Artwork src={iris} x={472} y={-37} width={290} height={495} />
         <Artwork className="sign-in-board__quote-label-paper" src={quoteLabelPaper} x={385} y={223.734} width={266.127} height={97.045} />
         <div className="sign-in-board__quote-label">
-          <h3>{showingDemoQuote ? "演示语录" : "今日语录"}</h3>
+          <h3>今日语录</h3>
         </div>
         <Artwork className="sign-in-board__quote-label-star" src={starBlue} x={421.109} y={255.805} width={32.501} height={32.501} />
         <Artwork src={paperclip} x={421} y={-32} width={57} height={114} />
@@ -252,13 +276,13 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
       <section className="sign-in-board__calendar" aria-label="签到日历">
         <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
-          {calendar ? <YearMonthPicker key={yearMonth} yearMonth={yearMonth} todayDate={todayDate} onChangeMonth={calendar.onChangeMonth} /> : <h3 className="sign-in-board__month">{grid.year} · {String(grid.month).padStart(2, "0")}</h3>}
-          <button type="button" className="sign-in-board__return-today" onClick={() => calendar ? calendar.onReturnToday() : setDemoSelectedDay(DEMO_TODAY)}>
+          <YearMonthPicker key={yearMonth} yearMonth={yearMonth} todayDate={todayDate} onChangeMonth={calendar.onChangeMonth} />
+          <button type="button" className="sign-in-board__return-today" onClick={calendar.onReturnToday}>
             <span>返回今日</span>
           </button>
           <Artwork src={calendarArrows} x={447} y={89} width={158} height={24} />
           <div className="sign-in-board__month-rule" aria-hidden="true" />
-          <div className="sign-in-board__calendar-table" role="table" aria-label={`${grid.year}年${grid.month}月${calendar ? "真实签到记录" : "签到记录（设计样本）"}`}>
+          <div className="sign-in-board__calendar-table" role="table" aria-label={`${grid.year}年${grid.month}月真实签到记录`}>
             <div className="sign-in-board__weekdays" role="row">
               {weekdays.map((weekday) => (
                 <span role="columnheader" key={weekday}>{weekday}</span>
@@ -280,33 +304,43 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
                         <button
                           type="button"
                           className="sign-in-board__date-button"
-                          data-today={calendar && isToday || undefined}
-                          aria-label={calendar ? `${dateForDay(day)}，${statusForDay(day)}（真实日历）` : `${DEMO_MONTH}月${day}日，${getDemoDay(day, demo.todaySigned).status}（演示）`}
+                          data-today={isToday || undefined}
+                          aria-label={`${dateForDay(day)}，${statusForDay(day)}（真实日历）`}
                           aria-pressed={selectedDate === date}
                           aria-current={isToday ? "date" : undefined}
                           onClick={() => date && selectDate(date)}
                         >
-                          {calendar && isToday && <span className="sign-in-board__current-day-art" aria-hidden="true">
-                            <img src={todayGoldRing} alt="" draggable={false} />
-                            <img src={todayBlueCircle} alt="" draggable={false} />
+                          {isToday && <span className="sign-in-board__current-day-art" aria-hidden="true">
+                            <img className="sign-in-board__today-gold-ring" src={todayGoldRing} alt="" draggable={false} />
+                            <img className="sign-in-board__today-blue-circle" src={todayBlueCircle} alt="" draggable={false} />
+                            <img className="sign-in-board__today-cell-star" src={starGoldToday} alt="" draggable={false} />
                           </span>}
-                          <span className={calendar ? "sign-in-board__date-number" : isToday ? "sign-in-board__day-number--hidden" : undefined} aria-hidden="true">
+                          <span className="sign-in-board__date-number" aria-hidden="true">
                             {day}
                           </span>
-                          {(calendar || !isToday) && signedForDay(day) && (
+                          {!isToday && signedForDay(day) && (
                             <img className="sign-in-board__stamp" src={signInStamp} alt="" aria-hidden="true" draggable={false} />
                           )}
-                          {selectedDate === date && (
-                            !calendar && mobile && isToday ? (
-                              <svg className="sign-in-board__selection-ring sign-in-board__selection-ring--today" width="31.49" height="31.49" viewBox="0 0 31.49 31.49" fill="none" aria-hidden="true">
-                                <circle cx="15.745" cy="15.745" r="15.369" stroke="#ad7e37" strokeWidth="0.752" />
-                              </svg>
-                            ) : (
-                              <img className="sign-in-board__selection-ring" src={selectedDateRing} alt="" aria-hidden="true" draggable={false} />
-                            )
+                          {selectedDate === date && !isToday && (
+                            <img className="sign-in-board__selection-ring" src={selectedDateRing} alt="" aria-hidden="true" draggable={false} />
                           )}
                         </button>
                       )}
+                      {isToday && <div className="sign-in-board__today-entry">
+                        <button
+                          type="button"
+                          className="sign-in-board__sign-in-button sign-in-board__sign-in-button--date"
+                          aria-label={`${todayDate}，${signInLabel}`}
+                          disabled={signInBlocked}
+                          aria-busy={signIn.status === "submitting" || undefined}
+                          onClick={(event) => { event.stopPropagation(); handleSignIn(); }}
+                        >
+                          <span className="sign-in-board__today-tag-art" aria-hidden="true">
+                            <img src={mobile ? todayTagPaperMobile : todayTagPaper} alt="" draggable={false} />
+                            <span className="sign-in-board__today-tag-label">{signInLabel}</span>
+                          </span>
+                        </button>
+                      </div>}
                     </div>
                     );
                   })}
@@ -314,27 +348,8 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
               ))}
             </div>
           </div>
-          {showingDemoMonth && <><div className="sign-in-board__today-copy" aria-hidden="true">
-            {!calendar && signedForDay(DEMO_TODAY) && (
-              <img className="sign-in-board__today-stamp" src={signInStamp} alt="" draggable={false} />
-            )}
-            {!calendar && <span className="sign-in-board__today-number">24</span>}
-            <span className="sign-in-board__sign-in-label">{signInLabel}</span>
-          </div>
-          <button
-            type="button"
-            className="sign-in-board__sign-in-button"
-            aria-label={`${DEMO_MONTH}月${DEMO_TODAY}日，${signInLabel}（本地演示）`}
-            onClick={handleSignIn}
-          /></>}
         </div>
         {/* These decorations are exported in the parent's rotated coordinates. */}
-        {showingDemoMonth && <div className="sign-in-board__today-art" aria-hidden="true">
-          {!calendar && <Artwork className="sign-in-board__today-gold" src={todayGoldRing} x={328.391} y={327.554} width={67.002} height={67.002} />}
-          {!calendar && <Artwork className="sign-in-board__today-blue" src={todayBlueCircle} x={332.392} y={331.554} width={59.001} height={59.001} />}
-          <Artwork className="sign-in-board__today-paper" src={mobile ? todayTagPaperMobile : todayTagPaper} x={308.004} y={384.563} width={144.922} height={64.487} />
-          {!calendar && <Artwork className="sign-in-board__today-star" src={starGoldToday} x={294.833} y={331.194} width={36.784} height={36.784} />}
-        </div>}
       </section>
 
       {[0, 1, 2, 3, 4].map((index) => (
@@ -355,66 +370,64 @@ function SignInBoard({ titleId, mobile, demo, statView, quoteView, calendar, onS
         <Artwork src={titlePin} x={-50} y={119.253} width={93.854} height={66.875} />
       </header>
 
-      {calendar && (
-        <div className="sign-in-board__calendar-status" role="status">
-          {calendar.view.kind === "initializing" && "正在确认登录状态。"}
-          {calendar.view.kind === "guest" && "登录后查看真实签到日历。"}
-          {calendar.view.kind === "loading" && "正在加载真实日历。"}
-          {calendar.view.kind === "ready" && "签到标记来自真实日历。"}
-          {calendar.view.kind === "invalid-month" && "日历月份无效。"}
-          {calendar.view.kind === "error" && <><span>日历获取失败。</span><button type="button" onClick={calendar.view.retry}>重试日历</button></>}
-        </div>
-      )}
-
-      {statView && <p className="sign-in-board__sign-in-demo-note">签到与抽卡为本地演示，不会保存。</p>}
-
-      <section className="sign-in-board__rewards" aria-label={statView ? "真实累计签到与演示奖励进度" : "累计签到与奖励（设计样本）"}>
+      <section className="sign-in-board__rewards" aria-label="累计签到与奖励">
         <Artwork className="sign-in-board__rewards-paper" src={mobile ? rewardsPaperMobile : rewardsPaper} x={-6} y={-2} width={873} height={253} />
         <div className="sign-in-board__rewards-border" aria-hidden="true" />
         <Artwork src={rewardRivet} x={17} y={12} width={19} height={19} />
         <Artwork src={rewardRivet} x={824} y={11} width={19} height={19} />
         <p className="sign-in-board__total">
-          <span>{statView ? "真实累计" : "已累计签到"}</span><strong>{totalDays}</strong><span>天</span>
+          <span>已累计签到</span><strong>{totalDays}</strong><span>天</span>
         </p>
         <Artwork src={starGoldRewards} x={338} y={33} width={26} height={26} />
-        <div className="sign-in-board__progress" role="progressbar" aria-label="距离30天奖励的累计签到进度（设计样本）" aria-valuemin={0} aria-valuemax={DEMO_REWARD_TARGET} aria-valuenow={demo.totalDays}>
-          <span style={{ width: `${demo.totalDays / DEMO_REWARD_TARGET * 100}%` }} />
+        <div
+          className="sign-in-board__progress"
+          role={awardProgress === null ? undefined : "progressbar"}
+          aria-hidden={awardProgress === null || undefined}
+          aria-label={awardProgress === null ? undefined : "当前奖励周期进度"}
+          aria-valuemin={awardProgress === null ? undefined : 0}
+          aria-valuemax={awardProgress === null ? undefined : 100}
+          aria-valuenow={awardProgress === null ? undefined : awardProgress * 100}
+        >
+          {awardProgress !== null && <span style={{ width: `${awardProgress * 100}%` }} />}
         </div>
         {[56, 125, 194, 263, 332, 401].map((x) => (
           <Artwork key={x} src={progressDot} x={x} y={100} width={8} height={8} />
         ))}
-        <p className="sign-in-board__next-reward">
+        {remainingDays !== null && <p className="sign-in-board__next-reward">
           <span>{mobile ? "距下一奖励还差" : "距离下一个奖励还有"}</span><strong>{remainingDays}</strong><span>天  ›</span>
-        </p>
+        </p>}
         <Artwork className="sign-in-board__gift-icon" src={giftIcon} x={52} y={174} width={33} height={34} />
-        <p className="sign-in-board__reward-hint">
-          {mobile ? <>达到30天可获得<br />「星光花语」头像框</> : "达到30天可获得「星光花语」头像框"}
-        </p>
+        {nextAward?.award_name.trim() && (
+          <p className="sign-in-board__reward-hint" title={`达到${nextAward.day_count}天可获得「${nextAward.award_name.trim() ? nextAward.award_name : "奖励名称暂不可用"}」`}>
+            达到{nextAward.day_count}天可获得{mobile && <br />}「{nextAward.award_name}」
+          </p>
+        )}
         <ul className="sign-in-board__reward-list">
-          {rewards.map((reward) => (
-            <li className="sign-in-board__reward" key={reward.days}>
-              <img className="sign-in-board__gift" src={reward.gift} alt="" aria-hidden="true" draggable={false} />
-              <span className="sign-in-board__reward-days">{reward.days}天</span>
-              <img className="sign-in-board__reward-preview" src={reward.preview} alt={`${reward.days}天奖励预览`} draggable={false} />
-              <span className="sign-in-board__locked">未解锁</span>
+          {(awardListView.kind === "ready" ? awardListView.awards.map((award) => ({
+            id: award.award_id,
+            days: award.day_count,
+            name: award.award_name.trim() ? award.award_name : "奖励名称暂不可用", imageUrl: award.reward_img_url,
+            status: award.is_get ? "已领取" : statView?.kind !== "ready" ? "状态待确认" :
+              award.day_count <= statView.totalDays ? "待领取" : "未解锁",
+          })) : []).map((reward, index) => (
+            <li className="sign-in-board__reward" key={reward.id}>
+              <img className="sign-in-board__gift" src={[gift30, gift111, gift365][index % 3]} alt="" aria-hidden="true" draggable={false} />
+              <span className="sign-in-board__reward-days">{reward.days > 0 ? `${reward.days}天` : null}</span>
+              <img className="sign-in-board__reward-preview" src={("imageUrl" in reward && reward.imageUrl?.trim()) || (mobile ? rewardPlaceholderTouch : rewardPlaceholderPc)} onError={(event) => { const fallback = mobile ? rewardPlaceholderTouch : rewardPlaceholderPc; if (event.currentTarget.getAttribute("src") !== fallback) { console.warn("奖励图片加载失败", event.currentTarget.src); event.currentTarget.src = fallback; } }} alt={`${reward.days}天奖励预览`} draggable={false} />
+              {reward.status !== "已领取" && awardClaim?.outcomeFor(reward.id).status === "unresolved" ? (
+                <button type="button" className="sign-in-board__locked sign-in-board__claim" disabled={awardClaim.busy}
+                  onClick={() => awardClaim.verify(reward.id)}>核实领取</button>
+              ) : reward.status === "待领取" && awardClaim?.canClaim && onOpenAward ? (
+                <button type="button" className="sign-in-board__locked sign-in-board__claim" disabled={awardClaim.busy}
+                  aria-label={`领取${reward.name}`}
+                  onClick={() => onOpenAward(reward.id)}>
+                  {awardClaim.busy && awardClaim.current?.awardId === reward.id ? "处理中…" : "待领取"}
+                </button>
+              ) : <span className="sign-in-board__locked">{reward.status}</span>}
             </li>
           ))}
         </ul>
       </section>
-      {statView && (
-        <div className="sign-in-board__reward-demo-note" aria-live="polite">
-          <span>进度与奖励状态为演示。</span>
-          {statView.kind === "initializing" && <span>正在确认登录状态。</span>}
-          {statView.kind === "guest" && <span>登录后查看累计签到。</span>}
-          {statView.kind === "loading" && <span>正在获取真实统计。</span>}
-          {statView.kind === "error" && (
-            <>
-              <span>统计获取失败。</span>
-              <button type="button" onClick={statView.retry}>重试</button>
-            </>
-          )}
-        </div>
-      )}
     </div>
   );
 }

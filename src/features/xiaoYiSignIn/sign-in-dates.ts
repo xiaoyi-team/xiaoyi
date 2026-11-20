@@ -51,7 +51,7 @@ export function createSignInMonth(yearMonth: string) {
   const month = Number(yearMonth.slice(5));
   const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const offset = (new Date(Date.UTC(year, month - 1, 1)).getUTCDay() + 6) % 7;
-  const rowCount = Math.max(5, Math.ceil((offset + days) / 7));
+  const rowCount = Math.ceil((offset + days) / 7);
   const weeks = Array.from({ length: rowCount }, (_, row) =>
     Array.from({ length: 7 }, (_, column) => {
       const day = row * 7 + column - offset + 1;
@@ -77,7 +77,6 @@ export function getNextBeijingMidnight(now: Date): number {
   return Date.UTC(year, month - 1, day + 1) - 8 * 60 * 60 * 1000;
 }
 
-export const SIGN_IN_DEMO_DATE = "2026-09-24";
 export const isSupportedSignInDate = (date: string) => isValidSignInDate(date) && date.slice(0, 7) >= SIGN_IN_LAUNCH_MONTH;
 
 export type SignInDateState = { todayDate: string; yearMonth: string; selectedDate: string | null };
@@ -94,15 +93,13 @@ export type SignInDateAction =
   | { type: "month"; yearMonth: string }
   | { type: "select"; date: string }
   | { type: "refresh-today"; date: string }
-  | { type: "return-today"; date: string }
-  | { type: "select-demo-date" };
+  | { type: "return-today"; date: string };
 
 export function signInDateReducer(state: SignInDateState, action: SignInDateAction): SignInDateState {
   if (action.type === "refresh-today") return action.date === state.todayDate ? state : { ...state, todayDate: action.date };
   if (action.type === "return-today") return isSupportedSignInDate(action.date)
     ? { todayDate: action.date, yearMonth: action.date.slice(0, 7), selectedDate: action.date }
     : { ...state, todayDate: action.date };
-  if (action.type === "select-demo-date") return { ...state, yearMonth: "2026-09", selectedDate: SIGN_IN_DEMO_DATE };
   if (action.type === "month") {
     if (!getSignInMonthOptions(Number(action.yearMonth.slice(0, 4)), state.todayDate).includes(Number(action.yearMonth.slice(5)))) return state;
     createSignInMonth(action.yearMonth);

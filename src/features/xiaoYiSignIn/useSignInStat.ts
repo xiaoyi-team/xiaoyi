@@ -3,14 +3,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../auth/AuthContext";
 import { getSignInStat } from "./sign-in-stat";
 
-const STAT_QUERY_KEY = ["xiaoYiSignIn", "stat"] as const;
+export const STAT_QUERY_KEY = ["xiaoYiSignIn", "stat"] as const;
 
 export type SignInStatView =
   | { kind: "initializing" }
   | { kind: "guest" }
   | { kind: "loading" }
   | { kind: "error"; retry: () => void }
-  | { kind: "ready"; totalDays: number };
+  | { kind: "ready"; totalDays: number; retry?: () => void };
 
 export function useSignInStat(): SignInStatView {
   const { initializing, isAuthenticated, user } = useAuth();
@@ -54,7 +54,9 @@ export function useSignInStat(): SignInStatView {
   if (initializing) return { kind: "initializing" };
   if (!isAuthenticated) return { kind: "guest" };
   if (!enabled) return { kind: "loading" };
+  if (query.data && query.data.owner === session) {
+    return { kind: "ready", totalDays: query.data.stat.total_days, retry: query.isError ? () => { void query.refetch(); } : undefined };
+  }
   if (query.isError) return { kind: "error", retry: () => { void query.refetch(); } };
-  if (query.isFetching || !query.data || query.data.owner !== session) return { kind: "loading" };
-  return { kind: "ready", totalDays: query.data.stat.total_days };
+  return { kind: "loading" };
 }

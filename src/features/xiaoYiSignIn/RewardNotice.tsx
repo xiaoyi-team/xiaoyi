@@ -1,36 +1,48 @@
-import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react";
 import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
-import gift30 from "../../assets/xiao-yi-sign-in/reward-notice-gift-30.png";
-import gift111 from "../../assets/xiao-yi-sign-in/reward-notice-gift-111.png";
-import gift365 from "../../assets/xiao-yi-sign-in/reward-notice-gift-365.png";
+import rewardPlaceholderPc from "../../assets/xiao-yi-sign-in/reward-placeholder-pc.png";
+import rewardPlaceholderTouch from "../../assets/xiao-yi-sign-in/reward-placeholder-touch.png";
 import "./reward-notice.css";
 
-export type RewardMilestone = 30 | 111 | 365;
-
 type RewardNoticeProps = {
-  milestone: RewardMilestone;
   onClose: () => void;
+  boardRef?: RefObject<HTMLDivElement | null>;
+  claim: { name: string; days: number; imageUrl: string | null; onClaim: () => void };
 };
 
-// Presentation fixtures from the PC prototype, not eligibility or claim rules.
-const rewards = {
-  30: { gift: gift30, title: "星光花语 · 头像框", imageSize: 156 },
-  111: { gift: gift111, title: "相伴纪念 · 纪念卡", imageSize: 120 },
-  365: { gift: gift365, title: "岁月珍藏 · 纪念卡", imageSize: 120 },
-};
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
-function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
+function RewardNotice({ claim, onClose, boardRef }: RewardNoticeProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
-  const backdropPressRef = useRef(false);
   const phaseRef = useRef<"active" | "closing" | "closed">("active");
   const [closingClip, setClosingClip] = useState<string | null>(null);
   const titleId = useId();
   const descriptionId = useId();
   const scale = useSyncExternalStore(subscribeToViewport, readBoardScale);
   const mobile = scale === null;
-  const reward = rewards[milestone];
+  const [boardBounds, setBoardBounds] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+  useLayoutEffect(() => {
+    const board = boardRef?.current;
+    if (!board) return;
+    const measure = () => {
+      const { left, top, width, height } = board.getBoundingClientRect();
+      setBoardBounds({ left, top, width, height });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(board);
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
+  }, [boardRef]);
+  const boardScale = boardBounds ? boardBounds.width / (mobile ? 448 : BOARD_WIDTH) : scale;
+  const reward = { gift: claim.imageUrl?.trim() || (mobile ? rewardPlaceholderTouch : rewardPlaceholderPc), title: claim.name.trim() ? claim.name : "奖励名称暂不可用", imageSize: 156 };
+  const days = claim.days;
 
   const finishClose = useCallback(() => {
     if (phaseRef.current === "closed") return;
@@ -59,9 +71,10 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
     return () => preference.removeEventListener("change", finishWithoutMotion);
   }, [closingClip, finishClose]);
 
-  function requestClose() {
+  function requestClose(accept = false) {
     if (phaseRef.current !== "active") return;
     phaseRef.current = "closing";
+    if (accept) claim.onClaim();
     if (window.matchMedia(REDUCED_MOTION).matches) {
       finishClose();
     } else {
@@ -86,20 +99,13 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
       onClose={(event) => {
         if (!event.currentTarget.open) finishClose();
       }}
-      onPointerDownCapture={(event) => {
-        backdropPressRef.current = event.isPrimary && event.button === 0 &&
-          !(event.target instanceof Element && event.target.closest(".reward-notice__card"));
-      }}
-      onPointerCancel={() => { backdropPressRef.current = false; }}
       onClick={(event) => {
         const outsideCard = !(event.target instanceof Element && event.target.closest(".reward-notice__card"));
-        const closeBackdrop = backdropPressRef.current && outsideCard;
-        backdropPressRef.current = false;
-        if (closeBackdrop) requestClose();
+        if (!outsideCard) requestClose(true);
       }}
     >
-      <div className="reward-notice__slot" style={mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
-        <div className="reward-notice__canvas" style={mobile ? undefined : { transform: `scale(${scale})` }}>
+      <div className="reward-notice__slot" style={boardBounds ? { position: "fixed", ...boardBounds } : mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
+        <div className="reward-notice__canvas" style={boardScale === null ? undefined : { transform: `scale(${boardScale})` }}>
           <div
             ref={revealRef}
             className="reward-notice__reveal"
@@ -120,13 +126,13 @@ function RewardNotice({ milestone, onClose }: RewardNoticeProps) {
                 <h2 className="reward-notice__title" id={titleId}>心意已抵达</h2>
                 <p className="reward-notice__english">A GIFT FOR OUR DAYS</p>
                 <div className="reward-notice__gift-slot">
-                  <img className="reward-notice__gift" src={reward.gift} width={reward.imageSize} height={reward.imageSize} alt={`${milestone}天奖励礼盒`} draggable={false} />
+                  <img className="reward-notice__gift" src={reward.gift} onError={(event) => { const fallback = mobile ? rewardPlaceholderTouch : rewardPlaceholderPc; if (event.currentTarget.getAttribute("src") !== fallback) { console.warn("奖励图片加载失败", event.currentTarget.src); event.currentTarget.src = fallback; } }} width={reward.imageSize} height={reward.imageSize} alt="" draggable={false} />
                 </div>
                 <p className="reward-notice__name">{reward.title}</p>
-                <p className="reward-notice__description" id={descriptionId}>累计签到 {milestone} 天奖励已收入珍藏</p>
+                <p className="reward-notice__description" id={descriptionId}>累计签到 {days} 天奖励</p>
               </div>
-              <button type="button" className="reward-notice__confirm" onClick={requestClose}>收下这份心意</button>
-              <button type="button" className="reward-notice__close" aria-label="关闭奖励通知" onClick={requestClose}>
+              <button type="button" className="reward-notice__confirm" onClick={() => requestClose(true)}>收下这份心意</button>
+              <button type="button" className="reward-notice__close" aria-label="关闭奖励通知" onClick={() => requestClose(true)}>
                 <span aria-hidden="true">×</span>
               </button>
             </div>

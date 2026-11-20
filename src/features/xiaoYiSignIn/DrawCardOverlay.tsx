@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type AnimationEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type AnimationEvent, type CSSProperties, type ReactNode } from "react";
 import { BOARD_HEIGHT, BOARD_WIDTH, readBoardScale, subscribeToViewport } from "./sign-in-viewport";
 import envelope from "../../assets/xiao-yi-sign-in/draw-envelope.png";
 import cardBack from "../../assets/xiao-yi-sign-in/draw-card-back.png";
@@ -12,16 +12,18 @@ import starLowerDivider from "../../assets/xiao-yi-sign-in/draw-card-star-lower-
 import "./draw-card.css";
 
 import { formatSignInCardDate } from "./sign-in-dates";
+import type { SignInAddResponse } from "./sign-in-add";
 
-export type DrawCardStage = "waiting" | "drawn" | "settled";
+export const SIGN_IN_QUOTE_PENDING_MESSAGE = "签到成功，但暂时无法获取语录";
 
 type DrawCardOverlayProps = {
-  signInDate: string;
   open: boolean;
-  stage?: DrawCardStage;
-  autoPlay?: boolean;
   onCollect?: () => void;
   children?: ReactNode;
+  sceneBounds?: { left: number; top: number; width: number; height: number } | null;
+  sceneScale?: number | null;
+  result: SignInAddResponse;
+  onDismiss: () => void;
 };
 
 const decorations = [
@@ -46,26 +48,21 @@ function readPageHidden() {
 }
 
 type DrawCardSceneProps = {
-  signInDate: string;
-  stage: DrawCardStage;
-  autoPlay: boolean;
-  mobile: boolean;
+  result: SignInAddResponse;
   scale: number | null;
   onCollect?: () => void;
 };
 
-function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }: DrawCardSceneProps) {
-  const { dateText, weekday } = formatSignInCardDate(signInDate);
+function DrawCardScene({ result, scale, onCollect }: DrawCardSceneProps) {
+  const { dateText, weekday } = formatSignInCardDate(result.sign_date);
   const [isSettled, setIsSettled] = useState(
-    () => autoPlay && window.matchMedia(REDUCED_MOTION).matches,
+    () => window.matchMedia(REDUCED_MOTION).matches,
   );
   const hidden = useSyncExternalStore(subscribeToVisibility, readPageHidden);
-  const currentStage = autoPlay ? (isSettled ? "settled" : "waiting") : stage;
+  const currentStage = isSettled ? "settled" : "waiting";
   const canCollect = currentStage === "settled" && onCollect !== undefined;
 
   useEffect(() => {
-    if (!autoPlay) return;
-
     const preference = window.matchMedia(REDUCED_MOTION);
     function settleWithoutMotion(event: MediaQueryListEvent) {
       // Turning motion back on does not replay this already settled instance.
@@ -74,11 +71,10 @@ function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }
 
     preference.addEventListener("change", settleWithoutMotion);
     return () => preference.removeEventListener("change", settleWithoutMotion);
-  }, [autoPlay]);
+  }, []);
 
   function finishPlayback(event: AnimationEvent<HTMLParagraphElement>) {
     if (
-      autoPlay &&
       !isSettled &&
       event.target === event.currentTarget &&
       event.animationName === "draw-card-finish"
@@ -91,10 +87,10 @@ function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }
     <div
       className="draw-card-scene"
       data-stage={currentStage}
-      data-auto-play={autoPlay || undefined}
-      data-playing={autoPlay && !isSettled ? true : undefined}
-      data-settled={autoPlay ? isSettled : stage === "settled"}
-      data-paused={autoPlay && hidden ? true : undefined}
+      data-auto-play
+      data-playing={!isSettled || undefined}
+      data-settled={isSettled}
+      data-paused={hidden || undefined}
       data-collectable={canCollect || undefined}
       onClick={canCollect ? onCollect : undefined}
       style={scale === null ? undefined : { transform: `scale(${scale})` }}
@@ -118,14 +114,16 @@ function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }
                 </span>
               ))}
               <h3 className="draw-card-scene__title">今日寄语</h3>
-              {/* The host supplies the date associated with this draw. */}
-              <div className="draw-card-scene__date-row">
-                <span className="draw-card-scene__date">{dateText}</span>
-                <span className="draw-card-scene__weekday">{weekday}</span>
-              </div>
-              <p className="draw-card-scene__quote">
-                {mobile ? <>赛车的终点<br />是赛道的尽头，<br />而我的终点<br />是你的身边。</> : <>赛车的终点是赛道的尽头，<br />而我的终点是你的身边。</>}
-              </p>
+                <div className="draw-card-scene__date-row">
+                  <span className="draw-card-scene__date">{dateText}</span>
+                  <span className="draw-card-scene__weekday">{weekday}</span>
+                </div>
+                <p className="draw-card-scene__quote draw-card-scene__quote--formal" aria-live="polite">
+                  {currentStage === "settled" && (
+                    result.quote_status === "pending" ? SIGN_IN_QUOTE_PENDING_MESSAGE : result.quote?.content
+                  )}
+                </p>
+
             </div>
           </div>
         </div>
@@ -134,7 +132,7 @@ function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }
       </div>
       <p
         className="draw-card-scene__hint"
-        aria-hidden={autoPlay ? !isSettled : stage !== "settled"}
+        aria-hidden={!isSettled}
         onAnimationEnd={finishPlayback}
       >
         {canCollect ? (
@@ -147,11 +145,12 @@ function DrawCardScene({ signInDate, stage, autoPlay, mobile, scale, onCollect }
   );
 }
 
-function DrawCardOverlay({ signInDate, open, stage = "waiting", autoPlay = false, onCollect, children }: DrawCardOverlayProps) {
+function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBounds, sceneScale }: DrawCardOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const collectedRef = useRef(false);
-  const scale = useSyncExternalStore(subscribeToViewport, readBoardScale);
-  const mobile = scale === null;
+  const viewportScale = useSyncExternalStore(subscribeToViewport, readBoardScale);
+  const mobile = viewportScale === null;
+  const scale = mobile ? null : sceneBounds ? sceneScale ?? viewportScale : viewportScale;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -180,15 +179,24 @@ function DrawCardOverlay({ signInDate, open, stage = "waiting", autoPlay = false
       className="draw-card-dialog"
       aria-label="今日寄语抽卡"
       data-mobile={mobile ? true : undefined}
-      onCancel={(event) => event.preventDefault()}
+      data-scene={sceneBounds ? true : undefined}
+      style={sceneBounds ? {
+        left: sceneBounds.left, top: sceneBounds.top,
+        width: sceneBounds.width, height: sceneBounds.height,
+        "--draw-area-height": `${sceneBounds.height}px`,
+      } as CSSProperties : undefined}
+      onCancel={(event) => {
+        event.preventDefault();
+        onDismiss();
+      }}
     >
       {open && (
         <div
           className="draw-card-slot"
-          style={mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
+          style={scale === null ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
         >
           {/* A fresh scene owns each opening; resize never changes its key. */}
-          <DrawCardScene signInDate={signInDate} key={autoPlay ? "auto" : "static"} stage={stage} autoPlay={autoPlay} mobile={mobile} scale={scale} onCollect={onCollect ? handleCollect : undefined} />
+          <DrawCardScene result={result} key="auto" scale={scale} onCollect={onCollect ? handleCollect : undefined} />
         </div>
       )}
       {children}

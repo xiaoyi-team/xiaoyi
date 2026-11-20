@@ -1,4 +1,7 @@
-import { useEffect, useLayoutEffect, useReducer, useRef, useState, type CSSProperties } from "react";
+import RewardNotice from "../features/xiaoYiSignIn/RewardNotice";
+import { useSignInAwardGet } from "../features/xiaoYiSignIn/useSignInAwardGet";
+import { useSignInAwardList } from "../features/xiaoYiSignIn/useSignInAwardList";
+import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { useGoLogin } from "../auth/navigation";
@@ -9,8 +12,11 @@ import signInWordmark from "../assets/xiao-yi-scene/sign-in-wordmark.png";
 import GuestLoginPrompt from "../features/xiaoYiGuestLogin/GuestLoginPrompt";
 import SignInOverlay from "../features/xiaoYiSignIn/SignInOverlay";
 import { useSignInCalendar } from "../features/xiaoYiSignIn/useSignInCalendar";
-import { useSignInQuote } from "../features/xiaoYiSignIn/useSignInQuote";
+import { useSignInQuote, type SignInQuoteView } from "../features/xiaoYiSignIn/useSignInQuote";
+import type { SignInQuote } from "../features/xiaoYiSignIn/sign-in-quote";
 import { useSignInStat } from "../features/xiaoYiSignIn/useSignInStat";
+import { useSignInAdd } from "../features/xiaoYiSignIn/useSignInAdd";
+import type { SignInAddResponse } from "../features/xiaoYiSignIn/sign-in-add";
 import { createSignInDateState, getBeijingDate, getNextBeijingMidnight, signInDateReducer } from "../features/xiaoYiSignIn/sign-in-dates";
 import "./xiao-yi-page.css";
 
@@ -21,18 +27,80 @@ function XiaoYiPage() {
   const { initializing, isAuthenticated, user, refreshUser } = useAuth();
   const goLogin = useGoLogin();
   const statView = useSignInStat();
+  const awardListView = useSignInAwardList();
+  const awardClaim = useSignInAwardGet();
+  const signIn = useSignInAdd();
   const [{ todayDate, yearMonth, selectedDate }, dispatchDate] = useReducer(
     signInDateReducer, null, () => createSignInDateState(new Date()),
   );
   const calendarView = useSignInCalendar(yearMonth);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const sceneSlotRef = useRef<HTMLDivElement>(null);
+  const rewardAnchorRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
-  const quoteView = useSignInQuote({ date: selectedDate, todayDate, enabled: signInOpen, calendar: calendarView });
+  const authSession = useMemo(() => ({ initializing, isAuthenticated, user }), [initializing, isAuthenticated, user]);
+  const [openAward, setOpenAward] = useState<{ owner: typeof authSession; id: number } | null>(null);
+  const selectedAward = signInOpen && openAward?.owner === authSession && awardListView.kind === "ready"
+    ? awardListView.awards.find((award) => award.award_id === openAward.id)
+    : undefined;
+  const [drawRequest, setDrawRequest] = useState<{
+    owner: typeof authSession;
+    previousResult: SignInAddResponse | null;
+    backgroundQuote: { view: SignInQuoteView; result: SignInAddResponse | null };
+  } | null>(null);
+  const [retainedQuotes, setRetainedQuotes] = useState<{
+    owner: typeof authSession;
+    byDate: ReadonlyMap<string, SignInQuote>;
+  } | null>(null);
+  const currentDrawRequest = drawRequest?.owner === authSession ? drawRequest : null;
+  // The hook publishes success before refreshing M1/M2. Only a new result for this click opens a card.
+  const drawResult = signInOpen && currentDrawRequest && signIn.result !== currentDrawRequest.previousResult
+    ? signIn.result : null;
+  const selectedSignInResult = selectedDate !== null && signIn.result?.sign_date === selectedDate ? signIn.result : null;
+  const quoteView = useSignInQuote({
+    date: selectedDate,
+    todayDate,
+    enabled: signInOpen && !selectedSignInResult && !currentDrawRequest,
+    calendar: calendarView,
+  });
+  const retainedQuote = retainedQuotes?.owner === authSession && selectedDate !== null
+    ? retainedQuotes.byDate.get(selectedDate)
+    : undefined;
+  const backgroundQuote = currentDrawRequest?.backgroundQuote;
+  const boardQuoteResult = backgroundQuote ? backgroundQuote.result : retainedQuote ? null : selectedSignInResult;
+  const boardQuoteView: SignInQuoteView = backgroundQuote?.view ?? (retainedQuote
+    ? { kind: "ready", data: retainedQuote }
+    : quoteView);
   const [guestLoginOpen, setGuestLoginOpen] = useState(false);
-  const [profileRefreshState, setProfileRefreshState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [profileRefreshing, setProfileRefreshing] = useState(false);
   // A touch hold does not consistently retain the native :active pseudo-class.
   const [signInPressed, setSignInPressed] = useState(false);
+
+  async function submitForDraw() {
+    const request = {
+      owner: authSession,
+      previousResult: signIn.result,
+      backgroundQuote: { view: boardQuoteView, result: boardQuoteResult },
+    };
+    // Keep the quote already shown for this date even if the repeat response differs.
+    const previousQuote = signIn.result?.quote;
+    const queriedQuote = selectedDate === todayDate && quoteView.kind === "ready" ? quoteView.data : null;
+    if (previousQuote || queriedQuote) {
+      setRetainedQuotes((current) => {
+        const byDate = current?.owner === authSession ? current.byDate : new Map<string, SignInQuote>();
+        const next = new Map(byDate);
+        for (const quote of [previousQuote, queriedQuote]) {
+          if (quote && !next.has(quote.quote_date)) next.set(quote.quote_date, quote);
+        }
+        return next.size === byDate.size ? current : { owner: authSession, byDate: next };
+      });
+    }
+    setDrawRequest((current) => current?.owner === authSession ? current : request);
+    const result = await signIn.submitSignIn();
+    if (!result) setDrawRequest((current) => current === request ? null : current);
+    return result;
+  }
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -82,6 +150,7 @@ function XiaoYiPage() {
       <div className="xiao-yi-page__viewport" ref={viewportRef}>
         <div
           className="xiao-yi-page__slot"
+          ref={sceneSlotRef}
           style={{
             "--scene-width": `${SCENE_WIDTH * sceneScale}px`,
             "--scene-height": `${SCENE_HEIGHT * sceneScale}px`,
@@ -106,11 +175,11 @@ function XiaoYiPage() {
             <button
               className="xiao-yi-page__sign-in"
               type="button"
-              disabled={profileRefreshState === "loading"}
+              disabled={profileRefreshing}
               aria-label="打开每日逸签"
               aria-haspopup="dialog"
               aria-expanded={signInOpen || guestLoginOpen}
-              aria-busy={profileRefreshState === "loading"}
+              aria-busy={profileRefreshing}
               data-pressed={signInPressed || undefined}
               onPointerDown={(event) => {
                 if (event.isPrimary && event.pointerType === "touch") setSignInPressed(true);
@@ -122,23 +191,21 @@ function XiaoYiPage() {
                 if (initializing) return;
 
                 if (!isAuthenticated) {
-                  setProfileRefreshState("idle");
                   setGuestLoginOpen(true);
                   return;
                 }
 
                 if (user === null) {
-                  if (profileRefreshState === "loading") return;
+                  if (profileRefreshing) return;
 
-                  setProfileRefreshState("loading");
+                  setProfileRefreshing(true);
                   void refreshUser().then(
-                    () => setProfileRefreshState("success"),
-                    () => setProfileRefreshState("error"),
+                    () => setProfileRefreshing(false),
+                    () => setProfileRefreshing(false),
                   );
                   return;
                 }
 
-                setProfileRefreshState("idle");
                 dispatchDate({ type: "refresh-today", date: getBeijingDate(new Date()) });
                 setSignInOpen(true);
               }}
@@ -149,28 +216,6 @@ function XiaoYiPage() {
           </div>
         </div>
       </div>
-      {profileRefreshState !== "idle" && (
-        <div
-          role={profileRefreshState === "error" ? "alert" : "status"}
-          aria-live={profileRefreshState === "error" ? "assertive" : "polite"}
-          style={{
-            position: "fixed",
-            zIndex: 5,
-            right: 16,
-            bottom: 16,
-            maxWidth: "min(420px, calc(100vw - 32px))",
-            padding: "12px 16px",
-            borderRadius: 8,
-            background: "rgba(20, 24, 32, 0.94)",
-            color: "#fff",
-            boxShadow: "0 4px 18px rgba(0, 0, 0, 0.3)",
-          }}
-        >
-          {profileRefreshState === "loading" && "正在恢复登录资料…"}
-          {profileRefreshState === "success" && "认证状态已更新，请再次点击入口继续。"}
-          {profileRefreshState === "error" && "登录资料暂时无法恢复，请再次点击入口重试。"}
-        </div>
-      )}
       <GuestLoginPrompt
         open={guestLoginOpen}
         onClose={() => setGuestLoginOpen(false)}
@@ -179,13 +224,49 @@ function XiaoYiPage() {
           goLogin();
         }}
       />
-      <SignInOverlay open={signInOpen} onClose={() => setSignInOpen(false)} statView={statView} quoteView={quoteView} calendar={{
-        view: calendarView, todayDate, yearMonth, selectedDate,
-        onSelectDate: (date) => dispatchDate({ type: "select", date }),
-        onChangeMonth: (month) => dispatchDate({ type: "month", yearMonth: month }),
-        onReturnToday: () => dispatchDate({ type: "return-today", date: getBeijingDate(new Date()) }),
-        onSelectDemoDate: () => dispatchDate({ type: "select-demo-date" }),
-      }} />
+      <SignInOverlay
+        rewardAnchorRef={rewardAnchorRef}
+        sceneRef={sceneSlotRef}
+        open={signInOpen}
+        onClose={() => {
+          setDrawRequest(null);
+          setOpenAward(null);
+          setSignInOpen(false);
+        }}
+        statView={statView}
+        awardListView={awardListView}
+        awardClaim={awardClaim}
+        onOpenAward={(id) => setOpenAward({ owner: authSession, id })}
+        quoteView={boardQuoteView}
+        quoteResult={boardQuoteResult}
+        drawResult={drawResult}
+        onDismissDraw={() => {
+          dispatchDate({ type: "return-today", date: getBeijingDate(new Date()) });
+          setDrawRequest(null);
+        }}
+        signIn={{ ...signIn, submitSignIn: submitForDraw, authenticated: !initializing && isAuthenticated && user !== null }}
+        calendar={{
+          view: calendarView, todayDate, yearMonth, selectedDate,
+          onSelectDate: (date) => dispatchDate({ type: "select", date }),
+          onChangeMonth: (month) => dispatchDate({ type: "month", yearMonth: month }),
+          onReturnToday: () => dispatchDate({ type: "return-today", date: getBeijingDate(new Date()) }),
+        }}
+      />
+      {selectedAward && (
+        <RewardNotice
+          boardRef={rewardAnchorRef}
+          claim={{
+            days: selectedAward.day_count,
+            name: selectedAward.award_name, imageUrl: selectedAward.reward_img_url,
+            onClaim: () => {
+              if (!selectedAward.is_get && statView.kind === "ready" && selectedAward.day_count <= statView.totalDays) {
+                awardClaim.claim(selectedAward.award_id);
+              }
+            },
+          }}
+          onClose={() => setOpenAward(null)}
+        />
+      )}
     </main>
   );
 }

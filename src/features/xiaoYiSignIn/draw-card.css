@@ -46,6 +46,12 @@
   background: transparent;
 }
 
+.draw-card-dialog[data-scene] {
+  right: auto;
+  bottom: auto;
+  overflow: clip;
+}
+
 .draw-card-slot {
   position: relative;
   overflow: clip;
@@ -127,7 +133,6 @@
   transform-origin: top left;
 }
 
-.draw-card-scene[data-stage="drawn"] .draw-card-scene__card,
 .draw-card-scene[data-stage="settled"] .draw-card-scene__card {
   top: 70.8px;
   left: 320.96px;
@@ -248,7 +253,7 @@
   text-align: center;
 }
 
-.draw-card-scene__date { width: 129.8px; font-family: "Playfair Display", serif; font-size: 37.76px; }
+.draw-card-scene__date { width: 129.8px; font-family: "Playfair Display", serif; font-size: 44.5568px; }
 .draw-card-scene__weekday { width: 91.45px; color: #b78336; font-family: "Dancing Script", cursive; font-size: 30.09px; }
 
 .draw-card-scene__quote {
@@ -256,10 +261,20 @@
   top: 250.75px;
   left: 28.32px;
   width: 285.56px;
-  font-size: 21.24px;
-  line-height: 1.45;
+  font-size: 26px;
+  line-height: 37px;
   text-align: center;
 }
+
+.draw-card-scene__quote--formal {
+  max-height: calc(var(--draw-height) - 272px);
+  overflow: auto;
+  overflow-wrap: anywhere;
+  scrollbar-width: none;
+  white-space: pre-wrap;
+}
+
+.draw-card-scene__quote--formal::-webkit-scrollbar { display: none; }
 
 .draw-card-scene__hint {
   position: absolute;
@@ -435,8 +450,8 @@
   --draw-front-radius: 6.7798076px;
   /* The 324.20574px art span leaves 50.79426px for top clearance and the hint.
    * Taller viewports center the 375px composition; compact ones shrink only art. */
-  --draw-mobile-fit: min(1, calc((100dvh - 50.79426px) / 324.20574px));
-  --draw-mobile-offset-y: max(0px, calc((100dvh - 375px) / 2));
+  --draw-mobile-fit: min(1, calc((var(--draw-area-height, 100dvh) - 50.79426px) / 324.20574px));
+  --draw-mobile-offset-y: max(0px, calc((var(--draw-area-height, 100dvh) - 375px) / 2));
   width: 100%;
   height: 100%;
 }
@@ -460,7 +475,6 @@
   height: var(--draw-height);
   border-radius: var(--draw-back-radius);
 }
-.draw-card-dialog[data-mobile] .draw-card-scene[data-stage="drawn"] .draw-card-scene__card,
 .draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { left: var(--draw-out-x); top: var(--draw-out-y); }
 .draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { border-radius: var(--draw-front-radius); }
 .draw-card-dialog[data-mobile] .draw-card-scene__card::after { border-width: 0.564984px; }
@@ -480,16 +494,19 @@
   font-size: calc(18px / var(--draw-mobile-fit));
   line-height: calc(26px / var(--draw-mobile-fit));
 }
-.draw-card-dialog[data-mobile] .draw-card-scene__date-row { left: 32.769619px; top: 73.447769px; width: 98.30613px; height: 29px; gap: 4.519872px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__date { width: 50px; font-size: 21px; line-height: 29px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__date-row { left: 32.769619px; top: 73.447769px; width: 108.30613px; height: 29px; gap: 4.519872px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__date { width: 60px; white-space: nowrap; font-size: 21px; line-height: 29px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__weekday { width: 43.786259px; font-size: calc(14.407093px / var(--draw-mobile-fit)); }
 .draw-card-dialog[data-mobile] .draw-card-scene__quote {
   left: 13.5px;
-  top: 104px;
+  top: 111px;
   width: 139.5px;
   /* Counter the art transform: even at 568×320 the four lines render at 15/21px. */
   font-size: calc(15px / var(--draw-mobile-fit));
   line-height: calc(21px / var(--draw-mobile-fit));
+}
+.draw-card-dialog[data-mobile] .draw-card-scene__quote--formal {
+  max-height: calc(var(--draw-height) - 115px);
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__hint {
   left: max(16px, calc(50% - 220px));
@@ -499,35 +516,3 @@
   font-size: 12px;
   line-height: 18px;
 }
-
-/* Only supplied by the DEV preview host, outside the artwork's scale layer. */
-.sign-in-dev-controls {
-  position: fixed;
-  z-index: 20;
-  left: 8px;
-  bottom: 8px;
-  display: flex;
-  max-width: calc(100vw - 16px);
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #64748b;
-  border-radius: 6px;
-  padding: 6px;
-  background: #fff;
-  color: #1f2937;
-  font: 14px/1.4 system-ui, sans-serif;
-}
-
-.sign-in-dev-controls button,
-.sign-in-dev-controls select {
-  min-height: 44px;
-  border: 1px solid #64748b;
-  border-radius: 4px;
-  padding: 6px 10px;
-  background: #fff;
-  color: inherit;
-  font: inherit;
-}
-
-.sign-in-dev-controls button { cursor: pointer; }
-.sign-in-dev-controls :focus-visible { outline: 2px solid #304bcc; outline-offset: 2px; }

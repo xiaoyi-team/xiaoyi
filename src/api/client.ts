@@ -20,17 +20,20 @@ export const AUTH_UNAUTHORIZED_EVENT =
 export class ApiError extends Error {
   status: number;
   data: unknown;
+  readonly bizCode?: string;
 
   constructor(
     message: string,
     status: number,
-    data?: unknown
+    data?: unknown,
+    bizCode?: string
   ) {
     super(message);
 
     this.name = "ApiError";
     this.status = status;
     this.data = data;
+    this.bizCode = bizCode;
   }
 }
 
@@ -201,6 +204,9 @@ export interface ApiRequestOptions
    * Optional service-specific base URL. Existing requests keep using VITE_API_BASE_URL.
    */
   baseUrl?: string;
+
+  // Observe an HTTP 401 before auth cleanup can abort reading its body.
+  onUnauthorizedResponse?: () => void;
 }
 
 /**
@@ -406,6 +412,7 @@ export async function apiRequest<T>(
     auth = true,
     responseType = "auto",
     baseUrl,
+    onUnauthorizedResponse,
     ...fetchOptions
   } = options;
 
@@ -461,6 +468,8 @@ export async function apiRequest<T>(
     );
   }
 
+  if (response.status === 401) onUnauthorizedResponse?.();
+
   /**
    * Token 失效
    */
@@ -502,7 +511,8 @@ export async function apiRequest<T>(
     throw new ApiError(
       message,
       response.status,
-      data
+      data,
+      response.headers.get("X-Biz-Code") ?? undefined
     );
   }
 
