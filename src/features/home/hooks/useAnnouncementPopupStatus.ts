@@ -11,14 +11,21 @@ export const announcementPopupStatusQueryKey = [
 
 type UseAnnouncementPopupStatusOptions = {
   enabled: boolean;
+  scope: string;
+  candidateVersion: string;
 };
 
 export function useAnnouncementPopupStatus({
   enabled,
+  scope,
+  candidateVersion,
 }: UseAnnouncementPopupStatusOptions) {
   return useQuery<AnnouncementPopupStatusResponse>({
-    queryKey: announcementPopupStatusQueryKey,
+    queryKey: [...announcementPopupStatusQueryKey, scope, candidateVersion],
     queryFn: getAnnouncementPopupStatus,
     enabled,
+    staleTime: 0,
+    refetchOnMount: "always",
+    retry: false,
   });
 }

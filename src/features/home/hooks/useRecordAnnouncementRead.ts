@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { recordAnnouncementRead } from "../../../services/home";
+import { ApiError } from "../../../api/client";
 import { announcementPopupStatusQueryKey } from "./useAnnouncementPopupStatus";
 
 export function useRecordAnnouncementRead() {
@@ -11,7 +12,11 @@ export function useRecordAnnouncementRead() {
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: announcementPopupStatusQueryKey,
-        exact: true,
       }),
+    onError: (error) => {
+      if (error instanceof ApiError && (error.status === 409 || error.status === 404)) {
+        void queryClient.invalidateQueries({ queryKey: ["home", "announcements"] });
+      }
+    },
   });
 }
