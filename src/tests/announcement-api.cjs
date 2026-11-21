@@ -21,7 +21,7 @@ const api = mod.exports;
   await assert.rejects(api.getHomeAnnouncements(), e => e.status === 502);
   reply = { should_popup: true, announcement_id: 1, version: 2 };
   assert.equal((await api.getAnnouncementPopupStatus()).version, 2);
-  assert.equal(calls.at(-1).url, '/v1/announcements/popup-status');
+  assert.equal(calls.at(-1).url, '/api/v1/announcements/popup-status');
   assert.notEqual(calls.at(-1).options.auth, false);
   reply = { should_popup: false, announcement_id: null, version: null };
   assert.equal((await api.getAnnouncementPopupStatus()).should_popup, false);

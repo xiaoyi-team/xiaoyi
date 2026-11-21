@@ -45,12 +45,6 @@ async function readResponseBody(response: Response): Promise<unknown> {
 }
 
 export async function request(path: string, options: RequestOptions = {}): Promise<unknown> {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
-  if (!baseUrl) {
-    throw new Error('VITE_API_BASE_URL is not configured')
-  }
-
-  const url = `${baseUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`
   const { json, timeoutMs, classifyNetworkErrors, headers: providedHeaders, ...init } = options
   if (timeoutMs !== undefined && (!Number.isFinite(timeoutMs) || timeoutMs <= 0 || timeoutMs > 2_147_483_647)) {
     throw new RangeError('timeoutMs must be a positive finite number no greater than 2147483647')
@@ -67,7 +61,7 @@ export async function request(path: string, options: RequestOptions = {}): Promi
 
   const bodyInit = json === undefined ? init.body : JSON.stringify(json)
   if (classifyNetworkErrors) {
-    const parsedUrl = new URL(url, typeof location === 'undefined' ? undefined : location.href)
+    const parsedUrl = new URL(path, typeof location === 'undefined' ? undefined : location.href)
     if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
       throw new TypeError('Request URL must use HTTP or HTTPS')
     }
@@ -97,14 +91,14 @@ export async function request(path: string, options: RequestOptions = {}): Promi
       body: bodyInit,
     }
     // Validate URL, method, headers and body before classifying transport failures.
-    const validatedRequest = classifyNetworkErrors ? new Request(url, fetchOptions) : undefined
+    const validatedRequest = classifyNetworkErrors ? new Request(path, fetchOptions) : undefined
     const classifyTransportFailure = (error: unknown): never => {
       if (classifyNetworkErrors && error instanceof TypeError && !controller?.signal.aborted && !callerSignal?.aborted) {
         throw new NetworkError(error)
       }
       throw error
     }
-    const response = await (validatedRequest ? fetch(validatedRequest) : fetch(url, fetchOptions))
+    const response = await (validatedRequest ? fetch(validatedRequest) : fetch(path, fetchOptions))
       .catch(classifyTransportFailure)
     const receivedAt = Date.now()
     controller?.signal.throwIfAborted()

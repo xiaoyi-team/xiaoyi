@@ -93,7 +93,7 @@ export async function getSupportRecords(
   if (normalized.act_category !== undefined) search.set('act_category', normalized.act_category)
 
   const query = search.toString()
-  const response = await request(`/support_record/timeline/list${query ? `?${query}` : ''}`, { signal, timeoutMs, classifyNetworkErrors: true })
+  const response = await request(`/api/support_record/timeline/list${query ? `?${query}` : ''}`, { signal, timeoutMs, classifyNetworkErrors: true })
   if (!Array.isArray(response)) {
     throw new Error('Invalid support record list response: expected an array')
   }
@@ -107,7 +107,7 @@ export async function getSupportRecordDetail(
   signal?: AbortSignal,
   timeoutMs?: number,
 ): Promise<SupportRecordDetail> {
-  const response = await request(`/support_record/${recordId}`, { signal, timeoutMs, classifyNetworkErrors: true })
+  const response = await request(`/api/support_record/${recordId}`, { signal, timeoutMs, classifyNetworkErrors: true })
   if (typeof response !== 'object' || response === null || Array.isArray(response)) {
     throw new Error('Invalid support record detail response: expected an object')
   }
@@ -116,7 +116,7 @@ export async function getSupportRecordDetail(
   return response as SupportRecordDetail
 }
 export async function getGlobalNotice(signal?: AbortSignal, timeoutMs?: number): Promise<GlobalNoticeDto> {
-  const response = await request('/front/global_notice', { signal, timeoutMs, classifyNetworkErrors: true })
+  const response = await request('/api/front/global_notice', { signal, timeoutMs, classifyNetworkErrors: true })
   if (response === null) {
     throw new Error('Invalid global notice response: expected the active notice, received null')
   }

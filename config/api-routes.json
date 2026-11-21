@@ -1,0 +1,62 @@
+{
+  "services": [
+    "gateway",
+    "core"
+  ],
+  "routes": [
+    {
+      "id": "announcements",
+      "path": "/api/v1/announcements/:path*",
+      "match": "prefix",
+      "service": "gateway",
+      "rewrite": "preserve",
+      "preserveApiPrefix": true,
+      "priority": 10
+    },
+    {
+      "id": "rights-records",
+      "path": "/api/v1/rights-records",
+      "match": "exact",
+      "service": "gateway",
+      "rewrite": "preserve",
+      "preserveApiPrefix": true,
+      "priority": 20
+    },
+    {
+      "id": "votes",
+      "path": "/api/v1/votes",
+      "match": "exact",
+      "service": "gateway",
+      "rewrite": "preserve",
+      "preserveApiPrefix": true,
+      "priority": 30
+    },
+    {
+      "id": "vote-submit",
+      "path": "/api/v1/votes/:id/submit",
+      "match": "template",
+      "service": "gateway",
+      "rewrite": "preserve",
+      "preserveApiPrefix": true,
+      "priority": 40
+    },
+    {
+      "id": "daily-quote",
+      "path": "/api/v1/daily-quotes/by-date",
+      "match": "exact",
+      "service": "gateway",
+      "rewrite": "preserve",
+      "preserveApiPrefix": true,
+      "priority": 50
+    },
+    {
+      "id": "core-api",
+      "path": "/api/:path*",
+      "match": "prefix",
+      "service": "core",
+      "rewrite": "strip-api-prefix",
+      "preserveApiPrefix": false,
+      "priority": 60
+    }
+  ]
+}

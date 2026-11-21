@@ -36,6 +36,6 @@ export function parseSignInAwardList(value: unknown): SignInAward[] {
 }
 
 export async function getSignInAwardList(signal: AbortSignal): Promise<SignInAward[]> {
-  const response = await apiRequest<unknown>("/sign/award/list", { method: "GET", signal });
+  const response = await apiRequest<unknown>("/api/sign/award/list", { baseUrl: "", method: "GET", signal });
   return parseSignInAwardList(response);
 }

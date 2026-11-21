@@ -11,15 +11,23 @@ export default defineConfig({
         target: "http://115.159.121.83",
         changeOrigin: true,
       },
-      "^/api/v1/votes(?:[/?]|$)": {
-        target: "http://115.159.121.83",
-        changeOrigin: true,
-      },
       "^/api/v1/rights-records(?:[?]|$)": {
         target: "http://115.159.121.83",
         changeOrigin: true,
       },
-      "/api": {
+      "^/api/v1/votes(?:[?]|$)": {
+        target: "http://115.159.121.83",
+        changeOrigin: true,
+      },
+      "^/api/v1/votes/[^/?]+/submit(?:[?]|$)": {
+        target: "http://115.159.121.83",
+        changeOrigin: true,
+      },
+      "^/api/v1/daily-quotes/by-date(?:[?]|$)": {
+        target: "http://115.159.121.83",
+        changeOrigin: true,
+      },
+      "^/api(?:[/?]|$)": {
         target: "http://115.159.121.83:8001",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api(?=\/|\?|$)/, ""),

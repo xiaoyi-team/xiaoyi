@@ -33,8 +33,8 @@ export async function getSignInCalendar(
     throw new Error("签到日历月份必须为有效的 yyyy-MM。");
   }
   const response = await apiRequest<unknown>(
-    `/sign/calendar?${new URLSearchParams({ yearMonth })}`,
-    { method: "GET", signal },
+    `/api/sign/calendar?${new URLSearchParams({ yearMonth })}`,
+    { baseUrl: "", method: "GET", signal },
   );
   if (response === null || typeof response !== "object" || Array.isArray(response)) {
     throw new Error("签到日历响应格式不正确。");

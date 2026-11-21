@@ -91,7 +91,7 @@ export async function addSignIn(signal: AbortSignal): Promise<SignInAddResponse>
   let response: unknown;
   try {
     signal.throwIfAborted();
-    response = await apiRequest<unknown>("/sign/add", { method: "POST", signal, responseType: "json" });
+    response = await apiRequest<unknown>("/api/sign/add", { baseUrl: "", method: "POST", signal, responseType: "json" });
   } catch (error) {
     // The shared client wraps fetch aborts as status 0. Preserve HTTP errors unchanged.
     if (signal.aborted && (!(error instanceof ApiError) || error.status === 0)) {

@@ -7,7 +7,7 @@ export type SignInStat = {
 };
 
 export async function getSignInStat(signal: AbortSignal): Promise<SignInStat> {
-  const response = await apiRequest<unknown>("/sign/stat", { method: "GET", signal });
+  const response = await apiRequest<unknown>("/api/sign/stat", { baseUrl: "", method: "GET", signal });
 
   if (
     response === null ||

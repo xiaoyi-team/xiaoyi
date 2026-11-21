@@ -83,7 +83,8 @@ export async function registerApi(
     }
   }
 
-  return apiRequest<string>("/register", {
+  return apiRequest<string>("/api/register", {
+    baseUrl: "",
     method: "POST",
     auth: false,
     headers: JSON_HEADERS,
@@ -131,8 +132,9 @@ export async function loginApi(
   }
 
   const data = await apiRequest<TokenResponse>(
-    "/login",
+    "/api/login",
     {
+      baseUrl: "",
       method: "POST",
       auth: false,
       headers: JSON_HEADERS,
@@ -177,23 +179,11 @@ export async function loginApi(
  */
 export async function getCaptchaApi():
   Promise<CaptchaData> {
-  const base = import.meta.env
-    .VITE_API_BASE_URL
-    ?.trim()
-    .replace(/\/$/, "");
-
-  if (!base) {
-    throw new ApiError(
-      "未配置后端接口地址 VITE_API_BASE_URL",
-      0
-    );
-  }
-
   let response: Response;
 
   try {
     response = await fetch(
-      `${base}/captcha/image`,
+      "/api/captcha/image",
       {
         method: "GET",
         cache: "no-store",
@@ -262,7 +252,8 @@ export async function getCaptchaApi():
  * 不用于权限控制。
  */
 export async function getCurrentUserApi(): Promise<CurrentUser> {
-  const response = await apiRequest<unknown>("/user/info", {
+  const response = await apiRequest<unknown>("/api/user/info", {
+    baseUrl: "",
     method: "GET",
     responseType: "json",
   });
@@ -317,8 +308,9 @@ export async function setNicknameApi(
   }
 
   return apiRequest<string>(
-    "/user/set_nickname",
+    "/api/user/set_nickname",
     {
+      baseUrl: "",
       method: "POST",
       headers: JSON_HEADERS,
       body: JSON.stringify({
@@ -444,8 +436,9 @@ export async function setBirthdayApi(
   validateFullDate(birthday);
 
   return apiRequest<string>(
-    "/user/set_birthday",
+    "/api/user/set_birthday",
     {
+      baseUrl: "",
       method: "POST",
       headers: JSON_HEADERS,
       body: JSON.stringify({
@@ -501,8 +494,9 @@ export async function getSecurityQuestionsApi(
   validateUID(uid);
 
   const response = await apiRequest<unknown>(
-    `/user/security_questions?uid=${encodeURIComponent(uid)}`,
+    `/api/user/security_questions?uid=${encodeURIComponent(uid)}`,
     {
+      baseUrl: "",
       method: "GET",
       auth: false,
       responseType: "json",
@@ -647,8 +641,9 @@ export async function verifySecurityAnswerApi(
   }
 
   const result = await apiRequest<VerifySecurityResponse>(
-    "/user/verify_security_answer",
+    "/api/user/verify_security_answer",
     {
+      baseUrl: "",
       method: "POST",
       auth: false,
       headers: JSON_HEADERS,
@@ -686,8 +681,9 @@ export async function resetPasswordApi(
   validatePassword(params.new_password);
 
   return apiRequest<string>(
-    "/user/reset_pwd_by_security",
+    "/api/user/reset_pwd_by_security",
     {
+      baseUrl: "",
       method: "POST",
       auth: false,
       headers: JSON_HEADERS,
@@ -709,7 +705,8 @@ export async function resetPasswordApi(
  * 本地会话由 AuthContext 在发起请求后立即清理。
  */
 export async function logoutApi(): Promise<void> {
-  await apiRequest<unknown>("/logout", {
+  await apiRequest<unknown>("/api/logout", {
+    baseUrl: "",
     method: "POST",
     responseType: "auto",
   });

@@ -384,7 +384,8 @@ const GasStationPage: React.FC = () => {
     setLoadingAll(true);
     setListError(false);
 
-    apiRequest<BackendResp>('/v1/rights-records', {
+    apiRequest<BackendResp>('/api/v1/rights-records', {
+      baseUrl: '',
       auth: false,
       responseType: 'json',
       signal: controller.signal,
@@ -414,7 +415,8 @@ const GasStationPage: React.FC = () => {
     setMatchError(false);
     const timer = window.setTimeout(async () => {
       try {
-        const response = await apiRequest<BackendResp>(`/v1/rights-records?${params}`, {
+        const response = await apiRequest<BackendResp>(`/api/v1/rights-records?${params}`, {
+          baseUrl: '',
           auth: false,
           responseType: 'json',
           signal: controller.signal,

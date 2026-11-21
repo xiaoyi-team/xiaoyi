@@ -6,7 +6,8 @@ export async function getSignInAward(
   onUnauthorizedResponse: () => void,
 ) {
   if (!Number.isSafeInteger(awardId)) throw new RangeError("奖励编号无效。");
-  const result = await apiRequest<{ msg?: unknown } | null>("/sign/award/get", {
+  const result = await apiRequest<{ msg?: unknown } | null>("/api/sign/award/get", {
+    baseUrl: "",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ award_id: awardId }),

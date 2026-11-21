@@ -14,8 +14,8 @@ export interface Vote {
 }
 
 export async function getVotes(auth: boolean, signal: AbortSignal) {
-  const data = await apiRequest<{ votes: Vote[] }>('/v1/votes?status=all', {
-    auth, signal, cache: 'no-store', responseType: 'json',
+  const data = await apiRequest<{ votes: Vote[] }>('/api/v1/votes?status=all', {
+    baseUrl: '', auth, signal, cache: 'no-store', responseType: 'json',
   });
   if (!Array.isArray(data?.votes)) throw new Error('投票列表返回格式不正确。');
   return data.votes;
@@ -23,7 +23,8 @@ export async function getVotes(auth: boolean, signal: AbortSignal) {
 
 export async function submitVote(voteId: number, optionIds: number[], signal: AbortSignal) {
   const data = await apiRequest<{ success: boolean; vote_id: number; option_ids: number[] }>(
-    `/v1/votes/${voteId}/submit`, {
+    `/api/v1/votes/${voteId}/submit`, {
+      baseUrl: '',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ option_ids: optionIds }),

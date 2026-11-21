@@ -7,7 +7,7 @@ import type {
 } from "../features/home/types";
 
 export async function getHomeAnnouncements(): Promise<AnnouncementsResponse> {
-  const result = await apiRequest<AnnouncementsResponse>("/v1/announcements/active", { auth: false, cache: "no-store", responseType: "json" });
+  const result = await apiRequest<AnnouncementsResponse>("/api/v1/announcements/active", { baseUrl: '', auth: false, cache: "no-store", responseType: "json" });
   if (!Array.isArray(result?.announcements) || result.announcements.some(item => !item || !validVersion(item.id) || !validVersion(item.version))) {
     throw new ApiError("公告数据缺少有效的公告 ID 或版本号。", 502);
   }
@@ -20,7 +20,7 @@ function validVersion(value: unknown): value is number {
 
 export async function getAnnouncementPopupStatus(): Promise<AnnouncementPopupStatusResponse> {
   if (!getAccessToken()) throw new ApiError("请登录后同步公告状态。", 401);
-  const result = await apiRequest<AnnouncementPopupStatusResponse>("/v1/announcements/popup-status", { cache: "no-store", responseType: "json" });
+  const result = await apiRequest<AnnouncementPopupStatusResponse>("/api/v1/announcements/popup-status", { baseUrl: '', cache: "no-store", responseType: "json" });
   if (typeof result?.should_popup !== "boolean" ||
       !(result.announcement_id === null && result.version === null && !result.should_popup || validVersion(result.announcement_id) && validVersion(result.version))) {
     throw new ApiError("公告弹窗状态缺少对应的公告 ID 或版本号。", 502);
@@ -31,7 +31,8 @@ export async function getAnnouncementPopupStatus(): Promise<AnnouncementPopupSta
 export async function recordAnnouncementRead(request: ReadAnnouncementRequest): Promise<RecordAnnouncementReadResponse> {
   if (!getAccessToken()) throw new ApiError("请登录后同步公告阅读记录。", 401);
   if (!validVersion(request.announcement_id) || !validVersion(request.version)) throw new ApiError("公告 ID 或版本号无效，请刷新后重试。", 422);
-  const result = await apiRequest<RecordAnnouncementReadResponse>("/v1/announcements/read", {
+  const result = await apiRequest<RecordAnnouncementReadResponse>("/api/v1/announcements/read", {
+    baseUrl: '',
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),

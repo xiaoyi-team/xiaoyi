@@ -6,12 +6,6 @@ export type SignInQuote = {
   quote_date: string;
 };
 
-const DAILY_QUOTES_API_BASE_URL =
-  import.meta.env.PROD ? "" : (
-    import.meta.env.VITE_DAILY_QUOTES_API_BASE_URL?.trim().replace(/\/$/, "") ||
-    "http://115.159.121.83"
-  );
-
 export function isValidSignInQuoteDate(date: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
   const [year, month, day] = date.split("-").map(Number);
@@ -35,7 +29,7 @@ export async function getSignInQuoteByDate(
 
   const response = await apiRequest<unknown>(
     `/api/v1/daily-quotes/by-date?${new URLSearchParams({ date })}`,
-    { method: "GET", signal, baseUrl: DAILY_QUOTES_API_BASE_URL },
+    { method: "GET", signal, baseUrl: "" },
   );
 
   if (response === null || typeof response !== "object" || Array.isArray(response)) {
