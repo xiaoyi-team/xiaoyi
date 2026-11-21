@@ -73,6 +73,12 @@
   outline-offset: 3px;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-viewport:focus-visible {
+    outline: none;
+  }
+}
+
 .xiao-yi-sign-in-button {
   min-width: 44px;
   min-height: 44px;
@@ -456,6 +462,10 @@
 .sign-in-board__quote-retry:focus-visible {
   outline: 2px solid #101d49;
   outline-offset: 2px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-retry {
+  padding-block: 2px;
 }
 
 .sign-in-board__quote-footer {

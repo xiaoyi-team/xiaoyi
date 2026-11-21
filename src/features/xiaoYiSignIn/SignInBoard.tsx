@@ -145,7 +145,7 @@ function SignInBoard({ titleId, mobile, statView, awardListView, awardClaim, onO
     "no-record": "该日期暂无已分配的逸签语录。",
     "invalid-date": "该日期暂不可查询。",
     unauthorized: "登录状态已失效，请重新登录。",
-    error: "语录暂时无法加载，请重试。",
+    error: "语录暂时无法加载",
   }[quoteView.kind]) : null;
   const quoteViewStatus = quoteView ? ({
     idle: "未选择日期",

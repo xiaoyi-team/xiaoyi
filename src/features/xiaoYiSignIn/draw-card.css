@@ -42,6 +42,12 @@
   place-items: center;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .draw-card-dialog[data-mobile]:focus-visible {
+    outline: none;
+  }
+}
+
 .draw-card-dialog::backdrop {
   background: transparent;
 }
