@@ -187,12 +187,12 @@ export default function BarPage() {
           <img src={background} alt="" />
         </picture>
         <div inert={open ? true : undefined}>
-          <Link className="bar-back" to="/home" aria-label="返回首页">
+          {!open && <Link className="bar-back" to="/home" aria-label="返回首页">
             <svg className="bar-back__icon" viewBox="0 0 74 64" fill="none" aria-hidden="true">
               <path d="M48 17L31 31.7027L48 46.4054M65 17L48 31.7027L65 46.4054" stroke="white" strokeWidth="4" strokeLinecap="round" />
             </svg>
             <span>返回</span>
-          </Link>
+          </Link>}
           <CalculatorEntrance onOpen={() => setOpen(true)} />
         </div>
         {open && <CalculatorSession isTouchViewport={isTouchViewport} onClose={() => setOpen(false)} /> }
