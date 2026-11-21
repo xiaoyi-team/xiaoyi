@@ -7,10 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
+# Dependencies and build outputs
+node_modules/
+dist/
 dist-ssr
 *.local
+
+# Environment files
+.env
+.env.local
+.env.example
 
 # Editor directories and files
 .vscode/*
@@ -22,9 +28,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.env
-.env.local
-node_modules/
-dist/
+
 # Playwright CLI artifacts
 .playwright-cli/

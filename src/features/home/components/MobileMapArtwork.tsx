@@ -48,7 +48,7 @@ export default function MobileMapArtwork() {
               心
             </p>
             <p className="whitespace-pre">
-              <span className="bg-clip-text leading-[12.506px] text-[23.762px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`　愿`}</span>
+              <span className="bg-clip-text leading-[12.506px] text-[23.762px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`\u3000愿`}</span>
               <span className="leading-[12.506px] text-[21.886px]">盒</span>
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function MobileMapArtwork() {
               糖
             </p>
             <p className="whitespace-pre">
-              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`　果`}</span>
+              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`\u3000果`}</span>
               <span className="leading-[8.337px] text-[14.591px]">屋</span>
             </p>
           </div>
@@ -116,7 +116,7 @@ export default function MobileMapArtwork() {
               杂
             </p>
             <p className="whitespace-pre">
-              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`　草`}</span>
+              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`\u3000草`}</span>
               <span className="leading-[8.337px] text-[14.591px]">酒吧</span>
             </p>
           </div>
@@ -177,7 +177,7 @@ export default function MobileMapArtwork() {
               加
             </p>
             <p className="whitespace-pre">
-              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`　油`}</span>
+              <span className="bg-clip-text leading-[8.337px] text-[15.841px] text-[transparent]" style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 253, 248) 0%, rgb(254, 251, 246) 30%, rgb(250, 247, 238) 55%, rgb(243, 238, 216) 80%, rgb(239, 232, 201) 100%)" }}>{`\u3000油`}</span>
               <span className="leading-[8.337px] text-[14.591px]">站</span>
             </p>
           </div>
