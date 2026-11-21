@@ -29,6 +29,27 @@
   height: 100%;
 }
 
+.bar-back {
+  --back-unit: calc(100cqw / 1920);
+  position: absolute;
+  left: calc(76 * var(--back-unit));
+  top: calc(25 * var(--back-unit));
+  width: calc(170 * var(--back-unit));
+  height: calc(74 * var(--back-unit));
+  color: white;
+  font-family: 'Bar Noto Serif SC', serif;
+  font-size: calc(30 * var(--back-unit));
+  font-weight: 500;
+  text-shadow: 0 0 calc(1.7 * var(--back-unit)) #000;
+}
+.bar-back__icon { position: absolute; left: calc(7 * var(--back-unit)); top: calc(5 * var(--back-unit)); width: calc(74 * var(--back-unit)); height: calc(64 * var(--back-unit)); filter: drop-shadow(0 0 calc(.86 * var(--back-unit)) #000); }
+.bar-back span { position: absolute; left: calc(89 * var(--back-unit)); top: calc(15 * var(--back-unit)); line-height: normal; white-space: nowrap; }
+@media (width <= 1024px) {
+  .bar-back { --back-unit: calc(100cqw / 667); left: calc(12 * var(--back-unit)); top: calc(19 * var(--back-unit)); width: calc(86 * var(--back-unit)); height: calc(40 * var(--back-unit)); font-size: calc(14 * var(--back-unit)); font-weight: 600; text-shadow: 0 calc(.6 * var(--back-unit)) calc(1.275 * var(--back-unit)) rgb(46 31 18 / 88%), 0 calc(1 * var(--back-unit)) calc(3.4 * var(--back-unit)) rgb(46 31 18 / 40%); }
+  .bar-back__icon { left: calc(14.5 * var(--back-unit)); top: calc(10.486486 * var(--back-unit)); width: calc(22 * var(--back-unit)); height: calc(19.027027 * var(--back-unit)); filter: drop-shadow(0 calc(.6 * var(--back-unit)) calc(.645 * var(--back-unit)) rgb(46 31 18 / 88%)) drop-shadow(0 calc(1 * var(--back-unit)) calc(1.72 * var(--back-unit)) rgb(46 31 18 / 40%)); }
+  .bar-back span { left: calc(43.5 * var(--back-unit)); top: calc(10 * var(--back-unit)); line-height: calc(20 * var(--back-unit)); }
+}
+
 /* Coordinates read from PC scene instance 7681:463, not the 442x208 master.
    Group children retain their enclosing scene-instance coordinate origin. */
 .bar-entrance {
