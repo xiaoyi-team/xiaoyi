@@ -12,6 +12,7 @@ import { useActivityState } from '../features/bar/useActivityState'
 import { dateKey, shanghaiToday, useCalculatorDate } from '../features/bar/useCalculatorDate'
 import { calculateResourcesWithGate } from '../features/bar/calculateResources'
 import { useCallback, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { Link } from 'react-router'
 import '../features/bar/BarPage.css'
 
 const touchViewport = window.matchMedia('(max-width: 1024px)')
@@ -185,7 +186,15 @@ export default function BarPage() {
           <source media="(max-width: 1024px)" srcSet={touchBackground} />
           <img src={background} alt="" />
         </picture>
-        <div inert={open ? true : undefined}><CalculatorEntrance onOpen={() => setOpen(true)} /></div>
+        <div inert={open ? true : undefined}>
+          <Link className="bar-back" to="/home" aria-label="返回首页">
+            <svg className="bar-back__icon" viewBox="0 0 74 64" fill="none" aria-hidden="true">
+              <path d="M48 17L31 31.7027L48 46.4054M65 17L48 31.7027L65 46.4054" stroke="white" strokeWidth="4" strokeLinecap="round" />
+            </svg>
+            <span>返回</span>
+          </Link>
+          <CalculatorEntrance onOpen={() => setOpen(true)} />
+        </div>
         {open && <CalculatorSession isTouchViewport={isTouchViewport} onClose={() => setOpen(false)} /> }
       </div>
     </main>
