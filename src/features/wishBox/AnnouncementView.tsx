@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import AnnouncementBoard from "./AnnouncementBoard";
+import WishBoxLoading from "./WishBoxLoading";
+import gardenBackground from "../../assets/wish-box/wish-box-home-background.png";
 import type { AnnouncementViewData } from "./announcementSample";
 
 type AnnouncementViewProps = {
@@ -61,6 +63,7 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
       data-announcement-center-loading={showCenterLoading ? "true" : undefined}
       aria-label="当期活动公告详情"
       className="wish-box-announcement-detail notice-zoom absolute inset-0 z-10 overflow-hidden"
+      style={announcementStatus === "loading" ? { backgroundColor: "#fff" } : undefined}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
           event.stopPropagation();
@@ -72,6 +75,9 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
         }
       }}
     >
+      {announcementStatus === "loading" ? (
+        <img src={gardenBackground} alt="" aria-hidden="true" className="wish-box-home-background pointer-events-none absolute left-0 top-0 w-full object-contain opacity-55" />
+      ) : null}
       <button
         type="button"
         onClick={closeAnnouncement}
@@ -97,6 +103,7 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
 
       <div className="wish-box-announcement-scroll">
         <article
+          hidden={announcementStatus === "loading"}
           className="wish-box-announcement-article absolute"
           style={{
             left: "var(--announcement-article-left, 8.33333%)",
@@ -105,22 +112,19 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
             height: "var(--announcement-article-height, 83.33333%)",
           }}
         >
-          {announcement && announcementStatus === "ready" ? (
-            <AnnouncementBoard data={announcement} interactive />
-          ) : (
-            <div className="absolute inset-0 grid place-items-center text-center" role={announcementStatus === "error" ? "alert" : "status"}>
-              <div className="flex flex-col items-center gap-3">
-                <p>{announcementStatus === "error" ? "公告加载失败" : "公告加载中"}</p>
-                {announcementStatus === "error" ? (
+          <AnnouncementBoard
+            data={announcementStatus === "ready" ? announcement : null}
+            interactive
+            statusContent={announcementStatus === "error" ? <>
+                <p>公告加载失败</p>
                   <button type="button" onClick={retryAnnouncement} disabled={retryInFlight} className="rounded border px-3 py-1">
                     重试
                   </button>
-                ) : null}
-              </div>
-            </div>
-          )}
+            </> : undefined}
+          />
         </article>
       </div>
+      {announcementStatus === "loading" ? <WishBoxLoading variant="center" className="z-10" /> : null}
     </section>
   );
 }
