@@ -6,7 +6,7 @@
 }
 
 #root,
-#root * {
+#root *:not(.bar-page, .bar-page *) {
   font-family: var(--interface-font) !important;
 }
 

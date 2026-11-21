@@ -1,0 +1,287 @@
+@import "./bar-fonts.css";
+.bar-page {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* PC design space: 1920 × 1080. Fit both axes without stretching. */
+.bar-scene {
+  position: relative;
+  width: min(100%, calc(100dvh * 16 / 9));
+  aspect-ratio: 1920 / 1080;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.bar-scene__background {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.bar-scene__background img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Coordinates read from PC scene instance 7681:463, not the 442x208 master.
+   Group children retain their enclosing scene-instance coordinate origin. */
+.bar-entrance {
+  --bar-unit: calc(100cqw / 1920);
+  position: absolute;
+  font-family: 'Bar Noto Serif SC', serif;
+  pointer-events: none;
+}
+.bar-entrance > * { position: absolute; }
+
+.bar-entrance {
+  left: calc(630.40478515625 * var(--bar-unit));
+  top: calc(509.760009765625 * var(--bar-unit));
+  width: calc(413.5052490234375 * var(--bar-unit));
+  height: calc(194.5906982421875 * var(--bar-unit));
+}
+
+.bar-entrance__calculator {
+  left: calc(277.8530578613281 * var(--bar-unit));
+  top: calc(-0.5757121443748474 * var(--bar-unit));
+  width: calc(116.9415283203125 * var(--bar-unit));
+  height: calc(133.27735900878906 * var(--bar-unit));
+}
+
+.bar-entrance__calculator { object-fit: cover; }
+
+.bar-entrance__signature {
+  left: calc(174.0089874267578 * var(--bar-unit));
+  top: calc(51.45427322387695 * var(--bar-unit));
+  width: calc(115.154541015625 * var(--bar-unit));
+  height: calc(65.48725128173828 * var(--bar-unit));
+}
+
+.bar-entrance__signature { overflow: hidden; }
+.bar-entrance__signature img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  transform-origin: 0 0;
+  transform: translate(-127.5411%, -105.0177%) scale(2.3003, 5.7191);
+}
+
+.bar-entrance__title {
+  left: calc(0 * var(--bar-unit));
+  top: calc(34.61469268798828 * var(--bar-unit));
+  width: calc(233.883056640625 * var(--bar-unit));
+  height: calc(78.58470916748047 * var(--bar-unit));
+}
+.bar-entrance__title {
+  font-size: calc(44.905548095703125 * var(--bar-unit));
+  font-weight: 700;
+  line-height: calc(59.874061584472656 * var(--bar-unit));
+  letter-spacing: 0;
+  text-align: right;
+  color: #fff;
+  text-shadow: calc(0.9355322122573853 * var(--bar-unit)) calc(1.8710644245147705 * var(--bar-unit)) calc(5.804977488517761 * var(--bar-unit)) rgb(0 0 0 / 39%);
+}
+
+.bar-entrance__subtitle {
+  left: calc(99.16641235351562 * var(--bar-unit));
+  top: calc(93.55322265625 * var(--bar-unit));
+  width: calc(187.1064453125 * var(--bar-unit));
+  height: calc(37.421287536621094 * var(--bar-unit));
+}
+.bar-entrance__subtitle {
+  font-size: calc(18.710643768310547 * var(--bar-unit));
+  font-weight: 400;
+  line-height: calc(29.937030792236328 * var(--bar-unit));
+  letter-spacing: 0;
+  text-align: left;
+  color: rgb(95.517993% 95.517993% 95.517993%);
+  text-shadow: calc(0.9355322122573853 * var(--bar-unit)) calc(1.8710644245147705 * var(--bar-unit)) calc(5.804977488517761 * var(--bar-unit)) rgb(0 0 0 / 39%);
+}
+
+/* B2-3: instance geometry; SVG lines retain their own local frame coordinates. */
+.bar-entrance__stripes {
+  display: block;
+  opacity: 0.6;
+  overflow: hidden;
+}
+.bar-entrance__stripes--first {
+  left: calc(67.35832214355469 * var(--bar-unit));
+  top: calc(67.35831832885742 * var(--bar-unit));
+  width: calc(119.74812316894531 * var(--bar-unit));
+  height: calc(17.77511215209961 * var(--bar-unit));
+}
+.bar-entrance__stripes--second {
+  left: calc(155.29833984375 * var(--bar-unit));
+  top: calc(89.81109237670898 * var(--bar-unit));
+  width: calc(119.74812316894531 * var(--bar-unit));
+  height: calc(17.77511215209961 * var(--bar-unit));
+}
+.bar-entrance__divider {
+  left: calc(18.710643768310547 * var(--bar-unit));
+  top: calc(93.55322265625 * var(--bar-unit));
+  width: calc(256.3358154296875 * var(--bar-unit));
+  height: calc(0.9355322122573853 * var(--bar-unit));
+}
+.bar-entrance__divider {
+  background: #fff;
+  /* Figma radius 6.829385 × 0.85, per figma-codegen box-shadow conversion. */
+  box-shadow: calc(0.9355322122573853 * var(--bar-unit)) calc(1.8710644245147705 * var(--bar-unit)) calc(5.804977488517761 * var(--bar-unit)) 0 rgb(0 0 0 / 39%);
+}
+.bar-entrance__divider-ink { display: none; }
+.bar-entrance__hit-area {
+  left: calc(-7.484257698059082 * var(--bar-unit));
+  top: calc(-7.484257698059082 * var(--bar-unit));
+  width: calc(420.989501953125 * var(--bar-unit));
+  height: calc(202.074951171875 * var(--bar-unit));
+}
+.bar-entrance__hit-area {
+  background: transparent;
+  pointer-events: auto;
+}
+
+/* Figma: SMART_ANIMATE / 160ms / EASE_OUT. CSS ease-out is a candidate
+   mapping; leaving the hit area restores default as an engineering policy. */
+@media (width > 1024px) and (hover: hover) and (pointer: fine) {
+  .bar-entrance__calculator {
+    transform-origin: 50% 50%;
+    transition: transform 160ms ease-out;
+  }
+
+  .bar-entrance:has(> .bar-entrance__hit-area:hover) > .bar-entrance__calculator {
+    /* 1.06 derives from Variant geometry; both image-frame centers coincide. */
+    transform: scale(1.06);
+  }
+}
+
+/* B2-5B: page-specific engineering breakpoint, not a Figma rule.
+   Touch uses its own 667 × 375 canvas and formal instance 7784:912. */
+.bar-entrance__stripes--touch { display: none; }
+
+/* The Touch calculator is a 615 × 343 frame positioned on its 667 × 375 scene. */
+.calculator-scene-shield--touch {
+  left: calc(26 * 100cqw / 667);
+  top: calc(18 * 100cqw / 667);
+  width: calc(615 * 100cqw / 667);
+  height: calc(343 * 100cqw / 667);
+}
+
+@media (width <= 1024px) {
+  .bar-scene {
+    width: min(100%, calc(100dvh * 667 / 375));
+    aspect-ratio: 667 / 375;
+  }
+  .bar-entrance { --bar-unit: calc(100cqw / 667); }
+  .bar-entrance {
+    left: calc(219 * var(--bar-unit));
+    top: calc(177 * var(--bar-unit));
+    width: calc(143.64999389648438 * var(--bar-unit));
+    height: calc(67.5999984741211 * var(--bar-unit));
+  }
+  .bar-entrance__calculator {
+    left: calc(96.5244140625 * var(--bar-unit));
+    top: calc(-0.20000000298023224 * var(--bar-unit));
+    width: calc(40.625 * var(--bar-unit));
+    height: calc(46.29999923706055 * var(--bar-unit));
+  }
+  .bar-entrance__signature {
+    left: calc(60.4501953125 * var(--bar-unit));
+    top: calc(17.8751220703125 * var(--bar-unit));
+    width: calc(40.00421142578125 * var(--bar-unit));
+    height: calc(22.75 * var(--bar-unit));
+  }
+  .bar-entrance__title {
+    left: calc(0 * var(--bar-unit));
+    top: calc(12.0250244140625 * var(--bar-unit));
+    width: calc(81.25 * var(--bar-unit));
+    height: calc(27.299999237060547 * var(--bar-unit));
+  }
+  .bar-entrance__subtitle {
+    left: calc(34.4501953125 * var(--bar-unit));
+    top: calc(32.5001220703125 * var(--bar-unit));
+    width: calc(65 * var(--bar-unit));
+    height: calc(13 * var(--bar-unit));
+  }
+  .bar-entrance__stripes--first {
+    left: calc(23.39990234375 * var(--bar-unit));
+    top: calc(23.400146484375 * var(--bar-unit));
+    width: calc(41.599998474121094 * var(--bar-unit));
+    height: calc(6.175000190734863 * var(--bar-unit));
+  }
+  .bar-entrance__stripes--second {
+    left: calc(53.9501953125 * var(--bar-unit));
+    top: calc(31.2001953125 * var(--bar-unit));
+    width: calc(41.599998474121094 * var(--bar-unit));
+    height: calc(6.175000190734863 * var(--bar-unit));
+  }
+  .bar-entrance__divider {
+    left: calc(6.5 * var(--bar-unit));
+    top: calc(32.5001220703125 * var(--bar-unit));
+    width: calc(89.05000305175781 * var(--bar-unit));
+    height: calc(0.32499998807907104 * var(--bar-unit));
+  }
+  .bar-entrance__hit-area {
+    left: calc(-2.60009765625 * var(--bar-unit));
+    top: calc(-2.5999755859375 * var(--bar-unit));
+    width: calc(146.25 * var(--bar-unit));
+    height: calc(70.19999694824219 * var(--bar-unit));
+  }
+  .bar-entrance__stripes:not(.bar-entrance__stripes--touch) { display: none; }
+  .bar-entrance__stripes--touch { display: block; }
+  .bar-entrance__title {
+    font-size: calc(15 * var(--bar-unit));
+    line-height: calc(22 * var(--bar-unit));
+    font-weight: 600;
+  }
+  .bar-entrance__subtitle {
+    font-size: calc(8 * var(--bar-unit));
+    line-height: calc(12 * var(--bar-unit));
+  }
+  .bar-entrance__title,
+  .bar-entrance__subtitle {
+    /* Candidate text-shadow conversion; exact visual equivalence unverified. */
+    text-shadow: calc(0.32500001788139343 * var(--bar-unit)) calc(0.6500000357627869 * var(--bar-unit)) calc(2.016625154018402 * var(--bar-unit)) rgb(0 0 0 / 39%);
+  }
+  .bar-entrance__divider {
+    /* Figma radius 2.37250018119812 × 0.85, per Skill box-shadow rule. */
+    /* Shadow only: SVG paints the fractional-height white body separately. */
+    background: transparent;
+    box-shadow: calc(0.32500001788139343 * var(--bar-unit)) calc(0.6500000357627869 * var(--bar-unit)) calc(2.016625154018402 * var(--bar-unit)) 0 rgb(0 0 0 / 39%);
+  }
+  .bar-entrance__divider-ink {
+    display: block;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+}
+
+/* Engineering text adaptation only: viewport width sets progress, while cqw
+   converts each endpoint's design units using the actual scene width.
+   Keep the original Touch/PC rules at and beyond the interval endpoints. */
+@media (667px < width < 1280px) {
+  .bar-entrance {
+    --bar-text-progress: clamp(0, (100vw - 667px) / 613px, 1);
+  }
+  .bar-entrance__title {
+    font-size: calc(100cqw * ((1 - var(--bar-text-progress)) * 15 / 667 + var(--bar-text-progress) * 44.905548095703125 / 1920));
+    line-height: calc(100cqw * ((1 - var(--bar-text-progress)) * 22 / 667 + var(--bar-text-progress) * 59.874061584472656 / 1920));
+    font-weight: calc(600 + 100 * var(--bar-text-progress));
+  }
+  .bar-entrance__subtitle {
+    font-size: calc(100cqw * ((1 - var(--bar-text-progress)) * 8 / 667 + var(--bar-text-progress) * 18.710643768310547 / 1920));
+    line-height: calc(100cqw * ((1 - var(--bar-text-progress)) * 12 / 667 + var(--bar-text-progress) * 29.937030792236328 / 1920));
+  }
+}
+
+

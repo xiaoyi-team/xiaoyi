@@ -1,0 +1,23 @@
+.quantity-overlay { --q: calc(100cqw / 1920); position: absolute; inset: 0; z-index: 100; }
+.quantity-overlay--touch { --q: calc(100cqw / 667); }
+.quantity-overlay__outside { position: absolute; inset: 0; }
+.quantity-dialog { position: absolute; box-sizing: border-box; left: calc(750 * var(--q)); top: calc(317 * var(--q)); width: calc(420 * var(--q)); height: calc(446 * var(--q)); border: calc(1.5 * var(--q)) solid #debd78; border-radius: calc(22 * var(--q)); background: #1f263b; outline: none; }
+.quantity-dialog__title, .quantity-dialog__input-back, .quantity-dialog__input, .quantity-dialog__keys, .quantity-dialog__actions { position: absolute; }
+.quantity-dialog__title { left: calc(22.5 * var(--q)); top: calc(16.5 * var(--q)); width: calc(370 * var(--q)); height: calc(35 * var(--q)); display: flex; align-items: center; font: 600 calc(24 * var(--q))/calc(36 * var(--q)) 'Noto Serif SC', serif; color: #f0d496; }
+.quantity-dialog__input-back { left: calc(22.5 * var(--q)); top: calc(64.5 * var(--q)); width: calc(372 * var(--q)); height: calc(56 * var(--q)); border-radius: calc(10 * var(--q)); background: #dbdeeb; }
+.quantity-dialog__input { box-sizing: border-box; left: calc(36.5 * var(--q)); top: calc(66.5 * var(--q)); width: calc(342 * var(--q)); height: calc(52 * var(--q)); border: 0; padding: 0; outline: none; background: transparent; color: #1f263b; display: flex; align-items: center; pointer-events: none; font: 500 calc(28 * var(--q)) 'Noto Sans SC', sans-serif; }
+.quantity-dialog__keys { left: calc(22.5 * var(--q)); top: calc(158.5 * var(--q)); display: grid; grid-template-columns: repeat(3, calc(116 * var(--q))); grid-auto-rows: calc(41 * var(--q)); column-gap: calc(12 * var(--q)); row-gap: calc(8 * var(--q)); }
+.quantity-dialog button { border: 0; padding: 0; border-radius: calc(10 * var(--q)); background: #3b455e; color: #e8ebf5; font: 500 calc(16 * var(--q))/calc(24 * var(--q)) 'Noto Sans SC', sans-serif; cursor: pointer; }
+.quantity-dialog button:focus-visible { outline: 2px solid #f0d496; }
+.quantity-dialog .quantity-dialog__backspace { font-size: calc(20 * var(--q)); font-weight: 400; }
+.quantity-dialog__actions { left: calc(22.5 * var(--q)); top: calc(363.5 * var(--q)); display: grid; grid-template-columns: calc(116 * var(--q)) calc(244 * var(--q)); gap: calc(12 * var(--q)); height: calc(52 * var(--q)); }
+.quantity-dialog__actions button:last-child { background: #f0d496; color: #1f263b; }
+.quantity-overlay--touch .quantity-dialog { left: calc(182.3 * var(--q)); top: calc(27 * var(--q)); width: calc(302.4 * var(--q)); height: calc(321.12 * var(--q)); border-width: calc(1.08 * var(--q)); border-radius: calc(15.84 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog__title { left: calc(16.2 * var(--q)); top: calc(11.88 * var(--q)); width: calc(266.4 * var(--q)); height: calc(25.2 * var(--q)); font-size: calc(17 * var(--q)); line-height: calc(24 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog__input-back { left: calc(16.2 * var(--q)); top: calc(46.44 * var(--q)); width: calc(267.84 * var(--q)); height: calc(40.32 * var(--q)); border-radius: calc(7.2 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog__input { left: calc(26.28 * var(--q)); top: calc(47.88 * var(--q)); width: calc(246.24 * var(--q)); height: calc(37.44 * var(--q)); font-size: calc(20.16 * var(--q)); text-align: center; justify-content: center; }
+.quantity-overlay--touch .quantity-dialog__keys { left: calc(16.2 * var(--q)); top: calc(114.12 * var(--q)); grid-template-columns: repeat(3, calc(83.52 * var(--q))); grid-auto-rows: calc(29.52 * var(--q)); column-gap: calc(8.64 * var(--q)); row-gap: calc(5.76 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog button { border-radius: calc(7.2 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog .quantity-dialog__backspace { font-size: calc(14.4 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog__actions { left: calc(16.2 * var(--q)); top: calc(261.72 * var(--q)); grid-template-columns: calc(83.52 * var(--q)) calc(175.68 * var(--q)); gap: calc(8.64 * var(--q)); height: calc(37.44 * var(--q)); }
+.quantity-overlay--touch .quantity-dialog__actions button:first-child { font-size: calc(12.96 * var(--q)); }

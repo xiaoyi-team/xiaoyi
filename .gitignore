@@ -31,3 +31,6 @@ dist-ssr
 
 # Playwright CLI artifacts
 .playwright-cli/
+
+# Local-only tests
+.local-tests/
