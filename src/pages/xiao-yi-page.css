@@ -103,7 +103,6 @@
   font-weight: 500;
   line-height: normal;
   text-decoration: none;
-  filter: drop-shadow(0 4px 3.75px #000);
 }
 
 .xiao-yi-page__back img {
@@ -113,6 +112,7 @@
   display: block;
   width: 74px;
   height: 64px;
+  filter: drop-shadow(0 0 0.86px #000);
   pointer-events: none;
 }
 
@@ -121,7 +121,7 @@
   top: 15px;
   left: 89px;
   white-space: nowrap;
-  text-shadow: 0 0 2px #000;
+  text-shadow: 0 0 1.7px #000;
 }
 
 .xiao-yi-page__sign-in {
@@ -207,7 +207,6 @@
     font-size: 15.3px;
     font-weight: 600;
     line-height: 22.1px;
-    filter: drop-shadow(0 2.21px 2.072px #000);
   }
 
   .xiao-yi-page__back img {
@@ -215,12 +214,13 @@
     left: 3.8674px;
     width: 40.885px;
     height: 35.36px;
+    filter: drop-shadow(0 0.6px 0.645px rgb(46 31 18 / 88%)) drop-shadow(0 1px 1.72px rgb(46 31 18 / 40%));
   }
 
   .xiao-yi-page__back span {
     top: 9.3927px;
     left: 44.7524px;
-    text-shadow: 0 0 1.105px #000;
+    text-shadow: 0 0.6px 1.275px rgb(46 31 18 / 88%), 0 1px 3.4px rgb(46 31 18 / 40%);
   }
 
   .xiao-yi-page__back:focus-visible {

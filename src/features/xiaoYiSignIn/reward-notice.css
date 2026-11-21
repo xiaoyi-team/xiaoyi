@@ -271,3 +271,9 @@
   outline: 1.5px solid #4867ba;
   outline-offset: -3px;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .reward-notice[data-mobile] .reward-notice__body:focus-visible {
+    outline: none;
+  }
+}
