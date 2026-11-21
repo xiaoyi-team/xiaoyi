@@ -227,8 +227,8 @@
   .bar-entrance__subtitle {
     left: calc(34.4501953125 * var(--bar-unit));
     top: calc(32.5001220703125 * var(--bar-unit));
-    width: calc(65 * var(--bar-unit));
-    height: calc(13 * var(--bar-unit));
+    width: auto;
+    height: auto;
   }
   .bar-entrance__stripes--first {
     left: calc(23.39990234375 * var(--bar-unit));
@@ -262,7 +262,7 @@
     font-weight: 600;
   }
   .bar-entrance__subtitle {
-    font-size: calc(8 * var(--bar-unit));
+    font-size: calc(6.753246784210205 * var(--bar-unit));
     line-height: calc(12 * var(--bar-unit));
   }
   .bar-entrance__title,
@@ -286,23 +286,3 @@
     pointer-events: none;
   }
 }
-
-/* Engineering text adaptation only: viewport width sets progress, while cqw
-   converts each endpoint's design units using the actual scene width.
-   Keep the original Touch/PC rules at and beyond the interval endpoints. */
-@media (667px < width < 1280px) {
-  .bar-entrance {
-    --bar-text-progress: clamp(0, (100vw - 667px) / 613px, 1);
-  }
-  .bar-entrance__title {
-    font-size: calc(100cqw * ((1 - var(--bar-text-progress)) * 15 / 667 + var(--bar-text-progress) * 44.905548095703125 / 1920));
-    line-height: calc(100cqw * ((1 - var(--bar-text-progress)) * 22 / 667 + var(--bar-text-progress) * 59.874061584472656 / 1920));
-    font-weight: calc(600 + 100 * var(--bar-text-progress));
-  }
-  .bar-entrance__subtitle {
-    font-size: calc(100cqw * ((1 - var(--bar-text-progress)) * 8 / 667 + var(--bar-text-progress) * 18.710643768310547 / 1920));
-    line-height: calc(100cqw * ((1 - var(--bar-text-progress)) * 12 / 667 + var(--bar-text-progress) * 29.937030792236328 / 1920));
-  }
-}
-
-
