@@ -330,14 +330,15 @@ function WishBoxTimeline({
     }
   }, [query.data, selectedYear]);
   const currentPresentation = mappingResult.status === "success" ? mappingResult.presentation : null;
-  const [lastPresentation, setLastPresentation] = useState<TimelinePresentation | null>(null);
+  const [lastPresentation, setLastPresentation] = useState<{ filterKey: string; presentation: TimelinePresentation } | null>(null);
   // This is a display snapshot only; never write it into the target Query's cache.
-  if (currentPresentation !== null && currentPresentation !== lastPresentation) {
-    setLastPresentation(currentPresentation);
+  if (currentPresentation !== null && (currentPresentation !== lastPresentation?.presentation || filterKey !== lastPresentation.filterKey)) {
+    setLastPresentation({ filterKey, presentation: currentPresentation });
   }
-  const previousPresentation = lastPresentation?.cards.length ? lastPresentation : null;
-  const presentation = currentPresentation ?? previousPresentation;
+  const previousPresentation = lastPresentation?.presentation.cards.length ? lastPresentation : null;
+  const presentation = currentPresentation ?? previousPresentation?.presentation ?? null;
   const showingPreviousResults = currentPresentation === null && previousPresentation !== null;
+  const presentationMatchesFilters = currentPresentation !== null || previousPresentation?.filterKey === filterKey;
   const pathEndPadding = presentation && presentation.cards.length > 0 ? PATH_END_PADDING : 0;
   const hasCurrentData = currentPresentation !== null;
   const hasMappingError = mappingResult.status === "error";
@@ -354,7 +355,7 @@ function WishBoxTimeline({
   }
 
   const blockingFeedback = !hasCurrentData && (hasError || activeFeedbackIntent !== null);
-  const showActivityGroup = presentation !== null && !blockingFeedback;
+  const showActivityGroup = presentation !== null && (!blockingFeedback || showingPreviousResults);
   const pendingWaiting = query.isPending && !hasError && !blockingFeedback;
   const showCenterLoading = pendingWaiting && presentation === null;
   const showCornerLoading = presentation !== null && !blockingFeedback
@@ -688,7 +689,8 @@ function WishBoxTimeline({
   };
 
   const openActivity = (activity: ActivityReviewSelection) => {
-    if (showingPreviousResults) return;
+    if (showingPreviousResults || !presentationMatchesFilters || showCornerLoading || blockingFeedback ||
+      !currentPresentation?.cards.some((card) => card.activity.recordId === activity.recordId)) return;
     onOpenActivity(activity, {
       filterKey,
       scrollLeft: Math.max(0, timelineViewportRef.current?.scrollLeft ?? 0),
@@ -791,6 +793,7 @@ function WishBoxTimeline({
           {showActivityGroup ? <div
             data-timeline-activity-group
             inert={showingPreviousResults || showCornerLoading}
+            aria-hidden={showingPreviousResults || undefined}
             className="absolute top-0 h-full"
           >
             {presentation.cards.map((card) => (

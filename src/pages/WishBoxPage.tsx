@@ -12,6 +12,7 @@ import WishBoxTimeline, {
   type TimelineScrollSnapshot,
 } from "../features/wishBox/WishBoxTimeline";
 import { useGlobalNotice } from "../features/wishBox/hooks/useGlobalNotice";
+import { isRecoverableWishBoxError } from "../features/wishBox/hooks/requestPolicy";
 import { mapGlobalNoticeToAnnouncement } from "../features/wishBox/announcementData";
 import "../features/wishBox/WishBoxMobile.css";
 
@@ -72,14 +73,15 @@ function WishBoxPage() {
   const restoreWishlandFocusRef = useRef(false);
   const globalNoticeQuery = useGlobalNotice(currentView === "home");
   const announcementResult = useMemo(() => {
-    if (globalNoticeQuery.isError) return { status: "error" as const, data: null };
+    if (globalNoticeQuery.isError && !isRecoverableWishBoxError(globalNoticeQuery.error)) return { status: "error" as const, data: null };
+    if (globalNoticeQuery.isError && globalNoticeQuery.data === undefined) return { status: "error" as const, data: null };
     if (globalNoticeQuery.data === undefined) return { status: "loading" as const, data: null };
     try {
       return { status: "ready" as const, data: mapGlobalNoticeToAnnouncement(globalNoticeQuery.data) };
     } catch {
       return { status: "error" as const, data: null };
     }
-  }, [globalNoticeQuery.data, globalNoticeQuery.isError]);
+  }, [globalNoticeQuery.data, globalNoticeQuery.isError, globalNoticeQuery.error]);
 
   const saveTimelineScrollSnapshot = useCallback((snapshot: TimelineScrollSnapshot) => {
     if (snapshot.filterKey !== timelineFilterKey || !Number.isFinite(snapshot.scrollLeft)) return;

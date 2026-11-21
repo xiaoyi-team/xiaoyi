@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { retryWishBoxRequest, wishBoxRetryDelay } from './requestPolicy'
 import {
   getSupportRecords,
   normalizeSupportRecordListParams,
@@ -16,6 +17,8 @@ export function useSupportRecords(params: SupportRecordListParams = {}) {
       normalized.act_category ?? null,
       normalized.act_kind ?? null,
     ],
-    queryFn: ({ signal }) => getSupportRecords(normalized, signal),
+    queryFn: ({ signal }) => getSupportRecords(normalized, signal, 10000),
+    retry: retryWishBoxRequest,
+    retryDelay: wishBoxRetryDelay,
   })
 }

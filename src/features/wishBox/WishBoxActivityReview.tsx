@@ -24,6 +24,7 @@ import whiteFlowers from "../../assets/wish-box/activity-review-white-flowers.pn
 import { HttpError } from "../../services/request";
 import { mapSupportRecordDetailToReview, type ActivityReviewViewModel } from "./activityReviewData";
 import { useSupportRecordDetail } from "./hooks/useSupportRecordDetail";
+import { isRecoverableWishBoxError } from "./hooks/requestPolicy";
 import { formatTimelineDateRange } from "./timelinePresentation";
 import WishBoxLoading from "./WishBoxLoading";
 import WishBoxPhotoViewer, { type PhotoViewerMedia } from "./WishBoxPhotoViewer";
@@ -392,7 +393,7 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
   const requestError = query.isError ? query.error : retryState?.error;
   const hasRequestError = query.isError || (retryState !== null && "error" in retryState);
   const silentRefreshFailure = isValidRecordId && viewModel !== null && retryState === null
-    && requestError instanceof HttpError && [408, 429, 502, 503, 504].includes(requestError.status);
+    && isRecoverableWishBoxError(requestError);
   const accessFailure = requestError instanceof HttpError && [401, 403, 404].includes(requestError.status);
   const panel: ReviewStatePanel | null = !isValidRecordId
     ? { title: "无法打开此活动", description: "无法打开此活动，请返回时间轴", canRetry: false }
@@ -401,7 +402,7 @@ function RecordActivityReview(props: ReviewControls & { recordId: number }) {
     : mapped.status === "error"
       ? { title: "活动内容暂不可用", description: "活动内容暂时无法显示，请重试", canRetry: true }
       : hasRequestError && !silentRefreshFailure ? requestFailurePanel(requestError)
-      : query.isPaused ? { title: "等待网络连接", description: "网络恢复后将继续加载活动详情。", canRetry: false }
+      : query.isPaused && viewModel === null ? { title: "等待网络连接", description: "网络恢复后将继续加载活动详情。", canRetry: false }
       : null;
   const visibleViewModel = panel ? null : viewModel;
   const showCenterLoading =

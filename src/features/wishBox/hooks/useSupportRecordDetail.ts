@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getSupportRecordDetail } from '../../../services/wishBox'
+import { retryWishBoxRequest, wishBoxRetryDelay } from './requestPolicy'
 
 export function useSupportRecordDetail(recordId: number) {
   const isValidRecordId = Number.isSafeInteger(recordId) && recordId > 0
@@ -11,8 +12,10 @@ export function useSupportRecordDetail(recordId: number) {
       if (!isValidRecordId) {
         throw new Error(`Invalid support record ID ${recordId}: expected a positive safe integer`)
       }
-      return getSupportRecordDetail(recordId, signal)
+      return getSupportRecordDetail(recordId, signal, 10000)
     },
+    retry: retryWishBoxRequest,
+    retryDelay: wishBoxRetryDelay,
   })
 
   // Consumers must handle invalid identity separately from the disabled Query's pending state.
