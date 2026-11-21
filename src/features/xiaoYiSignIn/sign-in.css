@@ -3,23 +3,25 @@
 @import "../../fonts/cormorant-garamond.css";
 @import "../../fonts/playfair-display.css";
 
-.xiao-yi-sign-in-preview {
-  display: grid;
-  min-height: 100dvh;
-  place-content: center;
-  justify-items: start;
-  gap: 1rem;
-  padding: clamp(1rem, 4vw, 2rem);
-  background: #f3f4f6;
-  color: #1f2937;
-  font-family: system-ui, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
+/* The modal stays in the top layer for focus management. Its visible and
+   interactive scene is positioned from the measured scene slot. */
+.xiao-yi-sign-in-dialog[data-scene] {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
 }
-
-.xiao-yi-sign-in-preview__title {
-  font-size: 1.5rem;
-  font-weight: 600;
+.xiao-yi-sign-in-dialog[data-scene]::backdrop { background: transparent; }
+.xiao-yi-sign-in-dialog[data-scene] .xiao-yi-sign-in-shell {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent;
+}
+.xiao-yi-sign-in-dialog[data-scene][data-mobile] .xiao-yi-sign-in-shell {
+  background: rgb(41 54 80 / 22%);
 }
 
 .xiao-yi-sign-in-dialog {
@@ -96,16 +98,7 @@
   outline-offset: 3px;
 }
 
-.xiao-yi-sign-in-close {
-  position: absolute;
-  z-index: 10;
-  top: 8px;
-  right: 8px;
-}
 
-.xiao-yi-sign-in-close__icon {
-  display: none;
-}
 
 /* PC Figma fixture: 1765 × 909. */
 .sign-in-board {
@@ -239,6 +232,10 @@
   font-size: 25px;
 }
 
+.sign-in-board__day:has(> .sign-in-board__today-entry) {
+  z-index: 4;
+}
+
 .sign-in-board__day::after {
   position: absolute;
   top: 44px;
@@ -270,10 +267,6 @@
   user-select: none;
 }
 
-.sign-in-board__day-number--hidden {
-  visibility: hidden;
-}
-
 .sign-in-board__stamp {
   position: absolute;
   top: -2px;
@@ -286,58 +279,23 @@
   user-select: none;
 }
 
-.sign-in-board__today-art {
+.sign-in-board__today-entry {
   position: absolute;
-  z-index: 1;
+  z-index: 4;
   inset: 0;
   pointer-events: none;
 }
 
-.sign-in-board__today-copy {
+.sign-in-board__sign-in-button--date {
   position: absolute;
-  top: 346px;
-  left: 287px;
-  width: 140px;
-  height: 104px;
-  pointer-events: none;
-}
-
-.sign-in-board__today-stamp {
-  position: absolute;
-  z-index: 1;
-  top: -1px;
-  left: 22px;
-  width: 66px;
-  height: 61px;
-  max-width: none;
-  opacity: 0.55;
-  user-select: none;
-}
-
-.sign-in-board__today-number {
-  position: absolute;
-  top: 9px;
-  left: 36px;
-  color: #fffaf0;
-  font-size: 30px;
-}
-
-.sign-in-board__sign-in-label {
-  position: absolute;
-  top: 67.281px;
-  left: 11px;
-  width: 115px;
-  height: 32px;
-  font-size: 22px;
-  text-align: center;
-}
-
-.sign-in-board__sign-in-button {
-  position: absolute;
-  top: 409px;
-  left: 293px;
+  top: 63px;
+  left: 2px;
   width: 125px;
   height: 40px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  pointer-events: auto;
 }
 
 .sign-in-board__title {
@@ -483,13 +441,33 @@
   white-space: pre-line;
 }
 
+.sign-in-board__quote-retry {
+  flex-shrink: 0;
+  margin: 8px auto 12px;
+  padding: 4px 14px;
+  border: 1px solid #8d7758;
+  border-radius: 4px;
+  background: transparent;
+  color: #101d49;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sign-in-board__quote-retry:focus-visible {
+  outline: 2px solid #101d49;
+  outline-offset: 2px;
+}
+
 .sign-in-board__quote-footer {
   position: absolute;
   top: 609px;
   left: 117px;
   width: 490px;
   color: #8d7758;
+  font-family: "Noto Serif SC", serif;
   font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
   text-align: center;
 }
 
@@ -519,6 +497,11 @@
   width: 855px;
   height: 235px;
 }
+
+
+
+
+
 
 .sign-in-board__rewards-border {
   top: 9px;
@@ -553,6 +536,7 @@
   height: 66px;
   color: #304bcc;
   font-size: 46px;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -640,17 +624,21 @@
 }
 
 .sign-in-board__reward-days {
+  height: 28px;
   font-size: 22px;
   line-height: 28px;
 }
 
 .sign-in-board__reward-preview {
+  object-fit: contain;
   width: 91px;
   height: 65px;
   border-radius: 10px;
 }
 
 .sign-in-board__locked {
+  position: relative;
+  left: 1px;
   width: 98px;
   height: 28px;
   margin-top: 2px;
@@ -662,9 +650,24 @@
   text-align: center;
 }
 
-/* 956 × 440 mounted mobile Browse A. The existing JS boundary owns this mode.
-   Only decoration geometry uses 0.47; HTML text and controls use mobile sizes.
-   Smaller layouts remain scroll-accessible until B3-B. */
+.sign-in-board__claim {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.sign-in-board__claim:disabled {
+  cursor: wait;
+}
+
+.sign-in-board__claim:focus-visible {
+  outline: 2px solid #304bcc;
+  outline-offset: 2px;
+}
+
+/* 667 × 375 Browse A: independent 448 × 248.5 canvas.
+   The existing dialog data attribute owns the PC/mobile mode boundary.
+   Only reusable artwork uses a unit conversion; text and controls have native sizes. */
 .xiao-yi-sign-in-dialog[data-mobile] {
   position: fixed;
   inset: 0;
@@ -679,53 +682,52 @@
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-viewport {
+  display: flex;
   width: 100%;
   height: 100%;
   max-height: none;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
 }
 
+/* Auto margins center when space permits, and keep the start reachable on overflow. */
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-scale-layer {
   position: relative;
-  width: 829.55px;
-  height: 427.23px;
-  margin: 0 auto;
+  flex: none;
+  width: 448px;
+  height: 248.5px;
+  margin: auto;
 }
 
-.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close {
-  top: max(5px, env(safe-area-inset-top));
-  right: max(8px, env(safe-area-inset-right), calc((100% - 956px) / 2 + 48px));
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: #d1b171;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close__label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-close__icon {
+.xiao-yi-sign-in-dialog[data-scene][data-mobile] .xiao-yi-sign-in-viewport {
+  position: relative;
   display: block;
+  overflow: visible;
+  padding: 0;
 }
+
+.xiao-yi-sign-in-dialog[data-scene][data-mobile] .xiao-yi-sign-in-scale-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  transform-origin: top left;
+}
+
+
+
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board {
-  --art-scale: 0.47;
-  width: 829.55px;
-  min-width: 829.55px;
-  height: 427.23px;
+  --art-scale: 0.24675;
+  width: 448px;
+  min-width: 448px;
+  height: 248.5px;
   overflow: visible;
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 9.1px;
+  line-height: 12.6px;
 }
+
+
+
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__art {
   left: calc(var(--art-x) * var(--art-scale));
@@ -734,409 +736,626 @@
   height: calc(var(--art-height) * var(--art-scale));
 }
 
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__root-art {
+  left: calc(var(--art-x) * var(--art-scale) + 6.243px);
+}
+
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar {
-  top: 66.27px;
-  left: 105.75px;
-  width: 315.84px;
-  height: 220.9px;
+  top: 34.792px;
+  left: 61.762px;
+  width: 165.816px;
+  height: 131.6px;
+}
+
+/* Existing final-render paper includes rotation and shadow padding. */
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-paper {
+  width: 176.918px;
+  height: 144.56px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month {
-  top: 42.77px;
-  left: 16.92px;
-  font-size: 16.92px;
-  line-height: normal;
+  top: 21.001px;
+  left: 8.883px;
+  font-size: 11.2px;
+  line-height: 16.8px;
 }
 
+/* Extend upward, leaving the text at its design position and the dates unobstructed. */
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today {
-  top: 37.13px;
-  left: 210.09px;
-  width: 76.61px;
-  height: 21.62px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 1.8px;
+  left: 110.297px;
+  width: 44px;
+  height: 36px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__return-today > span {
-  top: -0.16px;
-  left: 9.13px;
+  top: 17.262px;
+  left: 2.694px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__month-rule {
-  top: 66.74px;
-  left: 14.1px;
-  width: 286.7px;
-  height: 0.47px;
+  top: 35.039px;
+  left: 7.403px;
+  width: 150.518px;
+  height: 0.247px;
+  pointer-events: none;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__calendar-table {
-  top: 70.5px;
-  left: 14.1px;
-  width: 286.7px;
+  top: 37.8px;
+  left: 7.403px;
+  width: 150.518px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays,
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__week {
-  grid-template-columns: repeat(7, 40.89px);
+  grid-template-columns: repeat(7, 21.5px);
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__weekdays {
-  height: 15.98px;
-  font-size: 12px;
-  line-height: 17px;
+  height: 11.9px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day {
-  height: 25.38px;
-  font-size: 14px;
-  line-height: 21px;
+  height: 15.4px;
+  font-size: 9.1px;
+  line-height: 12.6px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day:has(> .sign-in-board__today-entry) {
+  z-index: 4;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__day::after {
-  top: 20.68px;
-  height: 0.47px;
+  top: 12.6px;
+  height: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__stamp {
-  top: -0.94px;
-  left: 5.17px;
-  width: 31.02px;
-  height: 28.67px;
-}
-
-/* Date controls keep priority where the mobile paper overlaps their hit areas. */
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__date-button:not([aria-current="date"]) {
-  z-index: 1;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-copy {
-  top: 162.62px;
-  left: 134.89px;
-  width: 61.1px;
-  height: 52.64px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-number {
-  top: 2.245px;
-  left: 14.38px;
-  width: 22px;
-  height: 27px;
-  font-size: 18px;
-  line-height: 27px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-stamp {
-  z-index: auto;
-  top: -0.47px;
-  left: 10.34px;
-  width: 31.02px;
-  height: 28.67px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-label {
-  top: 34.5px;
-  left: -2.62px;
-  width: 56px;
-  height: 21px;
-  font-size: 14px;
-  line-height: 21px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-button {
-  top: 189.62px;
-  left: 124.27px;
-  width: 72px;
-  height: 36px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-gold {
-  position: absolute;
-  top: 153.988px;
-  left: 153.641px;
-  width: 31.49px;
-  height: 31.49px;
+  top: 0.174px;
+  left: 2.607px;
+  width: 16.285px;
+  height: 15.052px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring {
-  top: 2.1155px;
-  left: 9.8705px;
-  width: 21.15px;
-  height: 21.15px;
+  top: 2.148px;
+  left: 5.198px;
+  width: 11.104px;
+  height: 11.104px;
 }
 
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__selection-ring--today {
-  top: 0;
-  left: 7.7545px;
-  width: 31.49px;
-  height: 31.49px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-blue {
-  top: 155.868px;
-  left: 155.521px;
-  width: 27.73px;
-  height: 27.73px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-paper {
-  top: 182.144px;
-  left: 131.414px;
-  width: 81.827px;
-  height: 40.19px;
-}
-
-.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-star {
-  top: 155.663px;
-  left: 138.572px;
-  width: 17.289px;
-  height: 17.289px;
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__sign-in-button--date {
+  top: 15.4px;
+  left: 1.65px;
+  width: 33.2px;
+  height: 16.8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__title {
-  top: 32.9px;
-  left: 107.16px;
-  width: 173.43px;
-  height: 74.26px;
+  top: 17.272px;
+  left: 62.502px;
+  width: 91.051px;
+  height: 38.987px;
+  pointer-events: none;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__daily {
-  top: -20.724px;
-  left: 8.418px;
-  font-size: 42.77px;
+  top: -10.88px;
+  left: 4.42px;
+  font-size: 22.454px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__check-in {
-  top: 18.137px;
-  left: 18.7px;
-  font-size: 32.43px;
+  top: 9.522px;
+  left: 9.818px;
+  font-size: 17.026px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__heading {
-  top: 48.366px;
-  left: 28.628px;
-  font-size: 12.69px;
+  top: 25.392px;
+  left: 15.03px;
+  font-size: 6.662px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote {
-  top: 55.46px;
-  left: 422.53px;
-  width: 306.91px;
-  height: 307.85px;
+  top: 29.116px;
+  left: 228.071px;
+  width: 161.128px;
+  height: 193.2px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-paper {
+  height: 197.642px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-border {
-  top: 5.64px;
-  left: 5.64px;
-  width: 295.63px;
-  height: 294.22px;
-  border-width: 0.47px;
+  top: 2.961px;
+  left: 2.962px;
+  width: 155.206px;
+  height: 186.2px;
+  border-width: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-shade {
-  top: 117.03px;
-  left: 12.22px;
-  width: 230.3px;
-  height: 21.62px;
+  top: 61.441px;
+  left: 6.416px;
+  width: 120.908px;
+  height: 11.351px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__photo-caption {
-  top: 117.03px;
-  left: 18.331px;
-  font-size: 14.1px;
+  top: 61.441px;
+  left: 9.624px;
+  font-size: 7.403px;
   line-height: normal;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-date-number {
-  top: 141.94px;
-  left: 32.9007px;
-  width: 83px;
-  height: 45px;
-  font-size: 33.84px;
+  top: 78.4px;
+  left: 17.5px;
+  width: 43px;
+  height: 24px;
+  font-size: 17.5px;
+  line-height: 23.8px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__review-weekday {
-  top: 164.5px;
-  left: 136.3007px;
-  width: 24px;
-  height: 17px;
-  font-size: 13.63px;
+  top: 89.6px;
+  left: 78.4px;
+  width: 18px;
+  height: 14px;
+  font-size: 9.8px;
+  line-height: 14px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content {
-  top: 192px;
-  left: 54px;
+  top: 113.4px;
+  left: 30.8px;
   display: block;
-  width: 230px;
-  height: 81px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  width: 99.4px;
+  height: 42px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-content p {
-  width: 228px;
+  width: 98px;
   max-width: 100%;
   margin: 0 auto;
   overflow-wrap: anywhere;
-  font-size: 18px;
-  line-height: 27px;
+  font-size: 9.8px;
+  line-height: 14px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-footer {
-  top: 284px;
-  left: 54.99px;
-  width: 230px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 172.9px;
+  left: 19.6px;
+  width: 121.8px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 7.35px;
+  line-height: 11.2px;
+  font-weight: 700;
+  color: #8d7758;
+  text-align: center;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label-paper,
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label-star {
+  top: calc(var(--art-y) * var(--art-scale) + 4.063px);
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label {
-  top: 116.09px;
-  left: 183.77px;
-  width: 114.68px;
-  height: 27.26px;
+  top: 65.009px;
+  left: 96.479px;
+  width: 60.207px;
+  height: 14.312px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-label h3 {
-  top: 1.63px;
-  left: 35.248px;
-  font-size: 16px;
-  line-height: 24px;
+  top: 0.656px;
+  left: 17.405px;
+  font-size: 9.1px;
+  line-height: 12.6px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-star-large {
+  top: 102.2px;
+  left: 145.728px;
+}
+
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__quote-star-small {
+  top: 95.2px;
+  left: 134.528px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards {
-  top: 288.11px;
-  left: 69.09px;
-  width: 401.85px;
-  height: 134px;
+  top: 167.3px;
+  left: 42.515px;
+  width: 210.971px;
+  height: 79.8px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-paper {
-  top: -0.94px;
-  left: -2.82px;
-  width: 410.31px;
-  height: 142.46px;
+  height: 84.242px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__rewards-border {
-  top: 4.23px;
-  left: 4.23px;
-  width: 393.39px;
-  height: 124px;
-  border-width: 0.47px;
+  top: 2.221px;
+  left: 2.221px;
+  width: 205.371px;
+  height: 74.2px;
+  border-width: 0.247px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :first-child {
-  top: 21px;
-  left: 24px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 10.5px;
+  left: 12.6px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total strong {
-  top: 8px;
-  left: 102px;
-  width: 46px;
-  height: 35px;
-  font-size: 24px;
-  line-height: 35px;
+  top: 3.5px;
+  left: 53.9px;
+  width: 24.5px;
+  height: 21px;
+  font-size: 14px;
+  line-height: 20.3px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__total > :last-child {
-  top: 21px;
-  left: 150px;
-  font-size: 14px;
-  line-height: 21px;
+  top: 10.5px;
+  left: 81.2px;
+  font-size: 8.4px;
+  line-height: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress {
-  top: 47.47px;
-  left: 30.55px;
-  width: 163.56px;
-  height: 3.29px;
+  top: 24.922px;
+  left: 16.039px;
+  width: 85.869px;
+  height: 1.727px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__progress > span {
-  width: 76.328px;
+  border-radius: 0.987px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :first-child {
-  top: 61px;
-  left: 24px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 32.2px;
+  left: 12.6px;
+  width: 63px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward strong {
-  top: 57px;
-  left: 132px;
-  width: 32px;
-  height: 24px;
-  font-size: 16px;
-  line-height: 24px;
+  top: 29.4px;
+  left: 70.7px;
+  width: 18.2px;
+  height: 16px;
+  font-size: 10.5px;
+  line-height: 15.4px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__next-reward > :last-child {
-  top: 61px;
-  left: 169px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 32.2px;
+  left: 91px;
+  width: 16.8px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift-icon {
-  top: 89px;
-  left: 24px;
+  top: 49.7px;
+  left: 12.6px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-hint {
-  top: 88px;
-  left: 43px;
-  width: 156px;
-  font-size: 12px;
-  line-height: 18px;
+  top: 49px;
+  left: 22.4px;
+  width: 81.9px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 7.35px;
+  line-height: 10.5px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-list {
-  top: 5.64px;
-  left: 202.57px;
-  grid-template-columns: repeat(3, 58.28px);
-  gap: 6.58px;
+  top: 2.961px;
+  left: 106.349px;
+  grid-template-columns: repeat(3, 30.8px);
+  gap: 3.251px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward {
   position: relative;
-  gap: 2.35px;
+  gap: 1.234px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__gift {
-  width: 50.76px;
-  height: 35.72px;
+  width: 26.649px;
+  height: 18.753px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-days {
-  font-size: 12px;
-  line-height: 18px;
+  height: 12px;
+  font-size: 7.7px;
+  line-height: 11.2px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__reward-preview {
-  width: 42.77px;
-  height: 30.55px;
-  border-radius: 4.7px;
+  width: 22.454px;
+  height: 16.039px;
+  border-radius: 2.467px;
 }
 
 .xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__locked {
   position: absolute;
-  top: 97.36px;
-  left: -0.36px;
+  top: 54.439px;
+  left: -1.4px;
   display: grid;
-  width: 59px;
-  height: 22px;
+  width: 33.6px;
+  height: 15.4px;
   margin: 0;
   place-items: center;
-  border-radius: 2.35px;
-  font-size: 11.5px;
-  line-height: 17px;
+  border-radius: 4px;
+  font-size: 7.7px;
+  line-height: 11.2px;
+}
+
+
+
+
+
+/* Four weeks retain the five-week geometry; only six weeks compress. */
+.sign-in-board[data-formal-calendar] { --calendar-visual-scale: 1; --calendar-row-height: 49.2px; }
+.sign-in-board[data-formal-calendar][data-calendar-rows="6"] { --calendar-visual-scale: 0.8333333333; --calendar-row-height: 41px; }
+.sign-in-board[data-formal-calendar] .sign-in-board__day { height: var(--calendar-row-height); }
+.sign-in-board[data-formal-calendar] .sign-in-board__day::after { top: 100%; }
+.sign-in-board[data-formal-calendar] .sign-in-board__selection-ring,
+.sign-in-board[data-formal-calendar] .sign-in-board__stamp { top: 50%; transform: translateY(-50%); }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] { --calendar-row-height: 13.6px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar][data-calendar-rows="6"] { --calendar-row-height: 11.333333px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__day { height: var(--calendar-row-height); }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__day::after { top: 100%; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar][data-calendar-rows="6"] .sign-in-board__date-button:not([data-today]) { min-height: 0; grid-template-rows: minmax(0, 1fr); }
+
+/* The signed-today flower belongs to the Figma today marker group. */
+.sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__stamp {
+  top: -1px; left: 18px; width: 66px; height: 61px; transform: none;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__stamp {
+  top: -0.525px; left: 1.825px; width: 17.85px; height: 16.45px; transform: none;
+}
+/* M6-2: grounded PC/mobile picker geometry. Twelve months scroll within the
+   existing sample list bounds; this extension is not a separate Figma variant. */
+.sign-in-month-picker__entry {
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 180px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  line-height: normal;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sign-in-month-picker__arrow { flex: none; width: 10px; height: 18px; }
+.sign-in-month-picker {
+  position: absolute;
+  z-index: 20;
+  top: 138px;
+  left: 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 243px;
+  height: 35px;
+  padding: 8px 10px;
+  border: 1px solid #c2a77e80;
+  border-radius: 3px;
+  background: #fff8e9;
+  color: #101d49;
+  font: 400 19px/19px "Noto Serif SC", serif;
+  isolation: isolate;
+}
+.sign-in-month-picker button {
+  flex: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sign-in-month-picker__year,
+.sign-in-month-picker__month { display: flex; align-items: center; justify-content: center; gap: 6px; height: 19px; }
+.sign-in-month-picker__year { width: 84px; }
+.sign-in-month-picker__month { width: 59px; }
+.sign-in-month-picker__separator { width: 19px; text-align: center; }
+.sign-in-month-picker__separator::before { content: "│"; }
+.sign-in-month-picker__separator { font-size: 0; }
+.sign-in-month-picker__separator::before { font-size: 19px; }
+.sign-in-month-picker__close { width: 19px; height: 19px; }
+.sign-in-month-picker .sign-in-month-picker__arrow { width: 8px; height: 13px; }
+.sign-in-month-picker__options {
+  position: absolute;
+  z-index: 1;
+  top: 37px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border: 1px solid #c2a77e80;
+  border-radius: 3px;
+  background: #fff8e9;
+  overflow-y: auto;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.sign-in-month-picker__options::-webkit-scrollbar { display: none; }
+.sign-in-month-picker__years { left: 0; width: 104px; height: 31px; }
+.sign-in-month-picker__months { left: 131px; width: 79px; height: 58px; overflow-y: auto; }
+.sign-in-month-picker__options button { min-height: 19px; width: 100%; text-align: center; }
+
+.sign-in-month-picker__entry:focus-visible,
+.sign-in-month-picker button:focus-visible,
+.sign-in-month-picker__months:focus-visible { outline: 2px solid #304bcc; outline-offset: 1px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__entry { width: 55.5px; height: 17px; gap: 4px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__entry .sign-in-month-picker__arrow { width: 3.5px; height: 6px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker {
+  top: 36px; left: 8px; width: 119.2px; height: 29.4px;
+  padding: 5px 8px; gap: 4px; border-width: 0.7px; border-radius: 2px;
+  font-size: 10px; font-weight: 700; line-height: 14px;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__year { width: 50px; height: 18px; gap: 4px; padding-inline: 2px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__month { width: 39.8px; height: 18px; gap: 4px; padding-inline: 2px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__separator { width: 4px; font-size: 10px; color: #b78336; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__separator::before { content: none; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker .sign-in-month-picker__arrow { width: 5px; height: 6.4px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__close { display: none; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__options { top: 26px; padding: 4px 6px; gap: 4px; border-width: 0.7px; border-radius: 2px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__years { width: 56px; height: auto; max-height: 42px; left: 0; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__months { width: 40px; height: 42px; left: 58px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-month-picker__options button { min-height: 22px; }
+
+/* The current-day treatment follows its date cell. */
+.sign-in-board__current-day-art {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  pointer-events: none; z-index: 0;
+}
+.sign-in-board__current-day-art img { position: absolute; max-width: none; }
+.sign-in-board__current-day-art .sign-in-board__today-gold-ring { top: 0; left: 18px; width: 67px; height: 67px; }
+.sign-in-board__current-day-art .sign-in-board__today-blue-circle { top: 4px; left: 22px; width: 59px; height: 59px; }
+.sign-in-board__date-number { position: relative; z-index: 2; }
+.sign-in-board__date-button[data-today] .sign-in-board__date-number {
+  position: absolute;
+  top: 9px;
+  left: 32px;
+  z-index: 2;
+  width: 36px;
+  height: 43px;
+  color: #fffaf0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 43px;
+  text-align: center;
+}
+.sign-in-board__date-button[data-today] .sign-in-board__selection-ring {
+  top: 50%; left: 50%; width: 52px; height: 52px; transform: translate(-50%, -50%); z-index: 3;
+}
+.sign-in-board__year-limit { position: absolute; top: 8px; left: 260px; z-index: 5; background: #fff8e9; color: #101d49; font-size: 18px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__current-day-art .sign-in-board__today-gold-ring {
+  top: -1.4px; left: 1.65px; width: 18.2px; height: 18.2px;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__current-day-art .sign-in-board__today-blue-circle {
+  top: -0.35px; left: 2.7px; width: 16.1px; height: 16.1px;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__date-button[data-today] .sign-in-board__date-number {
+  top: -0.35px;
+  left: 4.1px;
+  width: 14px;
+  height: 17px;
+  font-size: 11.2px;
+  line-height: 16.1px;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__date-button[data-today] .sign-in-board__selection-ring { width: 17px; height: 17px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__year-limit { top: 0; left: 40px; font-size: 8px; }
+
+/* The artwork shares the cell centre. It never owns pointer events. */
+.sign-in-board[data-formal-calendar] .sign-in-board__day:has(> .sign-in-board__today-entry) { z-index: auto; }
+.sign-in-board[data-formal-calendar] .sign-in-board__today-entry { z-index: 6; }
+.sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] { min-height: 0; }
+.sign-in-board[data-formal-calendar] .sign-in-board__date-number {
+  position: relative; inset: auto; width: auto; height: auto; line-height: normal; z-index: 5;
+  transform: scale(var(--calendar-visual-scale));
+}
+.sign-in-board[data-formal-calendar] .sign-in-board__selection-ring,
+.sign-in-board[data-formal-calendar] .sign-in-board__stamp,
+.sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__stamp {
+  top: 50%; left: 50%; transform: translate(-50%, -50%) scale(var(--calendar-visual-scale));
+}
+.sign-in-board[data-formal-calendar] .sign-in-board__current-day-art {
+  transform: none;
+}
+.sign-in-board[data-formal-calendar] .sign-in-board__current-day-art img {
+  top: 50%; left: 50%; transform: translate(-50%, -50%) scale(var(--calendar-visual-scale));
+}
+.sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-gold-ring { width: 54px; height: 54px; }
+.sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-blue-circle { width: 48px; height: 48px; }
+.sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-cell-star {
+  left: calc(50% - 53.93px * var(--calendar-visual-scale));
+  top: calc(50% - 14px * var(--calendar-visual-scale));
+  width: calc(25px * var(--calendar-visual-scale)); height: calc(25px * var(--calendar-visual-scale)); transform: none;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__current-day-art img {
+  top: 50%; left: 50%;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-gold-ring { width: 13px; height: 13px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-blue-circle { width: 11.6px; height: 11.6px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__current-day-art .sign-in-board__today-cell-star {
+  left: calc(50% - 13.55px * var(--calendar-visual-scale));
+  top: calc(50% - 2.9px * var(--calendar-visual-scale));
+  width: calc(5.5px * var(--calendar-visual-scale)); height: calc(5.5px * var(--calendar-visual-scale));
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__date-number {
+  position: relative; inset: auto; width: auto; height: auto; line-height: normal;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__stamp {
+  top: 50%; left: 50%; transform: translate(-50%, -50%) scale(var(--calendar-visual-scale));
+}
+.sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__date-number,
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__date-button[data-today] .sign-in-board__date-number {
+  position: absolute; inset: auto; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(var(--calendar-visual-scale));
+}
+/* One button owns the paper, its text, and precisely the same hit area. */
+.sign-in-board[data-formal-calendar] .sign-in-board__sign-in-button--date {
+  top: calc(50% + 25.6px * var(--calendar-visual-scale));
+  left: calc(50% - 48.93px * var(--calendar-visual-scale));
+  width: calc(98px * var(--calendar-visual-scale));
+  height: calc(31px * var(--calendar-visual-scale));
+}
+.sign-in-board__today-tag-art {
+  position: absolute; top: 0; left: 0; display: block;
+  width: 98px; height: 31px;
+  transform: scale(var(--calendar-visual-scale)); transform-origin: top left;
+  pointer-events: none;
+}
+.sign-in-board__today-tag-art img { position: absolute; left: -4.63px; top: -1.33px; display: block; width: 111.89px; height: 43px; max-width: none; }
+.sign-in-board__today-tag-label {
+  position: absolute; top: 1px; left: 9px; width: 80px; height: 29px;
+  font-size: 20px; line-height: normal; text-align: center;
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board[data-formal-calendar] .sign-in-board__sign-in-button--date {
+  top: calc(50% + 8.4px * var(--calendar-visual-scale));
+  left: calc(50% - 12px * var(--calendar-visual-scale));
+  width: calc(24px * var(--calendar-visual-scale));
+  height: calc(8px * var(--calendar-visual-scale));
+}
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-tag-art { width: 24px; height: 8px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-tag-art img { left: -0.986px; top: -0.267px; width: 26.96px; height: 10.93px; }
+.xiao-yi-sign-in-dialog[data-mobile] .sign-in-board__today-tag-label {
+  top: 0; left: 1.5px; width: 21px; height: 8px;
+  font-size: 5.2px; line-height: 7.752px;
 }

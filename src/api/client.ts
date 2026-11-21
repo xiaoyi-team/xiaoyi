@@ -20,17 +20,20 @@ export const AUTH_UNAUTHORIZED_EVENT =
 export class ApiError extends Error {
   status: number;
   data: unknown;
+  readonly bizCode?: string;
 
   constructor(
     message: string,
     status: number,
-    data?: unknown
+    data?: unknown,
+    bizCode?: string
   ) {
     super(message);
 
     this.name = "ApiError";
     this.status = status;
     this.data = data;
+    this.bizCode = bizCode;
   }
 }
 
@@ -196,6 +199,12 @@ export interface ApiRequestOptions
    * 返回数据解析方式
    */
   responseType?: ResponseType;
+
+  /** Optional service base URL; an empty string selects the same origin. */
+  baseUrl?: string;
+
+  /** Observe HTTP 401 before auth cleanup can abort reading its body. */
+  onUnauthorizedResponse?: () => void;
 }
 
 /**
@@ -397,21 +406,21 @@ export async function apiRequest<T>(
   path: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
-  /**
-   * 没有配置服务器地址
-   */
-  if (!API_BASE) {
+  const {
+    auth = true,
+    responseType = "auto",
+    baseUrl,
+    onUnauthorizedResponse,
+    ...fetchOptions
+  } = options;
+
+  const requestBaseUrl = baseUrl === "" ? "" : baseUrl?.trim().replace(/\/$/, "") || API_BASE;
+  if (!requestBaseUrl && baseUrl !== "") {
     throw new ApiError(
       "暂未配置后端接口地址，请检查 .env 中的 VITE_API_BASE_URL。",
       0
     );
   }
-
-  const {
-    auth = true,
-    responseType = "auto",
-    ...fetchOptions
-  } = options;
 
   const headers =
     new Headers(
@@ -437,7 +446,7 @@ export async function apiRequest<T>(
 
   try {
     response = await fetch(
-      `${API_BASE}${path}`,
+      `${requestBaseUrl}${path}`,
       {
         ...fetchOptions,
         headers,
@@ -456,6 +465,8 @@ export async function apiRequest<T>(
       0
     );
   }
+
+  if (response.status === 401) onUnauthorizedResponse?.();
 
   /**
    * Token 失效
@@ -498,7 +509,8 @@ export async function apiRequest<T>(
     throw new ApiError(
       message,
       response.status,
-      data
+      data,
+      response.headers.get("X-Biz-Code") ?? undefined
     );
   }
 

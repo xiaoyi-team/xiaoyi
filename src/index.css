@@ -6,7 +6,7 @@
 }
 
 #root,
-#root *:not(.bar-page, .bar-page *) {
+#root *:not(.bar-page, .bar-page *, .xiao-yi-page, .xiao-yi-page *) {
   font-family: var(--interface-font) !important;
 }
 

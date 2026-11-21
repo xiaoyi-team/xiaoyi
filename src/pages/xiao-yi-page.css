@@ -189,6 +189,7 @@
     width: 100%;
     height: 100%;
     transform: none;
+    container-type: inline-size;
   }
 
   .xiao-yi-page__background {
@@ -230,20 +231,20 @@
   .xiao-yi-page__sign-in {
     top: calc(100% * 271.72 / 375);
     left: calc(100% * 242 / 667);
-    width: 169.92px;
-    height: 55.2px;
+    width: calc(100cqw * 169.92 / 667);
+    height: calc(100cqw * 55.2 / 667);
   }
 
   .xiao-yi-page__calendar {
-    top: 5.28px;
-    width: 32px;
-    height: 40px;
+    top: calc(100cqw * 5.28 / 667);
+    width: calc(100cqw * 32 / 667);
+    height: calc(100cqw * 40 / 667);
   }
 
   .xiao-yi-page__wordmark {
-    left: 44.16px;
-    width: 125.76px;
-    height: 51.84px;
+    left: calc(100cqw * 44.16 / 667);
+    width: calc(100cqw * 125.76 / 667);
+    height: calc(100cqw * 51.84 / 667);
   }
 
   .xiao-yi-page__sign-in[aria-expanded="false"]:is(:active, [data-pressed]) .xiao-yi-page__calendar {

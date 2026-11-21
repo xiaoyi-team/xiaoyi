@@ -1,0 +1,273 @@
+@import "../../fonts/noto-serif-sc.css";
+
+.reward-notice {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  color: #152347;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+}
+
+.reward-notice[open] { display: grid; place-items: center; }
+.reward-notice::backdrop { background: transparent; }
+.reward-notice__slot { position: relative; }
+.reward-notice__canvas { position: absolute; inset: 0 auto auto 0; width: 1765px; height: 909px; transform-origin: top left; }
+
+/* Smart Animate exposes the endpoints and timing, not its intermediate render.
+ * Reveal the whole notification downward without moving/scaling its final art. */
+.reward-notice__reveal {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0);
+  animation: reward-notice-open 320ms ease-out both;
+}
+
+.reward-notice[data-closing] .reward-notice__reveal {
+  animation: reward-notice-close 250ms ease-out both;
+}
+
+.reward-notice__shade { position: absolute; inset: 0; background: rgb(12 21 48 / 62%); }
+
+.reward-notice__card {
+  position: absolute;
+  left: 562.5px;
+  top: 179.5px;
+  box-sizing: border-box;
+  width: 640px;
+  height: 550px;
+  border: 2px solid #bd9452;
+  border-radius: 15px;
+  background: #fcf2df;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 32%);
+}
+
+.reward-notice__card p,
+.reward-notice__card h2 { margin: 0; }
+.reward-notice__inner-border { position: absolute; left: 10px; top: 10px; box-sizing: border-box; width: 616px; height: 526px; border: 1px solid #dec796; border-radius: 9px; pointer-events: none; }
+
+.reward-notice__title,
+.reward-notice__english,
+.reward-notice__name,
+.reward-notice__description {
+  position: absolute;
+  line-height: normal;
+  text-align: center;
+}
+
+.reward-notice__title { left: -2px; top: 32px; width: 640px; height: 55px; font-size: 36px; }
+.reward-notice__english { left: -2px; top: 92px; width: 640px; height: 26px; color: #aa8242; font-size: 14px; }
+.reward-notice__gift-slot { position: absolute; left: 240px; top: 125px; width: 156px; height: 156px; }
+/* Placed Figma instances are all 156px; fill the slot rather than using
+ * the 120px sizing hint from the hidden backing components. */
+.reward-notice__gift { display: block; width: 100%; height: 100%; max-width: none; object-fit: contain; pointer-events: none; user-select: none; }
+.reward-notice__name { left: 28px; top: 301px; width: 580px; height: 50px; font-size: 30px; }
+.reward-notice__description { left: 28px; top: 363px; width: 580px; height: 35px; color: #8a7459; font-size: 20px; }
+
+.reward-notice__confirm {
+  position: absolute;
+  left: 157px;
+  top: 441px;
+  display: grid;
+  box-sizing: border-box;
+  width: 322px;
+  height: 60px;
+  place-items: center;
+  border: 1px solid #cda95f;
+  border-radius: 6px;
+  padding: 0;
+  background: #283f86;
+  color: #fff4d8;
+  font: inherit;
+  font-size: 23px;
+  line-height: normal;
+  cursor: pointer;
+}
+
+/* Expand the 34px design frame by 5px per side, leaving the glyph in place. */
+.reward-notice__close {
+  position: absolute;
+  left: 580px;
+  top: 13px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #94723d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.reward-notice__close span { position: absolute; left: 9px; top: 0; font-size: 31px; line-height: normal; }
+.reward-notice button:focus-visible { outline: 3px solid #4867ba; outline-offset: 4px; }
+
+@keyframes reward-notice-open {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}
+
+@keyframes reward-notice-close {
+  from { clip-path: var(--reward-close-clip, inset(0)); }
+  to { clip-path: inset(0 0 100% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reward-notice__reveal,
+  .reward-notice[data-closing] .reward-notice__reveal { animation: none; }
+}
+
+/* Keep the PC absolute children anchored to the card. */
+.reward-notice__body { display: contents; }
+
+/* The shared viewport snapshot selects mobile mode; no second breakpoint.
+ * Temporary Figma type baseline, pending UI readability confirmation. */
+.reward-notice[data-mobile] {
+  --reward-title-font: 700 12.6px / 18.2px "Noto Serif SC", serif;
+  --reward-english-font: 700 7.35px / 10.29px "Noto Serif SC", serif;
+  --reward-name-font: 700 11.2px / 16.8px "Noto Serif SC", serif;
+  --reward-description-font: 700 9.1px / 13.3px "Noto Serif SC", serif;
+  --reward-confirm-font: 700 10.5px / 15.4px "Noto Serif SC", serif;
+}
+
+.reward-notice[data-mobile] .reward-notice__slot,
+.reward-notice[data-mobile] .reward-notice__canvas { width: 448px; height: 248.5px; }
+
+.reward-notice[data-mobile] .reward-notice__card {
+  left: 113.456px;
+  top: 29.251px;
+  width: 221.088px;
+  height: 189.997px;
+  border: 0;
+  border-radius: 5.182px;
+  box-shadow: 0 6.909px 20.727px rgb(0 0 0 / 32%);
+}
+
+/* Paint the fractional border without shifting the mobile design coordinates. */
+.reward-notice[data-mobile] .reward-notice__card::before {
+  position: absolute;
+  inset: 0;
+  border: 0.691px solid #bd9452;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.reward-notice[data-mobile] .reward-notice__inner-border {
+  left: 4.145px;
+  top: 4.145px;
+  width: 212.797px;
+  height: 181.707px;
+  border-width: 0.345px;
+  border-radius: 3.109px;
+}
+
+.reward-notice[data-mobile] .reward-notice__body {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  box-sizing: border-box;
+  height: 142px;
+  padding: 11.745px 0 1.9px;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.reward-notice[data-mobile] .reward-notice__body > * {
+  position: static;
+  flex-shrink: 0;
+}
+
+.reward-notice[data-mobile] .reward-notice__title {
+  width: 100%;
+  height: auto;
+  min-height: 19px;
+  font: var(--reward-title-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__english {
+  width: 100%;
+  height: 8.982px;
+  margin-top: 1.727px;
+  font: var(--reward-english-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__gift-slot {
+  width: 53.89px;
+  height: 53.89px;
+  margin-top: 2.418px;
+}
+
+.reward-notice[data-mobile] .reward-notice__name,
+.reward-notice[data-mobile] .reward-notice__description {
+  width: 200.361px;
+  height: auto;
+  overflow-wrap: anywhere;
+}
+
+.reward-notice[data-mobile] .reward-notice__name {
+  min-height: 17px;
+  margin-top: 6.909px;
+  font: var(--reward-name-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__description {
+  min-height: 14px;
+  margin-top: 4.418px;
+  font: var(--reward-description-font);
+}
+
+.reward-notice[data-mobile] .reward-notice__confirm {
+  left: 54.927px;
+  top: 153.034px;
+  width: 111.235px;
+  height: 20.727px;
+  border-width: 0.345px;
+  border-radius: 2.073px;
+  font: var(--reward-confirm-font);
+}
+
+/* The 44px target stays below the content and inside the card. */
+.reward-notice[data-mobile] .reward-notice__confirm::before {
+  position: absolute;
+  top: calc(50% + 2px);
+  left: -0.345px;
+  right: -0.345px;
+  height: 44px;
+  transform: translateY(-50%);
+  content: "";
+}
+
+.reward-notice[data-mobile] .reward-notice__close {
+  left: 170.179px;
+  top: 0;
+}
+
+.reward-notice[data-mobile] .reward-notice__close span {
+  left: 33.981px;
+  top: 5.182px;
+  font-size: 10.709px;
+  line-height: 15px;
+}
+
+.reward-notice[data-mobile] button:focus-visible {
+  outline-width: 1.5px;
+  outline-offset: 2px;
+}
+
+.reward-notice[data-mobile] .reward-notice__body:focus-visible {
+  outline: 1.5px solid #4867ba;
+  outline-offset: -3px;
+}
