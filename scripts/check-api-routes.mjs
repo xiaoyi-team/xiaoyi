@@ -111,7 +111,7 @@ export function matchVercel(rewrites, request) {
 
     const id = path.split("/")[4];
     const suffix = path.slice(source.slice(0, -"/:path*".length).length + 1);
-    const expanded = type === "prefix" ? destination.replace("/:path*", () => suffix ? `/${suffix}` : "")
+    const expanded = type === "prefix" ? destination.replace("/:path*", () => suffix ? `/${suffix}` : path.endsWith("/") ? "/" : "")
       : type === "template" ? destination.replace(":id", () => id) : destination;
     const target = new URL(expanded);
     return { origin: target.origin, path: target.pathname + target.search + query };
@@ -203,6 +203,16 @@ export const pathCases = [
   ["/api/sign/add?next=%2Fapi%2Fsign&tag=a&tag=b", "core", "/sign/add?next=%2Fapi%2Fsign&tag=a&tag=b"],
   ["/api/api/sign/add", "core", "/api/sign/add"],
   ["/api", "core", "/"],
+  ["/api/v1/announcements/", "gateway"],
+  ["/api/v1/announcements/123", "gateway"],
+  ["/api/v1/announcements/123/", "gateway"],
+  ["/api/v1/announcements/?tag=a&tag=b", "gateway"],
+  ["/api/v1/announcements/123/?tag=a&tag=b", "gateway"],
+  ["/api/", "core", "/"],
+  ["/apiary", null],
+  ["/api/v1/announcements/a//b", "gateway"],
+  ["/api/v1/votes//submit", "core", "/v1/votes//submit"],
+  ["/api/v1/votes/a%2Fb/submit?tag=a&tag=b", "gateway"],
   ["/apiary/v1/votes", null],
   ["/home", null],
 ];
