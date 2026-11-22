@@ -196,6 +196,9 @@ export interface ApiRequestOptions
    * 返回数据解析方式
    */
   responseType?: ResponseType;
+
+  /** Use the supplied path on the current origin. */
+  baseUrl?: "";
 }
 
 /**
@@ -400,7 +403,7 @@ export async function apiRequest<T>(
   /**
    * 没有配置服务器地址
    */
-  if (!API_BASE) {
+  if (options.baseUrl !== "" && !API_BASE) {
     throw new ApiError(
       "暂未配置后端接口地址，请检查 .env 中的 VITE_API_BASE_URL。",
       0
@@ -410,6 +413,7 @@ export async function apiRequest<T>(
   const {
     auth = true,
     responseType = "auto",
+    baseUrl,
     ...fetchOptions
   } = options;
 
@@ -437,7 +441,7 @@ export async function apiRequest<T>(
 
   try {
     response = await fetch(
-      `${API_BASE}${path}`,
+      baseUrl === "" ? path : `${API_BASE}${path}`,
       {
         ...fetchOptions,
         headers,

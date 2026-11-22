@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/v1/announcements/:path*",
+      "destination": "http://115.159.121.83/api/v1/announcements/:path*"
+    },
+    {
+      "source": "/api/v1/rights-records",
+      "destination": "http://115.159.121.83/api/v1/rights-records"
+    },
+    {
+      "source": "/api/v1/votes",
+      "destination": "http://115.159.121.83/api/v1/votes"
+    },
+    {
+      "source": "/api/v1/votes/:id/submit",
+      "destination": "http://115.159.121.83/api/v1/votes/:id/submit"
+    },
+    {
+      "source": "/api/v1/daily-quotes/by-date",
+      "destination": "http://115.159.121.83/api/v1/daily-quotes/by-date"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "http://115.159.121.83:8001/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
