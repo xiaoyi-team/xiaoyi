@@ -13,6 +13,7 @@ import type { SignInAwardClaim } from "./useSignInAwardGet";
 type SignInOverlayProps = {
   rewardAnchorRef?: RefObject<HTMLDivElement | null>;
   sceneRef?: RefObject<HTMLDivElement | null>;
+  touchSceneScale?: number;
   awardClaim?: SignInAwardClaim;
   onOpenAward?: (awardId: number) => void;
   open: boolean;
@@ -60,7 +61,7 @@ function readSignInBoardScale() {
   return Math.min(1, viewportWidth / BOARD_WIDTH, viewportHeight / BOARD_HEIGHT);
 }
 
-function SignInOverlay({ rewardAnchorRef, sceneRef, open, onClose, children, statView, awardListView, awardClaim, onOpenAward, quoteView, quoteResult, calendar, signIn, drawResult, onDismissDraw }: SignInOverlayProps) {
+function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClose, children, statView, awardListView, awardClaim, onOpenAward, quoteView, quoteResult, calendar, signIn, drawResult, onDismissDraw }: SignInOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const backdropPressRef = useRef(false);
@@ -70,13 +71,8 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, open, onClose, children, sta
   const [sceneBounds, setSceneBounds] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
   const boardScale = sceneRef && viewportBoardScale !== null && sceneBounds
     ? sceneBounds.width / 1920 : viewportBoardScale;
-  const touchSceneScale = sceneBounds ? Math.min(sceneBounds.width / 667, sceneBounds.height / 375) : 1;
-  const touchScale = sceneRef && viewportBoardScale === null && sceneBounds
-    ? Math.min(
-        Math.max(1, touchSceneScale - 0.001),
-        Math.max(0, sceneBounds.width - 16) / 448,
-        Math.max(0, sceneBounds.height - 16) / 248.5,
-      )
+  const touchScale = sceneRef && viewportBoardScale === null && sceneBounds && touchSceneScale !== undefined
+    ? touchSceneScale
     : null;
   const activeDrawResult = open && onDismissDraw ? drawResult : null;
 
@@ -205,7 +201,7 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, open, onClose, children, sta
     <>
       {signInDialog}
       {activeDrawResult && onDismissDraw && (
-        <DrawCardOverlay result={activeDrawResult} open onCollect={onDismissDraw} onDismiss={onDismissDraw} sceneBounds={sceneBounds} sceneScale={boardScale} />
+        <DrawCardOverlay result={activeDrawResult} open onCollect={onDismissDraw} onDismiss={onDismissDraw} sceneBounds={sceneBounds} sceneScale={boardScale} touchSceneScale={touchSceneScale} />
       )}
     </>
   );

@@ -7,12 +7,13 @@ import "./reward-notice.css";
 type RewardNoticeProps = {
   onClose: () => void;
   boardRef?: RefObject<HTMLDivElement | null>;
+  touchSceneScale?: number;
   claim: { name: string; days: number; imageUrl: string | null; onClaim: () => void };
 };
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
-function RewardNotice({ claim, onClose, boardRef }: RewardNoticeProps) {
+function RewardNotice({ claim, onClose, boardRef, touchSceneScale }: RewardNoticeProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
   const phaseRef = useRef<"active" | "closing" | "closed">("active");
@@ -40,7 +41,9 @@ function RewardNotice({ claim, onClose, boardRef }: RewardNoticeProps) {
       window.removeEventListener("scroll", measure, true);
     };
   }, [boardRef]);
-  const boardScale = boardBounds ? boardBounds.width / (mobile ? 448 : BOARD_WIDTH) : scale;
+  const boardScale = mobile && touchSceneScale !== undefined
+    ? touchSceneScale
+    : boardBounds ? boardBounds.width / (mobile ? 448 : BOARD_WIDTH) : scale;
   const reward = { gift: claim.imageUrl?.trim() || (mobile ? rewardPlaceholderTouch : rewardPlaceholderPc), title: claim.name.trim() ? claim.name : "奖励名称暂不可用", imageSize: 156 };
   const days = claim.days;
 

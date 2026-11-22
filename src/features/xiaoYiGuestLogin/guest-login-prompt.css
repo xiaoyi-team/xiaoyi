@@ -211,6 +211,29 @@
 /* M1-E-L1: 667 landscape layout. Typography is a temporary Figma baseline,
  * pending UI readability review; normal mobile viewports never scale the card. */
 @media (max-width: 1024px) {
+  .guest-login-prompt[data-scene-scale] {
+    width: calc(350px * var(--guest-scene-scale));
+    height: calc(var(--guest-surface-height, 343px) * var(--guest-scene-scale));
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .guest-login-prompt[data-scene-scale] .guest-login-prompt__surface {
+    width: 350px;
+    border-radius: 8.4px;
+    background: #fbf1de;
+    box-shadow: 0 7px 21px rgb(0 0 0 / 28%);
+    transform: scale(var(--guest-scene-scale));
+    transform-origin: top left;
+  }
+
+  .guest-login-prompt[data-scene-scale] .guest-login-prompt__scroll {
+    max-height: 343px;
+  }
+
   .guest-login-prompt {
     --guest-mobile-english-font: 400 17.5px / 22.4px "Dancing Script", cursive;
     --guest-mobile-title-font: 700 18.2px / 26.6px "Noto Serif SC", serif;
