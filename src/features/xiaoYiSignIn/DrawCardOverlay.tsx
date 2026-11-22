@@ -180,8 +180,8 @@ function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBo
       className="draw-card-dialog"
       aria-label="今日寄语抽卡"
       data-mobile={mobile ? true : undefined}
-      data-scene={sceneBounds ? true : undefined}
-      style={sceneBounds ? {
+      data-scene={!mobile && sceneBounds ? true : undefined}
+      style={mobile ? { width: 667 * (touchSceneScale ?? 1), height: 375 * (touchSceneScale ?? 1) } : sceneBounds ? {
         left: sceneBounds.left, top: sceneBounds.top,
         width: sceneBounds.width, height: sceneBounds.height,
       } as CSSProperties : undefined}

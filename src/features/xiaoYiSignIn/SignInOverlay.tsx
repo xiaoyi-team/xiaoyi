@@ -71,14 +71,14 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClo
   const [sceneBounds, setSceneBounds] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
   const boardScale = sceneRef && viewportBoardScale !== null && sceneBounds
     ? sceneBounds.width / 1920 : viewportBoardScale;
-  const touchScale = sceneRef && viewportBoardScale === null && sceneBounds && touchSceneScale !== undefined
-    ? touchSceneScale
-    : null;
+  const mobile = viewportBoardScale === null;
+  const touchScale = mobile ? touchSceneScale ?? null : null;
+  const pcSceneBounds = mobile ? null : sceneBounds;
   const activeDrawResult = open && onDismissDraw ? drawResult : null;
 
   useLayoutEffect(() => {
     const scene = sceneRef?.current;
-    if (!scene || !open) return;
+    if (!scene || !open || mobile) return;
     const measure = () => {
       const { left, top, width, height } = scene.getBoundingClientRect();
       setSceneBounds({ left, top, width, height });
@@ -93,7 +93,7 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClo
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
-  }, [open, sceneRef]);
+  }, [open, sceneRef, mobile]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -122,14 +122,24 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClo
     onClose();
   }
 
+  function isSceneBackdrop(dialog: HTMLDialogElement, clientX: number, clientY: number) {
+    const panel = sceneRef || mobile ? boardRef.current : dialog;
+    const scene = touchScale !== null ? dialog : sceneRef?.current;
+    return panel !== null &&
+      ((!sceneRef && touchScale === null) || (scene != null && !isOutsidePanel(scene, clientX, clientY))) &&
+      isOutsidePanel(panel, clientX, clientY);
+  }
+
   const signInDialog = (
     <dialog
       ref={dialogRef}
       className="xiao-yi-sign-in-dialog"
       data-pc-fit={boardScale !== null ? true : undefined}
       data-mobile={boardScale === null ? true : undefined}
-      data-scene={sceneRef ? true : undefined}
-      style={!sceneRef && boardScale !== null ? { width: BOARD_WIDTH * boardScale } : undefined}
+      data-scene={sceneRef || touchScale !== null ? true : undefined}
+      data-native-center={touchScale !== null ? true : undefined}
+      style={touchScale !== null ? { width: 667 * touchScale, height: 375 * touchScale }
+        : !sceneRef && boardScale !== null ? { width: BOARD_WIDTH * boardScale } : undefined}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
@@ -142,31 +152,25 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClo
         }
       }}
       onPointerDownCapture={(event) => {
-        const panel = sceneRef || boardScale === null ? boardRef.current : event.currentTarget;
         backdropPressRef.current =
-          panel !== null &&
-          (!sceneRef || (sceneRef.current !== null && !isOutsidePanel(sceneRef.current, event.clientX, event.clientY))) &&
           event.isPrimary &&
           event.button === 0 &&
-          isOutsidePanel(panel, event.clientX, event.clientY);
+          isSceneBackdrop(event.currentTarget, event.clientX, event.clientY);
       }}
       onPointerCancel={() => {
         backdropPressRef.current = false;
       }}
       onClick={(event) => {
-        const panel = sceneRef || boardScale === null ? boardRef.current : event.currentTarget;
         const clickedBackdrop =
-          panel !== null &&
-          (!sceneRef || (sceneRef.current !== null && !isOutsidePanel(sceneRef.current, event.clientX, event.clientY))) &&
           backdropPressRef.current &&
-          isOutsidePanel(panel, event.clientX, event.clientY);
+          isSceneBackdrop(event.currentTarget, event.clientX, event.clientY);
 
         backdropPressRef.current = false;
         if (clickedBackdrop) requestClose();
       }}
     >
-      <div className="xiao-yi-sign-in-shell" style={sceneRef && sceneBounds ? {
-        left: sceneBounds.left, top: sceneBounds.top, width: sceneBounds.width, height: sceneBounds.height,
+      <div className="xiao-yi-sign-in-shell" style={sceneRef && pcSceneBounds ? {
+        left: pcSceneBounds.left, top: pcSceneBounds.top, width: pcSceneBounds.width, height: pcSceneBounds.height,
       } as CSSProperties : undefined}>
         <div
           className="xiao-yi-sign-in-viewport"
@@ -201,7 +205,7 @@ function SignInOverlay({ rewardAnchorRef, sceneRef, touchSceneScale, open, onClo
     <>
       {signInDialog}
       {activeDrawResult && onDismissDraw && (
-        <DrawCardOverlay result={activeDrawResult} open onCollect={onDismissDraw} onDismiss={onDismissDraw} sceneBounds={sceneBounds} sceneScale={boardScale} touchSceneScale={touchSceneScale} />
+        <DrawCardOverlay result={activeDrawResult} open onCollect={onDismissDraw} onDismiss={onDismissDraw} sceneBounds={pcSceneBounds} sceneScale={boardScale} touchSceneScale={touchSceneScale} />
       )}
     </>
   );

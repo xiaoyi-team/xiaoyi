@@ -132,6 +132,7 @@
 /* The shared viewport snapshot selects mobile mode; no second breakpoint.
  * Temporary Figma type baseline, pending UI readability confirmation. */
 .reward-notice[data-mobile] {
+  margin: auto;
   --reward-title-font: 700 12.6px / 18.2px "Noto Serif SC", serif;
   --reward-english-font: 700 7.35px / 10.29px "Noto Serif SC", serif;
   --reward-name-font: 700 11.2px / 16.8px "Noto Serif SC", serif;
@@ -139,7 +140,8 @@
   --reward-confirm-font: 700 10.5px / 15.4px "Noto Serif SC", serif;
 }
 
-.reward-notice[data-mobile] .reward-notice__slot,
+.reward-notice[data-mobile] .reward-notice__slot { width: 100%; height: 100%; }
+
 .reward-notice[data-mobile] .reward-notice__canvas { width: 448px; height: 248.5px; }
 
 .reward-notice[data-mobile] .reward-notice__card {

@@ -25,7 +25,7 @@ function RewardNotice({ claim, onClose, boardRef, touchSceneScale }: RewardNotic
   const [boardBounds, setBoardBounds] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
   useLayoutEffect(() => {
     const board = boardRef?.current;
-    if (!board) return;
+    if (!board || mobile) return;
     const measure = () => {
       const { left, top, width, height } = board.getBoundingClientRect();
       setBoardBounds({ left, top, width, height });
@@ -40,10 +40,8 @@ function RewardNotice({ claim, onClose, boardRef, touchSceneScale }: RewardNotic
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
-  }, [boardRef]);
-  const boardScale = mobile && touchSceneScale !== undefined
-    ? touchSceneScale
-    : boardBounds ? boardBounds.width / (mobile ? 448 : BOARD_WIDTH) : scale;
+  }, [boardRef, mobile]);
+  const boardScale = mobile ? touchSceneScale ?? 1 : boardBounds ? boardBounds.width / BOARD_WIDTH : scale;
   const reward = { gift: claim.imageUrl?.trim() || (mobile ? rewardPlaceholderTouch : rewardPlaceholderPc), title: claim.name.trim() ? claim.name : "奖励名称暂不可用", imageSize: 156 };
   const days = claim.days;
 
@@ -91,6 +89,7 @@ function RewardNotice({ claim, onClose, boardRef, touchSceneScale }: RewardNotic
       ref={dialogRef}
       className="reward-notice"
       data-mobile={mobile ? true : undefined}
+      style={mobile ? { width: 448 * (touchSceneScale ?? 1), height: 248.5 * (touchSceneScale ?? 1) } : undefined}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       data-closing={closingClip !== null ? true : undefined}
@@ -107,7 +106,7 @@ function RewardNotice({ claim, onClose, boardRef, touchSceneScale }: RewardNotic
         if (!outsideCard) requestClose(true);
       }}
     >
-      <div className="reward-notice__slot" style={boardBounds ? { position: "fixed", ...boardBounds } : mobile ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
+      <div className="reward-notice__slot" style={mobile ? undefined : boardBounds ? { position: "fixed", ...boardBounds } : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}>
         <div className="reward-notice__canvas" style={boardScale === null ? undefined : { transform: `scale(${boardScale})` }}>
           <div
             ref={revealRef}

@@ -691,6 +691,14 @@
   height: 100%;
 }
 
+.xiao-yi-sign-in-dialog[data-native-center] {
+  margin: auto;
+}
+
+.xiao-yi-sign-in-dialog[data-native-center] .xiao-yi-sign-in-shell {
+  inset: 0;
+}
+
 .xiao-yi-sign-in-dialog[data-mobile] .xiao-yi-sign-in-viewport {
   display: flex;
   width: 100%;

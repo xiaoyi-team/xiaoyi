@@ -58,6 +58,11 @@
   overflow: clip;
 }
 
+.draw-card-dialog[data-mobile] {
+  margin: auto;
+  overflow: clip;
+}
+
 .draw-card-slot {
   position: relative;
   overflow: clip;
