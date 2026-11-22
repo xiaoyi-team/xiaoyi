@@ -22,6 +22,7 @@ type DrawCardOverlayProps = {
   children?: ReactNode;
   sceneBounds?: { left: number; top: number; width: number; height: number } | null;
   sceneScale?: number | null;
+  touchSceneScale?: number;
   result: SignInAddResponse;
   onDismiss: () => void;
 };
@@ -145,12 +146,12 @@ function DrawCardScene({ result, scale, onCollect }: DrawCardSceneProps) {
   );
 }
 
-function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBounds, sceneScale }: DrawCardOverlayProps) {
+function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBounds, sceneScale, touchSceneScale }: DrawCardOverlayProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const collectedRef = useRef(false);
   const viewportScale = useSyncExternalStore(subscribeToViewport, readBoardScale);
   const mobile = viewportScale === null;
-  const scale = mobile ? null : sceneBounds ? sceneScale ?? viewportScale : viewportScale;
+  const scale = mobile ? touchSceneScale ?? 1 : sceneBounds ? sceneScale ?? viewportScale : viewportScale;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -183,7 +184,6 @@ function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBo
       style={sceneBounds ? {
         left: sceneBounds.left, top: sceneBounds.top,
         width: sceneBounds.width, height: sceneBounds.height,
-        "--draw-area-height": `${sceneBounds.height}px`,
       } as CSSProperties : undefined}
       onCancel={(event) => {
         event.preventDefault();
@@ -193,7 +193,7 @@ function DrawCardOverlay({ result, open, onCollect, onDismiss, children, sceneBo
       {open && (
         <div
           className="draw-card-slot"
-          style={scale === null ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
+          style={mobile || scale === null ? undefined : { width: BOARD_WIDTH * scale, height: BOARD_HEIGHT * scale }}
         >
           {/* A fresh scene owns each opening; resize never changes its key. */}
           <DrawCardScene result={result} key="auto" scale={scale} onCollect={onCollect ? handleCollect : undefined} />

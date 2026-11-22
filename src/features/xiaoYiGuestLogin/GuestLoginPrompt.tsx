@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import iris from "../../assets/xiao-yi-sign-in/iris.png";
 import seal from "../../assets/xiao-yi-sign-in/seal.svg";
 import "./guest-login-prompt.css";
@@ -7,6 +7,7 @@ type GuestLoginPromptProps = {
   open: boolean;
   onClose: () => void;
   onLogin: () => void;
+  touchSceneScale?: number;
 };
 
 function isOutsideCard(dialog: HTMLDialogElement, x: number, y: number) {
@@ -14,8 +15,10 @@ function isOutsideCard(dialog: HTMLDialogElement, x: number, y: number) {
   return x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom;
 }
 
-function GuestLoginPrompt({ open, onClose, onLogin }: GuestLoginPromptProps) {
+function GuestLoginPrompt({ open, onClose, onLogin, touchSceneScale }: GuestLoginPromptProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const [surfaceHeight, setSurfaceHeight] = useState<number>();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const backdropPressRef = useRef(false);
   const closeRequestedRef = useRef(false);
@@ -42,6 +45,16 @@ function GuestLoginPrompt({ open, onClose, onLogin }: GuestLoginPromptProps) {
     };
   }, [open]);
 
+  useEffect(() => {
+    const surface = surfaceRef.current;
+    if (!open || !surface || touchSceneScale === undefined) return;
+    const measure = () => setSurfaceHeight(parseFloat(getComputedStyle(surface).height));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(surface);
+    return () => observer.disconnect();
+  }, [open, touchSceneScale]);
+
   function requestClose() {
     if (!open || closeRequestedRef.current) return;
     closeRequestedRef.current = true;
@@ -52,6 +65,8 @@ function GuestLoginPrompt({ open, onClose, onLogin }: GuestLoginPromptProps) {
     <dialog
       ref={dialogRef}
       className="guest-login-prompt"
+      data-scene-scale={touchSceneScale !== undefined ? true : undefined}
+      style={{ "--guest-scene-scale": touchSceneScale, "--guest-surface-height": surfaceHeight === undefined ? undefined : `${surfaceHeight}px` } as CSSProperties}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       onCancel={(event) => {
@@ -76,7 +91,7 @@ function GuestLoginPrompt({ open, onClose, onLogin }: GuestLoginPromptProps) {
         if (clickedBackdrop) requestClose();
       }}
     >
-      <div className="guest-login-prompt__surface">
+      <div ref={surfaceRef} className="guest-login-prompt__surface">
         <div className="guest-login-prompt__decoration" aria-hidden="true">
           <div className="guest-login-prompt__paper" />
           <div className="guest-login-prompt__inner-border" />

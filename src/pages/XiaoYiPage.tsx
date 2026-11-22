@@ -23,6 +23,8 @@ import "./xiao-yi-page.css";
 
 const SCENE_WIDTH = 1920;
 const SCENE_HEIGHT = 1080;
+const TOUCH_SCENE_WIDTH = 667;
+const TOUCH_SCENE_HEIGHT = 375;
 
 function XiaoYiPage() {
   const { initializing, isAuthenticated, user, refreshUser } = useAuth();
@@ -39,6 +41,7 @@ function XiaoYiPage() {
   const sceneSlotRef = useRef<HTMLDivElement>(null);
   const rewardAnchorRef = useRef<HTMLDivElement>(null);
   const [sceneScale, setSceneScale] = useState(0);
+  const [touchSceneScale, setTouchSceneScale] = useState(0);
   const [signInOpen, setSignInOpen] = useState(false);
   const authSession = useMemo(() => ({ initializing, isAuthenticated, user }), [initializing, isAuthenticated, user]);
   const [openAward, setOpenAward] = useState<{ owner: typeof authSession; id: number } | null>(null);
@@ -140,6 +143,10 @@ function XiaoYiPage() {
         entry.contentRect.height / SCENE_HEIGHT,
       );
       setSceneScale(scale);
+      setTouchSceneScale(Math.min(
+        entry.contentRect.width / TOUCH_SCENE_WIDTH,
+        entry.contentRect.height / TOUCH_SCENE_HEIGHT,
+      ));
     });
 
     observer.observe(viewport);
@@ -156,6 +163,7 @@ function XiaoYiPage() {
             "--scene-width": `${SCENE_WIDTH * sceneScale}px`,
             "--scene-height": `${SCENE_HEIGHT * sceneScale}px`,
             "--scene-scale": sceneScale,
+            "--touch-scene-scale": touchSceneScale,
             visibility: sceneScale > 0 ? "visible" : "hidden",
           } as CSSProperties}
         >
@@ -220,6 +228,7 @@ function XiaoYiPage() {
       </div>
       <GuestLoginPrompt
         open={guestLoginOpen}
+        touchSceneScale={touchSceneScale}
         onClose={() => setGuestLoginOpen(false)}
         onLogin={() => {
           setGuestLoginOpen(false);
@@ -229,6 +238,7 @@ function XiaoYiPage() {
       <SignInOverlay
         rewardAnchorRef={rewardAnchorRef}
         sceneRef={sceneSlotRef}
+        touchSceneScale={touchSceneScale}
         open={signInOpen}
         onClose={() => {
           setDrawRequest(null);
@@ -257,6 +267,7 @@ function XiaoYiPage() {
       {selectedAward && (
         <RewardNotice
           boardRef={rewardAnchorRef}
+          touchSceneScale={touchSceneScale}
           claim={{
             days: selectedAward.day_count,
             name: selectedAward.award_name, imageUrl: selectedAward.reward_img_url,

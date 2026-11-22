@@ -181,14 +181,14 @@
  * Background fits the 667 x 375 composition; controls retain readable sizes. */
 @media (max-width: 1024px) {
   .xiao-yi-page__slot {
-    width: min(100%, calc(100dvh * 667 / 375));
-    height: min(100dvh, calc(100vw * 375 / 667));
+    width: calc(667px * var(--touch-scene-scale));
+    height: calc(375px * var(--touch-scene-scale));
   }
 
   .xiao-yi-page__scene {
-    width: 100%;
-    height: 100%;
-    transform: none;
+    width: 667px;
+    height: 375px;
+    transform: scale(var(--touch-scene-scale));
     container-type: inline-size;
   }
 

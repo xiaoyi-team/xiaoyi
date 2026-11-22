@@ -454,21 +454,15 @@
   --draw-side-width: 1.129972px;
   --draw-back-radius: 8.1396px;
   --draw-front-radius: 6.7798076px;
-  /* The 324.20574px art span leaves 50.79426px for top clearance and the hint.
-   * Taller viewports center the 375px composition; compact ones shrink only art. */
-  --draw-mobile-fit: min(1, calc((var(--draw-area-height, 100dvh) - 50.79426px) / 324.20574px));
-  --draw-mobile-offset-y: max(0px, calc((var(--draw-area-height, 100dvh) - 375px) / 2));
-  width: 100%;
-  height: 100%;
+  width: 667px;
+  height: 375px;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__shade { background: rgb(41 54 80 / 44%); }
 .draw-card-dialog[data-mobile] .draw-card-scene__assembly {
   left: calc(50% - 122.333893px);
-  top: calc(var(--draw-mobile-offset-y) + 3.52px + 18.48px * var(--draw-mobile-fit));
+  top: 22px;
   width: 244.667786px;
   height: 305.725739px;
-  transform: scale(var(--draw-mobile-fit));
-  transform-origin: center top;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__foreground {
   /* The existing mobile contour scales with the envelope, in the same coordinates. */
@@ -494,29 +488,28 @@
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-star { left: 78.53268px; top: 62.99605px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-star { left: 78.5324px; top: 100.28502px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__title {
-  left: calc((var(--draw-width) - 72px / var(--draw-mobile-fit)) / 2);
+  left: calc((var(--draw-width) - 72px) / 2);
   top: 31.074223px;
-  width: calc(72px / var(--draw-mobile-fit));
-  font-size: calc(18px / var(--draw-mobile-fit));
-  line-height: calc(26px / var(--draw-mobile-fit));
+  width: 72px;
+  font-size: 18px;
+  line-height: 26px;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__date-row { left: 32.769619px; top: 73.447769px; width: 108.30613px; height: 29px; gap: 4.519872px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__date { width: 60px; white-space: nowrap; font-size: 21px; line-height: 29px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__weekday { width: 43.786259px; font-size: calc(14.407093px / var(--draw-mobile-fit)); }
+.draw-card-dialog[data-mobile] .draw-card-scene__weekday { width: 43.786259px; font-size: 14.407093px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__quote {
   left: 13.5px;
   top: 111px;
   width: 139.5px;
-  /* Counter the art transform: even at 568×320 the four lines render at 15/21px. */
-  font-size: calc(15px / var(--draw-mobile-fit));
-  line-height: calc(21px / var(--draw-mobile-fit));
+  font-size: 15px;
+  line-height: 21px;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__quote--formal {
   max-height: calc(var(--draw-height) - 115px);
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__hint {
   left: max(16px, calc(50% - 220px));
-  top: calc(100% - 28px - var(--draw-mobile-offset-y));
+  top: 347px;
   width: min(440px, calc(100% - 32px));
   height: 18px;
   font-size: 12px;
