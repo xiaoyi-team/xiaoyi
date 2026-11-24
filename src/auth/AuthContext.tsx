@@ -18,7 +18,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -36,7 +35,10 @@ import {
   clearAuthToken,
   hasAuthToken,
   getAuthorizationHeader,
+  isSharedAuthStorageChange,
 } from "../api/client";
+import { createIdentitySession } from "./identitySession";
+import { createAdminGrantTracker, type AdminGrant } from "./adminGrant";
 
 import type {
   CurrentUser,
@@ -103,6 +105,9 @@ interface AuthContextValue {
    */
   initializing: boolean;
   isLoading: boolean;
+  reconfirmingIdentity: boolean;
+  sharedIdentityRevision: number;
+  adminGrant: AdminGrant | null;
 
   /**
    * 当前用户资料是否完善
@@ -148,13 +153,22 @@ interface AuthProviderProps {
 export function AuthProvider({
   children,
 }: AuthProviderProps) {
-  const sessionVersion = useRef(0);
+  const [session] = useState(() => createIdentitySession(getAuthorizationHeader, getCurrentUserApi));
+  const [adminGrants] = useState(() => createAdminGrantTracker(session));
+  const [reconfirmingIdentity, setReconfirmingIdentity] = useState(false);
+  const [sharedIdentityRevision, setSharedIdentityRevision] = useState(0);
 
   /**
    * 当前用户资料
    */
-  const [user, setUser] =
+  const [user, setCurrentUser] =
     useState<CurrentUser | null>(null);
+  const [adminGrant, setAdminGrant] = useState<AuthContextValue["adminGrant"]>(null);
+  const setUser = useCallback((nextUser: CurrentUser | null) => {
+    // Revoke synchronously; async cache callbacks can run before React unmounts the admin tree.
+    setAdminGrant(adminGrants.update(nextUser));
+    setCurrentUser(nextUser);
+  }, [adminGrants]);
 
   /**
    * 是否已经登录
@@ -195,8 +209,8 @@ export function AuthProvider({
    */
   const refreshUser = useCallback(
     async (): Promise<void> => {
-      const version = sessionVersion.current;
-      const authorization = getAuthorizationHeader();
+      const version = session.version;
+      if (!session.isCurrent(version)) return;
       if (!hasAuthToken()) {
         setUser(null);
         setIsAuthenticated(false);
@@ -205,28 +219,18 @@ export function AuthProvider({
 
       try {
         const currentUser =
-          await getCurrentUserApi();
+          await session.load();
 
-        if (version !== sessionVersion.current || authorization !== getAuthorizationHeader()) return;
+        if (!session.isCurrent(version)) return;
         setUser(currentUser);
         setIsAuthenticated(true);
       } catch (error) {
-        if (version !== sessionVersion.current) return;
-        /**
-         * 只有 Token 确实被清除时，
-         * 才将用户标记为未登录。
-         *
-         * 普通网络错误不应直接退出登录。
-         */
-        if (!hasAuthToken()) {
-          setUser(null);
-          setIsAuthenticated(false);
-        }
-
+        if (!session.isCurrent(version)) return;
+        setAdminGrant(adminGrants.update(null));
         throw error;
       }
     },
-    []
+    [session, setUser, adminGrants]
   );
 
   /**
@@ -245,12 +249,16 @@ const login = useCallback(
     params: LoginParams,
     remember = false
   ): Promise<CurrentUser | null> => {
-    const version = ++sessionVersion.current;
+    const version = session.advance();
     setInitializing(false);
+    setReconfirmingIdentity(false);
     // 1. 登录并保存 Token
-    await loginApi(params, remember, () => version === sessionVersion.current);
-    if (version !== sessionVersion.current) throw new Error("登录请求已失效");
-    const authorization = getAuthorizationHeader();
+    const credentials = await loginApi(params, remember, () => session.isCurrent(version));
+    if (version !== session.version ||
+        getAuthorizationHeader() !== `${credentials.token_type || "Bearer"} ${credentials.access_token}`) {
+      throw new Error("登录请求已失效");
+    }
+    session.adoptAuthorization();
 
     // 清除上一个账号可能残留的资料
     setUser(null);
@@ -258,9 +266,9 @@ const login = useCallback(
 
     try {
       // 2. 获取本次登录用户的资料
-      const currentUser = await getCurrentUserApi();
+      const currentUser = await session.load();
 
-      if (version !== sessionVersion.current || authorization !== getAuthorizationHeader()) throw new Error("登录请求已失效");
+      if (!session.isCurrent(version)) throw new Error("登录请求已失效");
       // 3. 更新全局状态
       setUser(currentUser);
       setIsAuthenticated(true);
@@ -268,13 +276,7 @@ const login = useCallback(
       // 4. 直接返回本次登录的用户资料
       return currentUser;
     } catch (error) {
-      if (version !== sessionVersion.current) throw error;
-      // Token 确实失效，登录不能视为成功
-      if (!hasAuthToken()) {
-        setUser(null);
-        setIsAuthenticated(false);
-        throw error;
-      }
+      if (!session.isCurrent(version)) throw error;
 
       // 仅用户资料请求失败，保留有效登录状态
       setUser(null);
@@ -284,7 +286,7 @@ const login = useCallback(
       return null;
     }
   },
-  []
+  [session, setUser]
 );
 
 
@@ -310,105 +312,81 @@ const login = useCallback(
    */
   const logout = useCallback(
     async (): Promise<void> => {
-      ++sessionVersion.current;
+      session.advance();
       // logoutApi synchronously captures the old authorization before local cleanup.
       const request = logoutApi();
       clearAuthToken();
+      session.adoptAuthorization();
       setUser(null);
       setIsAuthenticated(false);
       setInitializing(false);
+      setReconfirmingIdentity(false);
       await request;
     },
-    []
+    [session, setUser]
   );
 
   /**
-   * 应用首次加载：
-   *
-   * 如果本地存在 Token，
-   * 自动获取用户资料并恢复登录状态。
+   * 首次恢复身份，以及在其他标签页变更共享凭证后重新确认身份。
    */
   useEffect(() => {
-    let cancelled = false;
-    const version = sessionVersion.current;
-    const authorization = getAuthorizationHeader();
+    let active = true;
 
-    async function initializeAuth() {
-      if (!hasAuthToken()) {
-        if (!cancelled) {
-          setUser(null);
-          setIsAuthenticated(false);
-          setInitializing(false);
-        }
-
-        return;
-      }
-
+    async function confirmIdentity(version: number) {
       try {
-        const currentUser =
-          await getCurrentUserApi();
-
-        if (cancelled || version !== sessionVersion.current || authorization !== getAuthorizationHeader()) {
-          return;
-        }
-
-        setUser(currentUser);
-        setIsAuthenticated(true);
+        const currentUser = await session.load();
+        if (active && session.isCurrent(version)) setUser(currentUser);
       } catch {
-        if (cancelled || version !== sessionVersion.current || authorization !== getAuthorizationHeader()) {
-          return;
-        }
-
-        /**
-         * 网络异常不等于登录失效。
-         *
-         * 只有 client.ts 清除 Token 后，
-         * 才会认为用户已经退出登录。
-         */
-        setIsAuthenticated(
-          hasAuthToken()
-        );
-
-        setUser(null);
+        // The user is already unknown. Keep a valid credential for manual retry.
       } finally {
-        if (!cancelled && version === sessionVersion.current) {
+        if (active && session.isCurrent(version)) {
           setInitializing(false);
+          setReconfirmingIdentity(false);
         }
       }
     }
 
-    void initializeAuth();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /**
-   * 监听全局 401 未授权事件。
-   *
-   * Token 失效时同步清除登录状态。
-   */
-  useEffect(() => {
     function handleUnauthorized() {
-      ++sessionVersion.current;
+      session.advance();
+      session.adoptAuthorization();
       setInitializing(false);
+      setReconfirmingIdentity(false);
       setUser(null);
       setIsAuthenticated(false);
     }
 
-    window.addEventListener(
-      AUTH_UNAUTHORIZED_EVENT,
-      handleUnauthorized
-    );
+    function syncSharedIdentity() {
+      if (!session.syncAuthorization()) return false;
+      const authenticated = hasAuthToken();
+      setUser(null);
+      setSharedIdentityRevision(session.version);
+      setIsAuthenticated(authenticated);
+      setInitializing(false);
+      setReconfirmingIdentity(authenticated);
+      if (authenticated) void confirmIdentity(session.version);
+      return true;
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if (isSharedAuthStorageChange(event)) syncSharedIdentity();
+    }
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    window.addEventListener("storage", handleStorage);
+    const initialVersion = session.version;
+    queueMicrotask(() => {
+      if (!active || initialVersion !== session.version || syncSharedIdentity()) return;
+      if (hasAuthToken()) void confirmIdentity(initialVersion);
+      else setInitializing(false);
+    });
 
     return () => {
-      window.removeEventListener(
-        AUTH_UNAUTHORIZED_EVENT,
-        handleUnauthorized
-      );
+      active = false;
+      session.cancel();
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+      window.removeEventListener("storage", handleStorage);
     };
-  }, []);
+  }, [session, setUser]);
 
   /**
    * 统一提供给其他页面使用
@@ -418,8 +396,11 @@ const login = useCallback(
       user,
       isAuthenticated,
       isLogin: isAuthenticated,
-      initializing,
-      isLoading: initializing,
+      initializing: initializing || reconfirmingIdentity,
+      isLoading: initializing || reconfirmingIdentity,
+      reconfirmingIdentity,
+      sharedIdentityRevision,
+      adminGrant,
       profileFinished,
       login,
       register,
@@ -430,6 +411,9 @@ const login = useCallback(
       user,
       isAuthenticated,
       initializing,
+      reconfirmingIdentity,
+      sharedIdentityRevision,
+      adminGrant,
       profileFinished,
       login,
       register,

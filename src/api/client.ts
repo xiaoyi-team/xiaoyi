@@ -1,11 +1,20 @@
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL
+const API_BASE = import.meta.env?.VITE_API_BASE_URL
   ?.trim()
   .replace(/\/$/, "");
 
 const ACCESS_TOKEN_KEY = "access_token";
 const TOKEN_TYPE_KEY = "token_type";
 const REMEMBER_LOGIN_KEY = "remember_login";
+
+export function isSharedAuthStorageChange(event: StorageEvent): boolean {
+  return event.storageArea === localStorage && (
+    event.key === null ||
+    event.key === ACCESS_TOKEN_KEY ||
+    event.key === TOKEN_TYPE_KEY ||
+    event.key === REMEMBER_LOGIN_KEY
+  );
+}
 
 /**
  * 当任何接口返回 401 时，
@@ -185,6 +194,8 @@ type ResponseType =
 
 export interface ApiRequestOptions
   extends RequestInit {
+  /** Internal guard for requests tied to a particular identity session. */
+  isAuthSessionCurrent?: () => boolean;
   /**
    * 是否携带 Token
    *
@@ -414,6 +425,7 @@ export async function apiRequest<T>(
     auth = true,
     responseType = "auto",
     baseUrl,
+    isAuthSessionCurrent,
     ...fetchOptions
   } = options;
 
@@ -466,6 +478,7 @@ export async function apiRequest<T>(
    */
   if (
   response.status === 401 &&
+  (isAuthSessionCurrent?.() ?? true) &&
   auth &&
   headers.has("Authorization")
 ) {

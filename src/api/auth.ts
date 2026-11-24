@@ -251,11 +251,13 @@ export async function getCaptchaApi():
  * profile_finished 只用于判断是否提醒完善资料，
  * 不用于权限控制。
  */
-export async function getCurrentUserApi(): Promise<CurrentUser> {
+export async function getCurrentUserApi(signal?: AbortSignal, isAuthSessionCurrent?: () => boolean): Promise<CurrentUser> {
   const response = await apiRequest<unknown>("/api/user/info", {
     baseUrl: "",
     method: "GET",
     responseType: "json",
+    signal,
+    isAuthSessionCurrent,
   });
 
   if (
