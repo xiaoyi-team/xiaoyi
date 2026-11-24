@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Link, matchRoutes, useLocation, useRoutes, type RouteObject } from "react-router";
 import { AdminHome } from "./AdminHome";
 import { AdminLayout } from "./AdminLayout";
+import { AdminUIProvider } from "./AdminUIProvider";
 import { assembleModules } from "./assembleModules";
 import { AdminGuard } from "./auth/AdminGuard";
 import { moduleRegistry } from "./moduleRegistry";
@@ -45,5 +46,5 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 }
 
 export default function AdminRoutes() {
-  return <AdminGuard>{(onLogout) => <AdminShell onLogout={onLogout} />}</AdminGuard>;
+  return <AdminGuard>{(onLogout) => <AdminUIProvider><AdminShell onLogout={onLogout} /></AdminUIProvider>}</AdminGuard>;
 }

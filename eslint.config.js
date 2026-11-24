@@ -5,18 +5,27 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
+const adminOnlyImports = [
+  'antd', 'antd/*', '@ant-design/*', 'sonner',
+  '@/features/admin/*', '@/features/admin/**',
+  '@/features/admin/AdminUIProvider', '@/features/admin/AdminUIProvider.*',
+  '@/features/admin/AdminTheme', '@/features/admin/AdminTheme.*',
+  '@/features/admin/notifications/*', '@/features/admin/notifications/**',
+  '**/AdminUIProvider', '**/AdminUIProvider.*',
+  '**/AdminTheme', '**/AdminTheme.*',
+  '**/admin/notifications/*', '**/admin/notifications/**',
+]
+
 export default defineConfig([
   globalIgnores(['dist']),
   {
     files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      globals: globals.browser,
-    },
+    extends: [js.configs.recommended, tseslint.configs.recommended, reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
+    languageOptions: { globals: globals.browser },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/features/admin/**'],
+    rules: { 'no-restricted-imports': ['error', { patterns: adminOnlyImports }] },
   },
 ])
