@@ -119,7 +119,7 @@ function DrawCardScene({ result, scale, onCollect }: DrawCardSceneProps) {
                   <span className="draw-card-scene__date">{dateText}</span>
                   <span className="draw-card-scene__weekday">{weekday}</span>
                 </div>
-                <p className="draw-card-scene__quote draw-card-scene__quote--formal" aria-live="polite">
+                <p className="draw-card-scene__quote draw-card-scene__quote--formal" aria-live="polite" onClick={(event) => event.stopPropagation()}>
                   {currentStage === "settled" && (
                     result.quote_status === "pending" ? SIGN_IN_QUOTE_PENDING_MESSAGE : result.quote?.content
                   )}

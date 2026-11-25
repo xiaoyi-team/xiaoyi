@@ -78,7 +78,7 @@
   --draw-side-x: 434.83px;
   --draw-side-y: 96.17px;
   --draw-width: 342.2px;
-  --draw-height: 442.5px;
+  --draw-height: 522.5px;
   --draw-side-width: 2.36px;
   --draw-back-radius: 17px;
   --draw-front-radius: 14.16px;
@@ -137,7 +137,7 @@
   top: 126.85px;
   left: 274.94px;
   width: 342.2px;
-  height: 442.5px;
+  height: var(--draw-height);
   overflow: hidden;
   border-radius: 17px;
   transform: rotate(4deg);
@@ -222,7 +222,7 @@
   left: 6.49px;
   box-sizing: border-box;
   width: 329.22px;
-  height: 429.52px;
+  height: 511.88px;
   border: 0.59px solid #b78336;
   border-radius: 9.44px;
 }
@@ -234,7 +234,7 @@
 
 .draw-card-scene__decoration--top-left { left: 10.03px; top: 11.8px; }
 .draw-card-scene__decoration--top-right { left: 305.62px; top: 11.8px; }
-.draw-card-scene__decoration--bottom-left { left: 10.03px; top: 404.15px; }
+.draw-card-scene__decoration--bottom-left { left: 10.03px; top: 482.97px; }
 .draw-card-scene__decoration--upper-line { left: 47.2px; top: 141.6px; }
 .draw-card-scene__decoration--lower-line { left: 47.2px; top: 219.48px; }
 .draw-card-scene__decoration--upper-star { left: 164.02px; top: 131.57px; }
@@ -254,18 +254,19 @@
   position: absolute;
   top: 153.4px;
   left: 49.56px;
+  width: 223px;
   display: flex;
   height: 54.28px;
   align-items: center;
   justify-content: center;
-  gap: 9.44px;
+  gap: 40px;
   font-weight: 400;
   line-height: 1.45;
   text-align: center;
 }
 
-.draw-card-scene__date { width: 129.8px; font-family: "Playfair Display", serif; font-size: 44.5568px; }
-.draw-card-scene__weekday { width: 91.45px; color: #b78336; font-family: "Dancing Script", cursive; font-size: 30.09px; }
+.draw-card-scene__date { width: 126px; flex-shrink: 0; font-family: "Playfair Display", serif; font-size: 44.5568px; }
+.draw-card-scene__weekday { width: 57px; flex-shrink: 0; color: #b78336; font-family: "Dancing Script", cursive; font-size: 35.5062px; }
 
 .draw-card-scene__quote {
   position: absolute;
@@ -278,10 +279,14 @@
 }
 
 .draw-card-scene__quote--formal {
-  max-height: calc(var(--draw-height) - 272px);
-  overflow: auto;
+  max-height: 148px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
   overflow-wrap: anywhere;
   scrollbar-width: none;
+  -ms-overflow-style: none;
   white-space: pre-wrap;
 }
 
@@ -455,7 +460,7 @@
   --draw-side-x: 175.56px;
   --draw-side-y: -5.04px;
   --draw-width: 163.845367px;
-  --draw-height: 211.868988px;
+  --draw-height: 235.868988px;
   --draw-side-width: 1.129972px;
   --draw-back-radius: 8.1396px;
   --draw-front-radius: 6.7798076px;
@@ -483,11 +488,11 @@
 .draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { left: var(--draw-out-x); top: var(--draw-out-y); }
 .draw-card-dialog[data-mobile] .draw-card-scene[data-stage="settled"] .draw-card-scene__card { border-radius: var(--draw-front-radius); }
 .draw-card-dialog[data-mobile] .draw-card-scene__card::after { border-width: 0.564984px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__inner-border { left: 3.107005px; top: 3.107622px; width: 157.630539px; height: 205.654175px; border-width: 0.282492px; border-radius: 4.519872px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__inner-border { left: 3.107005px; top: 3.107622px; width: 157.630539px; height: 230.788986px; border-width: 0.282492px; border-radius: 4.519872px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration { transform: scale(0.4788); }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-left { left: 4.80119px; top: 5.64994px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--top-right { left: 146.33188px; top: 5.64958px; }
-.draw-card-dialog[data-mobile] .draw-card-scene__decoration--bottom-left { left: 4.80362px; top: 193.50746px; }
+.draw-card-dialog[data-mobile] .draw-card-scene__decoration--bottom-left { left: 4.80362px; top: 216.94432px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-line { left: 22.60049px; top: 68.08076px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--lower-line { left: 22.59808px; top: 105.37008px; }
 .draw-card-dialog[data-mobile] .draw-card-scene__decoration--upper-star { left: 78.53268px; top: 62.99605px; }
@@ -510,7 +515,7 @@
   line-height: 21px;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__quote--formal {
-  max-height: calc(var(--draw-height) - 115px);
+  max-height: 84px;
 }
 .draw-card-dialog[data-mobile] .draw-card-scene__hint {
   left: max(16px, calc(50% - 220px));
