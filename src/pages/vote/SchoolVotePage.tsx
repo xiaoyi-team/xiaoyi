@@ -40,6 +40,8 @@ export default function SchoolVotePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLogin, isLoading } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
   const token = isLogin ? getAccessToken() ?? null : null;
   const [view, setView] = useState<'entrance' | 'list' | 'detail' | 'result'>(
     () => new URLSearchParams(location.search).has('voteList') ? 'list' : 'entrance',
@@ -75,9 +77,16 @@ export default function SchoolVotePage() {
     : (mode === 'multi' ? [V8550_116, V8574_210] : [V8547_49, V8574_136])[variant];
 
   useEffect(() => {
+    if (showLoginPrompt && !isLogin && !dialog.current?.open) dialog.current?.showModal();
+    else if ((!showLoginPrompt || isLogin) && dialog.current?.open) dialog.current.close();
+  }, [showLoginPrompt, isLogin]);
+
+  useEffect(() => {
     if (isLoading) return;
     const controller = new AbortController();
-    getVotes(Boolean(token), controller.signal).then(votes => {
+    getVotes(Boolean(token), controller.signal, () => {
+      if (!controller.signal.aborted && token && getAccessToken() === token) setShowLoginPrompt(true);
+    }).then(votes => {
       if (!controller.signal.aborted) {
         setSnapshot({ token, votes });
         setLoad({ token, revision });
@@ -122,7 +131,7 @@ export default function SchoolVotePage() {
     if (submission.current) return;
     setNotice('');
     if (!token && vote.status === 'ongoing' && !vote.has_voted) {
-      if (!isLoading) goLogin();
+      if (!isLoading) setShowLoginPrompt(true);
       return;
     }
     setActiveId(vote.id);
@@ -132,7 +141,7 @@ export default function SchoolVotePage() {
 
   async function submit() {
     if (submission.current || !active || !picked.length || active.has_voted || active.status === 'ended') return;
-    if (!token || getAccessToken() !== token) { goLogin(); return; }
+    if (!token || getAccessToken() !== token) { setShowLoginPrompt(true); return; }
     const controller = new AbortController();
     submission.current = controller;
     setPending(true);
@@ -141,7 +150,9 @@ export default function SchoolVotePage() {
       ? { token, votes: current.votes.map(vote => vote.id === active.id ? { ...vote, ...fields } : vote) }
       : current);
     try {
-      const selected = await submitVote(active.id, picked, controller.signal);
+      const selected = await submitVote(active.id, picked, controller.signal, () => {
+        if (!controller.signal.aborted && getAccessToken() === token) setShowLoginPrompt(true);
+      });
       if (controller.signal.aborted || getAccessToken() !== token) return;
       updateVote({ has_voted: true, selected_option_ids: selected });
       setSubmittedId(active.id);
@@ -250,5 +261,13 @@ export default function SchoolVotePage() {
         )}
       </div>
     </div>
+    <dialog ref={dialog} onClose={() => setShowLoginPrompt(false)} aria-labelledby="vote-login-title" className="m-auto w-[min(90vw,420px)] rounded-xl border border-[#b99b65] bg-[#f6ead5] p-6 text-[#161811] backdrop:bg-black/60">
+      <h2 id="vote-login-title" className="text-xl font-semibold">请先登录</h2>
+      <p className="my-4">登录后可参与投票，也可以查看已参与的投票。</p>
+      <div className="flex justify-end gap-3">
+        <button type="button" autoFocus onClick={() => setShowLoginPrompt(false)} className="rounded border border-[#b99b65] px-4 py-2">取消</button>
+        <button type="button" onClick={goLogin} className="rounded bg-[#263957] px-4 py-2 text-white">去登录</button>
+      </div>
+    </dialog>
   </main>;
 }
