@@ -18,18 +18,10 @@ import V8574_106 from './design/V8574_106';
 import V8574_136 from './design/V8574_136';
 import V8574_175 from './design/V8574_175';
 import V8574_210 from './design/V8574_210';
-import V8575_1662, { MobileVoteCard } from './design/V8575_1662';
-import V8575_1723 from './design/V8575_1723';
-import V8575_1784 from './design/V8575_1784';
-import V8613_501, { DesktopVoteCard } from './design/V8613_501';
-import V8613_647 from './design/V8613_647';
-import V8613_793 from './design/V8613_793';
+import { MobileVoteCard } from './design/V8575_1662';
+import { DesktopVoteCard } from './design/V8613_501';
 import './vote.css';
 
-const lists = [
-  [V8312_8, V8574_56], [V8613_501, V8575_1662],
-  [V8613_647, V8575_1723], [V8613_793, V8575_1784],
-] as const;
 const tabs = ['全部投票', '进行中', '已参与', '已结束'];
 
 function viewSize() {
@@ -71,7 +63,7 @@ export default function SchoolVotePage() {
   const scale = Math.min(size.width / width, size.height / height);
   const variant = mobile ? 1 : 0;
   const Entrance = wideEntrance ? V8296_5677 : V8613_978;
-  const List = lists[tab][variant];
+  const List = mobile ? V8574_56 : V8312_8;
   const Card = mobile ? MobileVoteCard : DesktopVoteCard;
   const Detail = view === 'detail' ? (mode === 'multi' ? [V8550_50, V8574_175] : [V8312_59, V8574_106])[variant]
     : (mode === 'multi' ? [V8550_116, V8574_210] : [V8547_49, V8574_136])[variant];
@@ -227,14 +219,15 @@ export default function SchoolVotePage() {
 
   const visible = votes.filter(vote => {
     if (tab === 0) return true;
-    if (tab === 3) return vote.status === 'ended';
-    return vote.status === 'ongoing' && (vote.has_voted === true) === (tab === 2);
+    if (tab === 1) return vote.status === 'ongoing';
+    if (tab === 2) return vote.has_voted === true;
+    return vote.status === 'ended';
   });
   return <main className="school-vote" aria-label="海事高中 · 心意征集簿">
     <div className="school-vote-window" style={{ width: width * scale, height: height * scale }}>
       <div className="school-vote-canvas" data-view={screen} data-mode={mode} data-mobile={mobile} data-has-selection={picked.length > 0 && !pending}
         style={{ width, height, transform: `scale(${scale})` }} onClick={interact}>
-        {screen === 'entrance' ? <Entrance /> : screen === 'list' ? <List cards={
+        {screen === 'entrance' ? <Entrance /> : screen === 'list' ? <List activeTab={tab} cards={
           visible.length ? visible.map(vote => <Card key={vote.id} title={vote.title} description={vote.description}
             cutoff={formatDeadline(vote.deadline)} totalVotes={vote.total_votes} participated={vote.has_voted === true}
             ended={vote.status === 'ended'} guest={!token} onOpen={() => openVote(vote)} />)

@@ -19,9 +19,9 @@ const img2 = new URL('./art/50d168ec-d3c2-44f9-baa5-d67f8511dae6.svg', import.me
 const imgGroup11 = new URL('./art/a4d96976-aec7-49ad-b448-0d8f2ce7fbed.svg', import.meta.url).href;
 const img7 = new URL('./art/c0fdff66-d103-4a63-a010-7b57ced71c74.svg', import.meta.url).href;
 
-function Component({ className }: { className?: string }) {
+function Component({ className, active }: { className?: string; active?: boolean }) {
   return (
-    <button type="button" className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[234px]"} data-node-id="8343:72" data-name="分类标签 / 已结束">
+    <button type="button" aria-pressed={active} className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[234px]"} data-node-id="8343:72" data-name="分类标签 / 已结束">
       <div className="overflow-hidden relative shrink-0 h-[25.2px] w-[25.2px]" data-node-id="8343:73" data-name="图标 / clock">
         <div className="absolute inset-[8.33%]" data-node-id="8343:74" data-name="Group">
           <div className="absolute inset-[-4.5%]">
@@ -36,9 +36,9 @@ function Component({ className }: { className?: string }) {
   );
 }
 
-function Component1({ className }: { className?: string }) {
+function Component1({ className, active }: { className?: string; active?: boolean }) {
   return (
-    <button type="button" className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[220.5px]"} data-node-id="8343:67" data-name="分类标签 / 已参与">
+    <button type="button" aria-pressed={active} className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[220.5px]"} data-node-id="8343:67" data-name="分类标签 / 已参与">
       <div className="overflow-hidden relative shrink-0 h-[25.2px] w-[25.2px]" data-node-id="8343:68" data-name="图标 / check">
         <div className="absolute bottom-1/4 left-[12.5%] right-[8.33%] top-[16.67%]" data-node-id="8343:69" data-name="Group">
           <div className="absolute inset-[-6.43%_-4.74%]">
@@ -53,9 +53,9 @@ function Component1({ className }: { className?: string }) {
   );
 }
 
-function Component2({ className }: { className?: string }) {
+function Component2({ className, active }: { className?: string; active?: boolean }) {
   return (
-    <button type="button" className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[218.7px]"} data-node-id="8343:62" data-name="分类标签 / 进行中">
+    <button type="button" aria-pressed={active} className={className || "bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[218.7px]"} data-node-id="8343:62" data-name="分类标签 / 进行中">
       <div className="overflow-hidden relative shrink-0 h-[25.2px] w-[25.2px]" data-node-id="8343:63" data-name="图标 / play">
         <div className="absolute inset-[12.5%_12.5%_12.5%_29.17%]" data-node-id="8343:64" data-name="Group">
           <div className="absolute inset-[-5%_-6.43%]">
@@ -70,9 +70,9 @@ function Component2({ className }: { className?: string }) {
   );
 }
 
-function Component3({ className }: { className?: string }) {
+function Component3({ className, active }: { className?: string; active?: boolean }) {
   return (
-    <div className={className || "[background-size:26.999999284744263px_20.699999451637268px] bg-top-left border-[1.35px] border-solid border-white flex gap-[10.8px] h-[51.3px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[232.2px]"} data-node-id="8343:56" style={{ backgroundImage: `url("${img}")` }} data-name="分类标签 / 全部投票">
+    <button type="button" aria-pressed={active} className={className || "[background-size:26.999999284744263px_20.699999451637268px] bg-top-left border-[1.35px] border-solid border-white flex gap-[10.8px] h-[51.3px] items-center justify-center relative rounded-tl-[24.3px] rounded-tr-[24.3px] w-[232.2px]"} data-node-id="8343:56" style={{ backgroundImage: `url("${img}")` }} data-name="分类标签 / 全部投票">
       <div className="overflow-hidden relative shrink-0 h-[25.2px] w-[25.2px]" data-node-id="8343:57" data-name="图标 / calendar">
         <div className="absolute inset-[8.33%_12.5%]" data-node-id="8343:58" data-name="Group">
           <div className="absolute inset-[-4.5%_-5%]">
@@ -83,11 +83,11 @@ function Component3({ className }: { className?: string }) {
       <p className="[word-break:break-word] font-['Noto_Serif_SC:Bold'] font-bold leading-[32.625px] relative shrink-0 text-[22.5px] text-white whitespace-nowrap" data-node-id="8343:61">
         全部投票
       </p>
-    </div>
+    </button>
   );
 }
 
-export default function Component4({ cards }: VoteListContent) {
+export default function Component4({ cards, activeTab = 0 }: VoteListContent) {
   return (
     <div className="bg-white relative h-full w-full" data-node-id="8312:8" data-name="投票列表 · 参考图精细还原">
       <div className="absolute h-[1080px] left-0 top-0 w-[1920px]" data-node-id="8312:9" data-name="1110_2 1">
@@ -123,7 +123,7 @@ export default function Component4({ cards }: VoteListContent) {
         <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[78.3px] left-[275.4px] text-[#2b426d] text-[54px] top-[184.5px] tracking-[4.5px] whitespace-nowrap" data-node-id="8343:52">
           心意征集簿
         </p>
-        <p className="[word-break:break-word] absolute font-['Caveat:Regular'] font-normal leading-[87.435px] left-[559px] text-[#9cb5db] text-[60.3px] top-[198px] whitespace-nowrap" data-node-id="8343:53">
+        <p className="school-vote-signature [word-break:break-word] absolute font-['Caveat:Regular'] font-normal leading-[87.435px] left-[559px] text-[#9cb5db] text-[60.3px] top-[198px] whitespace-nowrap" data-node-id="8343:53">
           OSBORN
         </p>
         <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Regular'] font-normal leading-[26.1px] left-[279.9px] text-[#46516d] text-[18px] top-[264.6px] tracking-[2.7px] whitespace-nowrap" data-node-id="8343:54">
@@ -132,10 +132,10 @@ export default function Component4({ cards }: VoteListContent) {
         <div className="absolute h-[19.8px] left-[282.6px] top-[289.8px] w-[167.4px]" data-node-id="8343:55" data-name="装饰 / list-underline">
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none h-full w-full" src={imgListUnderline} />
         </div>
-        <Component3 className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.35px] border-solid border-white flex gap-[10.8px] h-[51.3px] items-center justify-center left-[167.4px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[325.8px] w-[232.2px]" />
-        <Component2 className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[415.8px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[218.7px]" />
-        <Component1 className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[650.7px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[220.5px]" />
-        <Component className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[887.4px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[234px]" />
+        <Component3 active={activeTab === 0} className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.35px] border-solid border-white flex gap-[10.8px] h-[51.3px] items-center justify-center left-[167.4px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[325.8px] w-[232.2px]" />
+        <Component2 active={activeTab === 1} className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[415.8px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[218.7px]" />
+        <Component1 active={activeTab === 2} className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[650.7px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[220.5px]" />
+        <Component active={activeTab === 3} className="absolute bg-[#ebebf0] border-[1.35px] border-solid border-white cursor-pointer flex gap-[10.8px] h-[46.8px] items-center justify-center left-[887.4px] rounded-tl-[24.3px] rounded-tr-[24.3px] top-[330.3px] w-[234px]" />
         <div className="absolute bg-[#859ec6] h-[1.35px] left-[151.2px] top-[376.2px] w-[979.2px]" data-node-id="8343:78" data-name="标签底部分隔线" />
         <div className="school-vote-cards school-vote-cards--desktop">{cards}</div>
         <div className="absolute left-[115.6px] h-[177px] w-[177px] top-[792.7px]" data-node-id="8556:5924" data-name="蓝色复古帆船徽章贴纸 1">

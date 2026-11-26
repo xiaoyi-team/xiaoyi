@@ -7,12 +7,12 @@ const imgFrame = "/assets/figma/19f01d53-3d81-4d3a-9791-73a849fd9751.svg";
 
 export default function Component() {
   return (
-    <div className="bg-white relative size-full" data-node-id="7041:3583" data-name="移动端 / 公会入口 · 易读新版">
+    <div className="candy-entrance-scene bg-white relative size-full" data-node-id="7041:3583" data-name="移动端 / 公会入口 · 易读新版">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="7041:3584" data-name="9">
         <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={img9} />
       </div>
       <div className="absolute contents left-[263.54px] top-[125.35px]" data-node-id="7041:3585" data-name="摁钮">
-        <div className="absolute h-[103.819px] left-[318.06px] top-[125.35px] w-[114.931px]" data-node-id="7041:3586" data-name="9">
+        <div className="candy-entrance-display absolute h-[103.819px] left-[318.06px] top-[125.35px] w-[114.931px]" data-node-id="7041:3586" data-name="9">
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={img10} />
         </div>
         <div className="absolute contents left-[263.54px] top-[155.21px]" data-node-id="7041:3588" data-name="官谷图鉴  字牌">
@@ -37,7 +37,7 @@ export default function Component() {
           </p>
         </div>
       </div>
-      <button className="absolute bg-[rgba(255,255,255,0)] block cursor-pointer h-[103.819px] left-[263.54px] top-[125.35px] w-[169.444px]" data-node-id="7041:3720" data-name="移动端入口 / 轻触打开官谷图鉴" />
+      <button type="button" aria-label="打开官谷图鉴" className="candy-entrance-trigger absolute bg-[rgba(255,255,255,0)] block cursor-pointer h-[103.819px] left-[263.54px] top-[125.35px] w-[169.444px]" data-node-id="7041:3720" data-name="移动端入口 / 轻触打开官谷图鉴" />
       <button className="absolute block cursor-pointer drop-shadow-[0px_2.21px_2.072px_black] h-[40.885px] left-[8px] overflow-clip rounded-[12.155px] top-[4px] w-[93.925px]" data-node-id="7524:17991" data-name="←  返回花园">
         <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:SemiBold'] font-semibold leading-[22.1px] left-[44.75px] text-[15.3px] text-left [text-shadow:0px_0px_1.105px_black] text-white top-[9.39px] whitespace-nowrap" data-node-id="7524:17992">
           返回
