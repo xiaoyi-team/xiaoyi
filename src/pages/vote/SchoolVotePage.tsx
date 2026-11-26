@@ -247,7 +247,7 @@ export default function SchoolVotePage() {
           </div>
         )}
         {view === 'entrance' && (
-          <Link to="/home" className="school-vote-back" aria-label="返回花园">
+          <Link data-return-feedback to="/home" className="school-vote-back" aria-label="返回花园">
             <img src={backArrow} alt="" />
             <span>返回</span>
           </Link>

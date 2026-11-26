@@ -110,7 +110,7 @@ function ViewerContent({
         style={{ appearance: "none" }}
       />
 
-      <button
+      <button data-return-feedback
         ref={returnButtonRef}
         type="button"
         data-photo-viewer-return

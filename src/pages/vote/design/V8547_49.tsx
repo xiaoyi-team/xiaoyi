@@ -110,7 +110,7 @@ export default function Component02({ title, rows, cutoff, totalVotes, resultMes
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[30.015px] left-[819.9px] text-[#536079] text-[20.7px] top-[406.8px] whitespace-nowrap" data-node-id="8547:98">
           已参与：{totalVotes}人
         </p>
-        <button type="button" className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.8px] border-solid border-white cursor-pointer drop-shadow-[1.8px_2.7px_0.9px_rgba(52,64,91,0.14)] flex gap-[12.6px] h-[64.8px] items-center justify-center left-[491.4px] rounded-[32.4px] top-[774px] w-[311.4px]" data-node-id="8547:105" style={{ backgroundImage: `url("${img6}")` }} data-name="返回列表">
+        <button data-return-feedback type="button" className="absolute [background-size:89.99999761581421px_89.99999761581421px] bg-top-left border-[1.8px] border-solid border-white cursor-pointer drop-shadow-[1.8px_2.7px_0.9px_rgba(52,64,91,0.14)] flex gap-[12.6px] h-[64.8px] items-center justify-center left-[491.4px] rounded-[32.4px] top-[774px] w-[311.4px]" data-node-id="8547:105" style={{ backgroundImage: `url("${img6}")` }} data-name="返回列表">
           <p className="[word-break:break-word] font-['Noto_Serif_SC:Bold'] font-bold leading-[46.98px] relative shrink-0 text-[32.4px] text-left text-white whitespace-nowrap" data-node-id="I8547:105;8343:27">
             返回列表
           </p>

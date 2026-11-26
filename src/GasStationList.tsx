@@ -854,7 +854,7 @@ const GasStationPage: React.FC = () => {
                   : ''
               }`}
             >
-              <button
+              <button data-return-feedback
                 type="button"
                 className="pit-back"
                 onClick={backToSplash}
@@ -1094,7 +1094,7 @@ const GasStationPage: React.FC = () => {
                     #
                   </span>
 
-                  <button
+                  <button data-return-feedback
                     type="button"
                     className="pit-table-small-heading"
                     onClick={backToList}

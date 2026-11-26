@@ -1001,7 +1001,7 @@ function ReviewScene({ data, selectedPhoto, onOpenPhoto, onClosePhoto, onBack }:
         <WishBoxLoading variant="corner" className="z-40" />
       ) : null}
 
-        <button
+        <button data-return-feedback
           type="button"
           autoFocus={!isPreview}
           data-activity-review-return

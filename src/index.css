@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./fonts/noto-serif-sc.css";
+@import "./return-feedback.css";
 
 :root {
   --interface-font: "Noto Serif SC", "Songti SC", SimSun, serif;
