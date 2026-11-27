@@ -8,6 +8,7 @@ type GuestLoginPromptProps = {
   onClose: () => void;
   onLogin: () => void;
   touchSceneScale?: number;
+  pcSceneScale?: number;
 };
 
 function isOutsideCard(dialog: HTMLDialogElement, x: number, y: number) {
@@ -15,7 +16,18 @@ function isOutsideCard(dialog: HTMLDialogElement, x: number, y: number) {
   return x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom;
 }
 
-function GuestLoginPrompt({ open, onClose, onLogin, touchSceneScale }: GuestLoginPromptProps) {
+function getFocusableElements(dialog: HTMLDialogElement) {
+  return Array.from(dialog.querySelectorAll<HTMLElement>(
+    'a[href], button, input:not([type="hidden"]), select, textarea, [tabindex], [contenteditable="true"]',
+  )).filter((element) => {
+    const style = getComputedStyle(element);
+    return !element.matches(':disabled') && element.tabIndex >= 0 &&
+      !element.closest('[hidden], [inert]') && style.visibility !== 'hidden' &&
+      style.visibility !== 'collapse' && element.getClientRects().length > 0;
+  });
+}
+
+function GuestLoginPrompt({ open, onClose, onLogin, touchSceneScale, pcSceneScale }: GuestLoginPromptProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const [surfaceHeight, setSurfaceHeight] = useState<number>();
@@ -66,9 +78,27 @@ function GuestLoginPrompt({ open, onClose, onLogin, touchSceneScale }: GuestLogi
       ref={dialogRef}
       className="guest-login-prompt"
       data-scene-scale={touchSceneScale !== undefined ? true : undefined}
-      style={{ "--guest-scene-scale": touchSceneScale, "--guest-surface-height": surfaceHeight === undefined ? undefined : `${surfaceHeight}px` } as CSSProperties}
+      style={{ "--guest-scene-scale": touchSceneScale, "--guest-pc-scale": pcSceneScale, "--guest-surface-height": surfaceHeight === undefined ? undefined : `${surfaceHeight}px` } as CSSProperties}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+
+        const focusableElements = getFocusableElements(dialog);
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement?.focus();
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement?.focus();
+        }
+      }}
       onCancel={(event) => {
         event.preventDefault();
         requestClose();

@@ -208,6 +208,30 @@
   }
 }
 
+@media (min-width: 1025px) {
+  .guest-login-prompt[data-scene-scale] {
+    width: calc(640px * var(--guest-pc-scale));
+    height: calc(var(--guest-surface-height, 380px) * var(--guest-pc-scale));
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .guest-login-prompt[data-scene-scale] .guest-login-prompt__surface {
+    width: 640px;
+    background: #fbf1de;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
+    transform: scale(var(--guest-pc-scale));
+    transform-origin: top left;
+  }
+
+  .guest-login-prompt[data-scene-scale] .guest-login-prompt__scroll {
+    max-height: calc(100dvh / var(--guest-pc-scale));
+  }
+}
+
 /* M1-E-L1: 667 landscape layout. Typography is a temporary Figma baseline,
  * pending UI readability review; normal mobile viewports never scale the card. */
 @media (max-width: 1024px) {

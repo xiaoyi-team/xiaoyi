@@ -138,7 +138,6 @@ function XiaoYiPage() {
       if (!entry) return;
 
       const scale = Math.min(
-        1,
         entry.contentRect.width / SCENE_WIDTH,
         entry.contentRect.height / SCENE_HEIGHT,
       );
@@ -227,6 +226,7 @@ function XiaoYiPage() {
         </div>
       </div>
       <GuestLoginPrompt
+        pcSceneScale={sceneScale}
         open={guestLoginOpen}
         touchSceneScale={touchSceneScale}
         onClose={() => setGuestLoginOpen(false)}
