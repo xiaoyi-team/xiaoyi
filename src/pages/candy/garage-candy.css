@@ -4,36 +4,20 @@
   background: #050d0f;
 }
 .garage-candy button { cursor: pointer; }
-.candy-entrance-display {
+.candy-entrance-visual {
+  position: absolute;
   pointer-events: none;
-  transform-origin: center;
-  transition: transform 240ms ease-out, filter 240ms ease-out;
+  transform-origin: 50% 50%;
+  transition: transform 180ms ease-out 0ms;
 }
-.candy-entrance-scene:has(.candy-entrance-trigger:focus-visible) .candy-entrance-display {
-  transform: translateY(-8px) scale(1.045);
-  filter: brightness(1.12) drop-shadow(0 12px 16px rgba(0, 0, 0, .45));
-}
+.candy-entrance-wordmark { position: absolute; pointer-events: none; }
 @media (hover: hover) and (pointer: fine) {
-  .candy-entrance-scene:has(.candy-entrance-trigger:hover) .candy-entrance-display {
-    transform: translateY(-8px) scale(1.045);
-    filter: brightness(1.12) drop-shadow(0 12px 16px rgba(0, 0, 0, .45));
-  }
-}
-.candy-entrance-scene:has(.candy-entrance-trigger:active) .candy-entrance-display {
-  transform: translateY(-3px) scale(1.025);
-  filter: brightness(1.12) drop-shadow(0 6px 8px rgba(0, 0, 0, .4));
-}
-@media (max-width: 1023px) {
-  .candy-entrance-scene:has(.candy-entrance-trigger:focus-visible) .candy-entrance-display,
-  .candy-entrance-scene:has(.candy-entrance-trigger:active) .candy-entrance-display {
-    transform: translateY(-2px) scale(1.04);
+  .candy-entrance-scene:has(.candy-entrance-trigger:hover) .candy-entrance-visual {
+    transform: scale(1.06);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .candy-entrance-display { transition: none; }
-  .candy-entrance-scene:has(.candy-entrance-trigger:is(:hover, :focus-visible, :active)) .candy-entrance-display {
-    transform: none;
-  }
+  .candy-entrance-visual { transition: none; }
 }
 .garage-candy button:focus-visible, .garage-candy input:focus-visible {
   outline: 2px solid #76a9fa;

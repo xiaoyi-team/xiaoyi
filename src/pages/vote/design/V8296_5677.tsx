@@ -16,25 +16,29 @@ export default function Component() {
 export function WishbookEntranceLabel() {
   return (
       <button type="button" aria-label="打开心意征集簿" className="school-vote-entrance-label absolute contents cursor-pointer left-[821px] top-[724px]" data-node-id="8564:6466" data-name="心意征集簿 字牌">
-        <div className="absolute h-[19px] left-[830px] top-[780px] w-[128px]" data-node-id="8564:6467">
-          <img alt="" className="absolute block inset-0 max-w-none h-full w-full" src={imgFrame13} />
-        </div>
-        <div className="absolute h-[19px] left-[949px] top-[808px] w-[128px]" data-node-id="8564:6530">
-          <img alt="" className="absolute block inset-0 max-w-none h-full w-full" src={imgFrame13} />
-        </div>
-        <div className="absolute h-[87px] left-[984px] top-[759px] w-[153px]" data-node-id="8564:6593" data-name="IMG_8281 1">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <img alt="" className="absolute h-[571.91%] left-[-127.54%] max-w-none top-[-105.02%] w-[230.03%]" src={imgImg82811} />
+        <div className="school-vote-wordmark">
+          <div className="school-vote-wordmark__origin">
+          <div className="absolute h-[19px] left-[830px] top-[780px] w-[128px]" data-node-id="8564:6467">
+            <img alt="" className="absolute block inset-0 max-w-none h-full w-full" src={imgFrame13} />
+          </div>
+          <div className="absolute h-[19px] left-[949px] top-[808px] w-[128px]" data-node-id="8564:6530">
+            <img alt="" className="absolute block inset-0 max-w-none h-full w-full" src={imgFrame13} />
+          </div>
+          <div className="absolute h-[87px] left-[984px] top-[759px] w-[153px]" data-node-id="8564:6593" data-name="IMG_8281 1">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <img alt="" className="absolute h-[571.91%] left-[-127.54%] max-w-none top-[-105.02%] w-[230.03%]" src={imgImg82811} />
+            </div>
+          </div>
+          <div className="absolute h-[20px] left-[841px] rounded-[5px] top-[793px] w-[215px]" data-node-id="8564:6594" />
+          <div className="-translate-y-full [word-break:break-word] absolute flex flex-col font-['Noto_Serif_SC:Bold'] font-bold h-[84px] justify-end leading-[0] left-[821px] text-[48px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] text-white top-[808px] w-[345px]" data-node-id="8564:6595">
+            <p className="leading-[64px]">心意征集簿</p>
+          </div>
+          <div className="absolute bg-white h-px left-[830px] shadow-[1px_2px_7.3px_0px_rgba(0,0,0,0.39)] top-[811px] w-[291px]" data-node-id="8564:6596" />
+          <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Regular'] font-normal h-[40px] leading-[36px] left-[978px] text-[#f4f4f4] text-[20px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] top-[818px] w-[155px]" data-node-id="8564:6597">
+            The Wishbook
+          </p>
           </div>
         </div>
-        <div className="absolute h-[20px] left-[841px] rounded-[5px] top-[793px] w-[215px]" data-node-id="8564:6594" />
-        <div className="-translate-y-full [word-break:break-word] absolute flex flex-col font-['Noto_Serif_SC:Bold'] font-bold h-[84px] justify-end leading-[0] left-[821px] text-[48px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] text-white top-[808px] w-[345px]" data-node-id="8564:6595">
-          <p className="leading-[64px]">心意征集簿</p>
-        </div>
-        <div className="absolute bg-white h-px left-[830px] shadow-[1px_2px_7.3px_0px_rgba(0,0,0,0.39)] top-[811px] w-[291px]" data-node-id="8564:6596" />
-        <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Regular'] font-normal h-[40px] leading-[36px] left-[978px] text-[#f4f4f4] text-[20px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] top-[818px] w-[155px]" data-node-id="8564:6597">
-          The Wishbook
-        </p>
       </button>
   );
 }

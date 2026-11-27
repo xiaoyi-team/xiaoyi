@@ -10,30 +10,34 @@ export default function Component() {
       <div className="absolute h-[1080px] left-0 top-0 w-[1920px]" data-node-id="5756:22897" data-name="9">
         <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={img9} />
       </div>
-      <div className="absolute contents left-[759px] top-[361px]" data-node-id="6281:3983" data-name="摁钮">
+      <div className="candy-entrance-visual" style={{ left: 759, top: 361, width: 488, height: 299 }} data-node-id="6281:3983" data-name="摁钮">
+        <div className="absolute" style={{ left: -759, top: -361 }}>
         <div className="candy-entrance-display absolute h-[299px] left-[916px] top-[361px] w-[331px]" data-node-id="6244:3979" data-name="9">
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={img10} />
         </div>
-        <div className="absolute contents left-[759px] top-[447px]" data-node-id="6236:3270" data-name="官谷图鉴  字牌">
-          <div className="absolute h-[19px] left-[759px] top-[483px] w-[128px]" data-node-id="6236:3271">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgFrame13} />
-          </div>
-          <div className="absolute h-[19px] left-[875px] top-[506px] w-[128px]" data-node-id="6236:3334">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgFrame13} />
-          </div>
-          <div className="absolute h-[69.974px] left-[914px] top-[467px] w-[123.045px]" data-node-id="6236:3397" data-name="IMG_8281 1">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <img alt="" className="absolute h-[571.91%] left-[-127.54%] max-w-none top-[-105.02%] w-[230.03%]" src={imgImg82811} />
+        <div className="candy-entrance-wordmark" style={{ left: 759, top: 447, width: 278.0449523925781, height: 108 }} data-node-id="6236:3270" data-name="官谷图鉴  字牌">
+          <div className="absolute" style={{ left: -759, top: -447 }}>
+            <div className="absolute h-[19px] left-[759px] top-[483px] w-[128px]" data-node-id="6236:3271">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgFrame13} />
             </div>
+            <div className="absolute h-[19px] left-[875px] top-[506px] w-[128px]" data-node-id="6236:3334">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgFrame13} />
+            </div>
+            <div className="absolute h-[69.974px] left-[914px] top-[467px] w-[123.045px]" data-node-id="6236:3397" data-name="IMG_8281 1">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[571.91%] left-[-127.54%] max-w-none top-[-105.02%] w-[230.03%]" src={imgImg82811} />
+              </div>
+            </div>
+            <div className="absolute h-[20px] left-[770px] rounded-[5px] top-[496px] w-[215px]" data-node-id="6236:3398" />
+            <p className="[word-break:break-word] absolute font-['Songti_SC:Bold'] h-[71px] leading-[64px] left-[780px] not-italic text-[57px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] text-white top-[447px] tracking-[-0.25px] w-[228px]" data-node-id="6236:3399">
+              官谷图鉴
+            </p>
+            <div className="absolute bg-white h-px left-[781px] shadow-[1px_2px_7.3px_0px_rgba(0,0,0,0.39)] top-[514px] w-[210px]" data-node-id="6236:3400" />
+            <p className="[word-break:break-word] absolute font-['Songti_SC:Regular'] h-[59px] leading-[64px] left-[856px] not-italic text-[#f4f4f4] text-[24px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] top-[496px] tracking-[-0.25px] w-[147px] whitespace-nowrap" data-node-id="6236:3401">
+              Goods Catalog
+            </p>
           </div>
-          <div className="absolute h-[20px] left-[770px] rounded-[5px] top-[496px] w-[215px]" data-node-id="6236:3398" />
-          <p className="[word-break:break-word] absolute font-['Songti_SC:Bold'] h-[71px] leading-[64px] left-[780px] not-italic text-[57px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] text-white top-[447px] tracking-[-0.25px] w-[228px]" data-node-id="6236:3399">
-            官谷图鉴
-          </p>
-          <div className="absolute bg-white h-px left-[781px] shadow-[1px_2px_7.3px_0px_rgba(0,0,0,0.39)] top-[514px] w-[210px]" data-node-id="6236:3400" />
-          <p className="[word-break:break-word] absolute font-['Songti_SC:Regular'] h-[59px] leading-[64px] left-[856px] not-italic text-[#f4f4f4] text-[24px] [text-shadow:1px_2px_7.3px_rgba(0,0,0,0.39)] top-[496px] tracking-[-0.25px] w-[147px] whitespace-nowrap" data-node-id="6236:3401">
-            Goods Catalog
-          </p>
+        </div>
         </div>
       </div>
       <button type="button" aria-label="打开官谷图鉴" className="candy-entrance-trigger absolute block cursor-pointer h-[299px] left-[759px] top-[361px] w-[488px]" data-node-id="6303:3129" data-name="摁钮 / 悬停放大并打开图鉴" />

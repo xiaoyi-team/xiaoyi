@@ -155,10 +155,10 @@
 }
 
 .xiao-yi-page__wordmark {
-  top: 0;
-  left: 92px;
+  top: 1.0112342834472656px;
+  left: 93px;
   width: 262px;
-  height: 108px;
+  height: 105.97753143310547px;
 }
 
 .xiao-yi-page__sign-in:focus-visible .xiao-yi-page__calendar {
@@ -242,9 +242,10 @@
   }
 
   .xiao-yi-page__wordmark {
-    left: calc(100cqw * 44.16 / 667);
-    width: calc(100cqw * 125.76 / 667);
-    height: calc(100cqw * 51.84 / 667);
+    top: calc(100cqw * 0.4766712188720703 / 667);
+    left: calc(100cqw * 44.160621643066406 / 667);
+    width: calc(100cqw * 125.80313873291016 / 667);
+    height: calc(100cqw * 50.886661529541016 / 667);
   }
 
   .xiao-yi-page__sign-in[aria-expanded="false"]:is(:active, [data-pressed]) .xiao-yi-page__calendar {
@@ -257,3 +258,16 @@
     transition: none;
   }
 }
+
+.xiao-yi-page__wordmark { transform-origin: 50% 50%; transition: transform 180ms ease-out 0ms; }
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  .xiao-yi-page__sign-in[aria-expanded="false"]:hover .xiao-yi-page__wordmark {
+    transform: translate(10.88936996459961px, -0.5400466918945312px) scale(1.06);
+  }
+}
+@media (max-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .xiao-yi-page__sign-in[aria-expanded="false"]:hover .xiao-yi-page__wordmark {
+    transform: translate(calc(100cqw * 5.4633026123046875 / 667), calc(100cqw * 0.03817176818847656 / 667)) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .xiao-yi-page__wordmark { transition: none; } }

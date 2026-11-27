@@ -203,3 +203,8 @@
 .school-vote [data-name^="装饰 /"] {
   pointer-events: none;
 }
+
+.school-vote-wordmark { position: absolute; left: 821px; top: 724px; width: 345px; height: 134px; transform-origin: 50% 50%; transition: transform 180ms ease-out 0ms; pointer-events: none; }
+.school-vote-wordmark__origin { position: absolute; left: -821px; top: -724px; }
+@media (hover: hover) and (pointer: fine) { .school-vote-entrance-label:hover .school-vote-wordmark { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .school-vote-wordmark { transition: none; } }

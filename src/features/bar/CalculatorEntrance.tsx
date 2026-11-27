@@ -222,20 +222,24 @@ export default function CalculatorEntrance({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="bar-entrance">
       <img className="bar-entrance__calculator" src={calculator} alt="" />
-      <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--first" />
-      <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--second" />
-      <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--first bar-entrance__stripes--touch" touchOrigins={touchStripe1Origins} />
-      <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--second bar-entrance__stripes--touch" touchOrigins={touchStripe2Origins} />
-      <div className="bar-entrance__signature" aria-hidden="true">
-        <img src={signatures} alt="" />
+      <div className="bar-entrance__wordmark">
+        <div className="bar-entrance__wordmark-origin">
+          <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--first" />
+          <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--second" />
+          <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--first bar-entrance__stripes--touch" touchOrigins={touchStripe1Origins} />
+          <StripeDecoration className="bar-entrance__stripes bar-entrance__stripes--second bar-entrance__stripes--touch" touchOrigins={touchStripe2Origins} />
+          <div className="bar-entrance__signature" aria-hidden="true">
+            <img src={signatures} alt="" />
+          </div>
+          <div className="bar-entrance__title">资源计算器</div>
+          <div className="bar-entrance__divider" aria-hidden="true" />
+          <svg className="bar-entrance__divider-ink" viewBox="0 0 143.64999389648438 67.5999984741211"
+            width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
+            <rect x="6.5" y="32.5001220703125" width="89.05000305175781" height="0.32499998807907104" fill="white" />
+          </svg>
+          <div className="bar-entrance__subtitle" lang="en">Resource Estimator</div>
+        </div>
       </div>
-      <div className="bar-entrance__title">资源计算器</div>
-      <div className="bar-entrance__divider" aria-hidden="true" />
-      <svg className="bar-entrance__divider-ink" viewBox="0 0 143.64999389648438 67.5999984741211"
-        width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
-        <rect x="6.5" y="32.5001220703125" width="89.05000305175781" height="0.32499998807907104" fill="white" />
-      </svg>
-      <div className="bar-entrance__subtitle" lang="en">Resource Estimator</div>
       <button type="button" className="bar-entrance__hit-area" aria-label="打开资源计算器" onClick={onOpen} />
     </div>
   )

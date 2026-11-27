@@ -168,17 +168,15 @@
   pointer-events: auto;
 }
 
-/* Figma: SMART_ANIMATE / 160ms / EASE_OUT. CSS ease-out is a candidate
-   mapping; leaving the hit area restores default as an engineering policy. */
+/* PC default and hover variants use independently positioned artwork. */
 @media (width > 1024px) and (hover: hover) and (pointer: fine) {
   .bar-entrance__calculator {
     transform-origin: 50% 50%;
-    transition: transform 160ms ease-out;
+    transition: transform 180ms ease-out 0ms;
   }
 
   .bar-entrance:has(> .bar-entrance__hit-area:hover) > .bar-entrance__calculator {
-    /* 1.06 derives from Variant geometry; both image-frame centers coincide. */
-    transform: scale(1.06);
+    transform: translateX(calc(8.335595663122799 * var(--bar-unit))) scale(1.06);
   }
 }
 
@@ -286,3 +284,51 @@
     pointer-events: none;
   }
 }
+
+.bar-entrance__wordmark {
+  left: 0;
+  top: calc(34.61469268798828 * var(--bar-unit));
+  width: calc(289.0794677734375 * var(--bar-unit));
+  height: calc(97.02666473388672 * var(--bar-unit));
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  transition: transform 180ms ease-out 0ms;
+}
+.bar-entrance__wordmark-origin {
+  position: absolute;
+  left: 0;
+  top: calc(-34.61469268798828 * var(--bar-unit));
+  width: calc(413.5052490234375 * var(--bar-unit));
+  height: calc(194.5906982421875 * var(--bar-unit));
+}
+.bar-entrance__wordmark-origin > * { position: absolute; }
+@media (max-width: 1024px) {
+  .bar-entrance__wordmark {
+    top: calc(12.0250244140625 * var(--bar-unit));
+    width: calc(100.4251937866211 * var(--bar-unit));
+    height: calc(33.70672607421875 * var(--bar-unit));
+  }
+  .bar-entrance__wordmark-origin {
+    top: calc(-12.0250244140625 * var(--bar-unit));
+    width: calc(143.64999389648438 * var(--bar-unit));
+    height: calc(67.5999984741211 * var(--bar-unit));
+  }
+}
+@media (width > 1024px) and (hover: hover) and (pointer: fine) {
+  .bar-entrance:has(> .bar-entrance__hit-area:hover) > .bar-entrance__wordmark {
+    transform: translate(calc(-3.1714501457206685 * var(--bar-unit)), calc(1.0239057452997353 * var(--bar-unit))) scale(1.06);
+  }
+}
+@media (max-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .bar-entrance__calculator {
+    transform-origin: 50% 50%;
+    transition: transform 180ms ease-out 0ms;
+  }
+  .bar-entrance:has(> .bar-entrance__hit-area:hover) > .bar-entrance__calculator {
+    transform: translateX(calc(2.8957290649414062 * var(--bar-unit))) scale(1.06);
+  }
+  .bar-entrance:has(> .bar-entrance__hit-area:hover) > .bar-entrance__wordmark {
+    transform: translate(calc(-1.1017260551452637 * var(--bar-unit)), calc(0.35570335388183594 * var(--bar-unit))) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .bar-entrance__wordmark { transition: none; } }

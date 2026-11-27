@@ -1913,3 +1913,12 @@
 .pit-image-frame img { max-width: 100%; max-height: 72dvh; object-fit: contain; }
 .pit-image-fallback { display: grid; justify-items: center; gap: 6px; text-align: center; }
 .pit-image-view a { color: inherit; text-decoration: underline; }
+
+.pit-sign { position: absolute; transform-origin: 50% 50%; transition: transform 180ms ease-out 0ms; }
+.pit-sign--desktop { left: 259.78px; top: 465px; width: 346.262px; height: 137px; }
+.pit-sign--mobile { left: 88.73px; top: 155px; width: 120.979px; height: 52px; }
+.pit-sign__origin { position: absolute; }
+.pit-sign__origin--desktop { left: -259.78px; top: -465px; }
+.pit-sign__origin--mobile { left: -88.73px; top: -155px; }
+@media (hover: hover) and (pointer: fine) { .pit-entrance-artboard:has(.pit-splash-entry:hover) .pit-sign { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .pit-sign { transition: none; } }
