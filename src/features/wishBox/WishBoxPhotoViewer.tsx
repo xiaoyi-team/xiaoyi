@@ -35,18 +35,16 @@ function ViewerContent({
   const isLoading = status === "loading";
   const [closing, setClosing] = useState(false);
   const closingRef = useRef(false);
-  const [loadingAtClose, setLoadingAtClose] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestClose = useCallback(() => {
     if (closingRef.current) return;
     closingRef.current = true;
-    setLoadingAtClose(isLoading);
     setClosing(true);
     onTransitionChange(false);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const touch = window.matchMedia("(max-width: 1024px)").matches;
     closeTimerRef.current = setTimeout(onClose, reduced ? 0 : touch ? 160 : 300);
-  }, [isLoading, onClose, onTransitionChange]);
+  }, [onClose, onTransitionChange]);
   useEffect(() => {
     const frame = requestAnimationFrame(() => { if (!closingRef.current) onTransitionChange(true); });
     return () => {
@@ -86,7 +84,7 @@ function ViewerContent({
       data-photo-viewer-record-id={media.source === "record" ? media.recordId : undefined}
       data-photo-viewer-img-key={media.source === "record" ? media.imgKey : undefined}
       data-viewer-transition={closing ? "closing" : "opening"}
-      data-viewer-loading={isLoading || (closing && loadingAtClose) ? "true" : undefined}
+      data-viewer-loading={isLoading ? "true" : undefined}
       className="absolute inset-0 z-50 isolate overflow-hidden"
       onKeyDown={(event) => {
         if (event.key === "Tab") {

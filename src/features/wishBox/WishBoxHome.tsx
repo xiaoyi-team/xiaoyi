@@ -6,6 +6,7 @@ import backDoubleChevron from "../../assets/wish-box/back-double-chevron.svg";
 import backTouch from "../../assets/wish-box/announcement-back-touch.svg";
 import gardenBackground from "../../assets/wish-box/wish-box-home-background.png";
 import wishlandSign from "../../assets/wish-box/wishland-sign.png";
+import announcementSign from "../../assets/wish-box/announcement-hint-sign.png";
 import mobileHatchLeft from "../../assets/wish-box/mobile-wishland-hatch-left.svg";
 import mobileHatchRight from "../../assets/wish-box/mobile-wishland-hatch-right.svg";
 import mobileScript from "../../assets/wish-box/mobile-wishland-script.png";
@@ -88,6 +89,11 @@ function WishBoxHome({
               </span>
             </button>
           </h1>
+
+          <div className="wish-box-home-announcement-sign" aria-hidden="true">
+            <img src={announcementSign} alt="" draggable={false} />
+            <span>点击下方查看最新公告</span>
+          </div>
 
           <div className="wish-box-home-announcement absolute">
             <div
