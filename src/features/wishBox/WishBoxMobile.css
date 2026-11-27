@@ -190,6 +190,49 @@ main .wish-box-scene:has(> [role="dialog"] > [data-photo-viewer-background])::be
   height: 291px;
 }
 
+.wish-box-home-announcement::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: 0 0 25.88px 2px #f5d18775;
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .wish-box-home-announcement:has(button:hover)::before { opacity: 1; }
+}
+
+.wish-box-home-announcement:has(button:active)::before { opacity: 1; }
+
+.wish-box-home-announcement-sign {
+  position: absolute;
+  left: 169.234879px;
+  top: 449.900909px;
+  width: 449px;
+  height: 149.760651px;
+  transform: matrix(1, .02, -.04, 1, 0, 0);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.wish-box-home-announcement-sign img { display: block; width: 100%; height: 100%; }
+.wish-box-home-announcement-sign span {
+  position: absolute;
+  left: 125.92px;
+  top: 62.51px;
+  width: 206.721924px;
+  height: 25.856466px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #384557;
+  font: 700 18px/27px "Noto Serif SC", serif;
+  text-align: center;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px) {
   /* Mobile Loading uses the existing full-width Scene, without a parent scale. */
   .wish-box-scene .wish-box-loading {
@@ -237,6 +280,17 @@ main .wish-box-scene:has(> [role="dialog"] > [data-photo-viewer-background])::be
     width: 197px;
     height: 101px;
   }
+
+  .wish-box-home-announcement::before { box-shadow: 0 0 11.76px 1px #f5d18775; }
+
+  .wish-box-home-announcement-sign {
+    left: 57.509636px;
+    top: 155.973786px;
+    width: 155.980728px;
+    height: 52.026226px;
+  }
+
+  .wish-box-home-announcement-sign span { left: 43.70px; top: 21.56px; width: 71.814339px; height: 8.982429px; font-size: 6.253125px; line-height: 9.379687px; }
 
   .wish-box-home-sign-image {
     display: none;
