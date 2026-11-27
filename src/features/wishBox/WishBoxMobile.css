@@ -183,6 +183,20 @@ main .wish-box-scene:has(> [role="dialog"] > [data-photo-viewer-background])::be
   height: 144px;
 }
 
+.wish-box-home-sign-image,
+.wish-box-home-wordmark {
+  pointer-events: none;
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+
+@media (hover: hover) {
+  .wish-box-home-sign button:hover .wish-box-home-sign-image,
+  .wish-box-home-sign button:hover .wish-box-home-wordmark {
+    transform: scale(1.06);
+  }
+}
+
 .wish-box-home-announcement {
   left: 107px;
   top: 590px;
