@@ -8,7 +8,7 @@ const imgListUnderline = new URL('./art/078681f7-5065-4a6c-bd4a-588ec288fe5d.png
 const imgChatGpt2026111600083411 = new URL('./art/2707b4cc-f458-42f7-a844-8b4e24bafd7b.png', import.meta.url).href;
 const imgGroup = new URL('./art/7c359131-22ff-4b26-be73-37848796ea92.svg', import.meta.url).href;
 
-export default function Component667375({ cards }: VoteListContent) {
+export default function Component667375({ cards, activeTab = 0 }: VoteListContent) {
   return (
     <div className="bg-[#d1dbe5] relative h-full w-full" data-node-id="8574:56" data-name="移动端 667×375 / 投票列表">
       <div className="absolute h-[375px] left-0 top-0 w-[667px]" data-node-id="8574:57" data-name="1110_2 1">
@@ -32,28 +32,28 @@ export default function Component667375({ cards }: VoteListContent) {
       <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[36px] left-[48px] text-[#2b4269] text-[24px] top-[37px] whitespace-nowrap" data-node-id="8574:64">
         心意征集簿
       </p>
-      <p className="[word-break:break-word] absolute font-['Caveat:Regular'] font-normal leading-[21px] left-[178px] text-[#829cc0] text-[14px] top-[51px] whitespace-nowrap" data-node-id="8574:65">
+      <p className="school-vote-signature [word-break:break-word] absolute font-['Caveat:Regular'] font-normal leading-[21px] left-[178px] text-[#829cc0] text-[14px] top-[51px] whitespace-nowrap" data-node-id="8574:65">
         OSBORN
       </p>
       <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[21px] left-[48px] text-[#44546e] text-[14px] top-[75px] whitespace-nowrap" data-node-id="8574:66">
         不是命运选择了我们，而是你选择了我。
       </p>
-      <div className="absolute bg-[#6689ba] h-[44px] left-[48px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:67" data-name="筛选 / 全部投票">
+      <button type="button" aria-pressed={activeTab === 0} className="absolute bg-[#6689ba] h-[44px] left-[48px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:67" data-name="筛选 / 全部投票">
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[22.5px] left-[36px] text-[15px] text-white top-[10px] whitespace-nowrap" data-node-id="8574:68">
           全部投票
         </p>
-      </div>
-      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[188px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:69" data-name="筛选 / 进行中">
+      </button>
+      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[188px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:69" aria-pressed={activeTab === 1} data-name="筛选 / 进行中">
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[22.5px] left-[43.5px] text-[#55627b] text-[15px] text-left top-[10px] whitespace-nowrap" data-node-id="8574:70">
           进行中
         </p>
       </button>
-      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[328px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:71" data-name="筛选 / 已参与">
+      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[328px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:71" aria-pressed={activeTab === 2} data-name="筛选 / 已参与">
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[22.5px] left-[43.5px] text-[#55627b] text-[15px] text-left top-[10px] whitespace-nowrap" data-node-id="8574:72">
           已参与
         </p>
       </button>
-      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[468px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:73" data-name="筛选 / 已结束">
+      <button type="button" className="absolute bg-[#e9eaf0] block cursor-pointer h-[44px] left-[468px] overflow-hidden rounded-[12px] top-[99px] w-[132px]" data-node-id="8574:73" aria-pressed={activeTab === 3} data-name="筛选 / 已结束">
         <p className="[word-break:break-word] absolute font-['Noto_Sans_SC:Regular'] font-normal leading-[22.5px] left-[43.5px] text-[#55627b] text-[15px] text-left top-[10px] whitespace-nowrap" data-node-id="8574:74">
           已结束
         </p>

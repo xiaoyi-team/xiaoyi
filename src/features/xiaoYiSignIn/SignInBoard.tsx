@@ -277,7 +277,7 @@ function SignInBoard({ titleId, mobile, statView, awardListView, awardClaim, onO
         <Artwork className="sign-in-board__calendar-paper" src={calendarPaper} x={-6} y={-37.17} width={713.677} height={522.526} />
         <div className="sign-in-board__calendar-content">
           <YearMonthPicker key={yearMonth} yearMonth={yearMonth} todayDate={todayDate} onChangeMonth={calendar.onChangeMonth} />
-          <button type="button" className="sign-in-board__return-today" onClick={calendar.onReturnToday}>
+          <button data-return-feedback type="button" className="sign-in-board__return-today" onClick={calendar.onReturnToday}>
             <span>返回今日</span>
           </button>
           <Artwork src={calendarArrows} x={447} y={89} width={158} height={24} />

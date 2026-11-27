@@ -16,7 +16,7 @@ export default function PitEntrance({ mobile, onEnter }: { mobile: boolean; onEn
         <img src={mobile ? mobileMonitor : desktopMonitor} alt="" />
       </button>
       {mobile ? <MobilePitSign /> : <DesktopPitSign />}
-      <button type="button" className="pit-entrance-back" onClick={() => navigate('/home')}>
+      <button data-return-feedback type="button" className="pit-entrance-back" onClick={() => navigate('/home')}>
         <img src={mobile ? mobileBack : desktopBack} alt="" />
         <span>返回</span>
       </button>

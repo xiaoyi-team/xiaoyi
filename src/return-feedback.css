@@ -1,0 +1,15 @@
+/* Independent scale preserves each page's existing position and transform. */
+[data-return-feedback] {
+  scale: 1;
+  transition: scale 160ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-return-feedback]:not(:disabled):hover { scale: 1.06; }
+}
+
+[data-return-feedback]:not(:disabled):active:hover { scale: .94; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-return-feedback] { transition: none; }
+}

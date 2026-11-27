@@ -187,7 +187,7 @@ export default function BarPage() {
           <img src={background} alt="" />
         </picture>
         <div inert={open ? true : undefined}>
-          {!open && <Link className="bar-back" to="/home" aria-label="返回首页">
+          {!open && <Link data-return-feedback className="bar-back" to="/home" aria-label="返回首页">
             <svg className="bar-back__icon" viewBox="0 0 74 64" fill="none" aria-hidden="true">
               <path d="M48 17L31 31.7027L48 46.4054M65 17L48 31.7027L65 46.4054" stroke="white" strokeWidth="4" strokeLinecap="round" />
             </svg>

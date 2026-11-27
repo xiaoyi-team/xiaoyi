@@ -46,7 +46,7 @@
 .home-page__scene[data-mobile="true"] .home-map__artwork [data-name="萧逸家标题"] > p:nth-of-type(2) {
   top: 20.85px;
 }
-.home-map__artwork [data-name="遮罩"] { opacity: 0; transition: opacity 200ms ease; }
+.home-map__artwork [data-name="遮罩"] { background: rgb(0 0 0 / 45%); opacity: 0; transition: opacity 200ms ease; }
 .home-map[data-active] .home-map__artwork [data-name="遮罩"] { opacity: 1; }
 .home-map__artwork [data-name="心愿盒"] > div,
 .home-map__artwork [data-name="糖果屋"] > div,

@@ -552,7 +552,7 @@ function ForgotSuccessDialog({
           请使用游戏 UID 和新密码重新登录。
         </p>
 
-        <button
+        <button data-return-feedback
           type="button"
           className="figma-auth-forgot-success-button"
           onClick={onBackToLogin}
@@ -1973,7 +1973,7 @@ const handleForgotStepTwo = async (
             中配置公开访问的游客路由。
           </p>
 
-          <button
+          <button data-return-feedback
             type="button"
             onClick={() => {
               setGuestEntered(false);
@@ -2533,7 +2533,7 @@ const handleForgotStepTwo = async (
                   )}
 
                   <div className="figma-auth-security-actions">
-                    <button
+                    <button data-return-feedback
                       type="button"
                       className="figma-auth-back-button"
                       onClick={() => {
@@ -2843,7 +2843,7 @@ const handleForgotStepTwo = async (
                     />
                   </button>
 
-                  <button
+                  <button data-return-feedback
                     type="button"
                     className="figma-auth-forgot-back"
                     onClick={
@@ -2946,7 +2946,7 @@ const handleForgotStepTwo = async (
                     />
                   </button>
 
-                  <button
+                  <button data-return-feedback
                     type="button"
                     className="figma-auth-forgot-back"
                     disabled={loading}

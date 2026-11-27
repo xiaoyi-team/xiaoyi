@@ -85,7 +85,7 @@ function AnnouncementView({ announcement, announcementStatus, onRetryAnnouncemen
         aria-label="关闭公告返回心愿盒"
         className="wish-box-announcement-dismiss absolute inset-0"
       />
-      <button
+      <button data-return-feedback
         ref={closeButtonRef}
         type="button"
         onClick={closeAnnouncement}

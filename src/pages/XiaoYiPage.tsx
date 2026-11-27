@@ -178,7 +178,7 @@ function XiaoYiPage() {
               draggable={false}
             />
             <XiaoYiCharacter />
-            <Link className="xiao-yi-page__back" to="/home" aria-label="返回首页">
+            <Link data-return-feedback className="xiao-yi-page__back" to="/home" aria-label="返回首页">
               <img src={backArrow} width={74} height={64} alt="" draggable={false} />
               <span>返回</span>
             </Link>

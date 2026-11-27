@@ -87,7 +87,7 @@ export default function Component667375({ title, rows, cutoff, totalVotes, resul
       <div className="absolute aspect-[1254/1254] left-[6%] right-[84.11%] top-[229px]" data-node-id="8591:273" data-name="ChatGPT 图像 2026年11月16日 00_08_58-5 1">
         <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none h-full w-full" src={imgChatGpt2026111600085851} />
       </div>
-      <button type="button" className="absolute bg-[#5b80b6] block cursor-pointer h-[40px] left-[405px] overflow-hidden rounded-[22px] top-[302px] w-[108px]" data-node-id="8574:173" data-name="返回列表">
+      <button data-return-feedback type="button" className="absolute bg-[#5b80b6] block cursor-pointer h-[40px] left-[405px] overflow-hidden rounded-[22px] top-[302px] w-[108px]" data-node-id="8574:173" data-name="返回列表">
         <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[24px] left-[26px] text-[14px] text-left text-white top-[9px] whitespace-nowrap" data-node-id="8574:174">
           返回列表
         </p>

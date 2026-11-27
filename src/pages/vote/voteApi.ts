@@ -13,15 +13,15 @@ export interface Vote {
   selected_option_ids: number[] | null;
 }
 
-export async function getVotes(auth: boolean, signal: AbortSignal) {
+export async function getVotes(auth: boolean, signal: AbortSignal, onUnauthorizedResponse?: () => void) {
   const data = await apiRequest<{ votes: Vote[] }>('/api/v1/votes?status=all', {
-    baseUrl: '', auth, signal, cache: 'no-store', responseType: 'json',
+    baseUrl: '', auth, signal, cache: 'no-store', responseType: 'json', onUnauthorizedResponse,
   });
   if (!Array.isArray(data?.votes)) throw new Error('投票列表返回格式不正确。');
   return data.votes;
 }
 
-export async function submitVote(voteId: number, optionIds: number[], signal: AbortSignal) {
+export async function submitVote(voteId: number, optionIds: number[], signal: AbortSignal, onUnauthorizedResponse?: () => void) {
   const data = await apiRequest<{ success: boolean; vote_id: number; option_ids: number[] }>(
     `/api/v1/votes/${voteId}/submit`, {
       baseUrl: '',
@@ -30,6 +30,7 @@ export async function submitVote(voteId: number, optionIds: number[], signal: Ab
       body: JSON.stringify({ option_ids: optionIds }),
       signal,
       responseType: 'json',
+      onUnauthorizedResponse,
     },
   );
   if (data?.success !== true || data.vote_id !== voteId || !Array.isArray(data.option_ids)) {

@@ -116,7 +116,7 @@ function WishBoxHome({
         </div>
 
         {!inactive ? (
-          <Link
+          <Link data-return-feedback
             to="/home"
             aria-label="返回首页"
             className="wish-box-home-return absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

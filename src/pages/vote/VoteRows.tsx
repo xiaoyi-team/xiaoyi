@@ -8,7 +8,7 @@ export type VoteFrameContent = Pick<Vote, 'title' | 'description'> & {
   resultMessage: string;
   ended: boolean;
 };
-export type VoteListContent = { cards: ReactNode };
+export type VoteListContent = { cards: ReactNode; activeTab?: number };
 export type VoteCardContent = Pick<VoteFrameContent, 'title' | 'description' | 'cutoff' | 'totalVotes' | 'ended'> & {
   participated: boolean;
   guest: boolean;

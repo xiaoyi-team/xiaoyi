@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Vote Caveat";
+  src: url("/fonts/caveat/caveat-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 .school-vote {
   min-height: 100dvh;
   display: grid;
@@ -37,6 +45,34 @@
 
 .school-vote, .school-vote * {
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif !important;
+}
+
+/* Override the global interface font only for the handwritten signature. */
+#root .school-vote .school-vote-signature {
+  font-family: "Vote Caveat", cursive !important;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Keep the list mounted while the selected filter changes in place. */
+.school-vote [aria-pressed][data-name^="分类标签 /"],
+.school-vote [aria-pressed][data-name^="筛选 /"] {
+  background-image: none !important;
+  background-color: #ebebf0;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.school-vote [aria-pressed][data-name^="分类标签 /"] p,
+.school-vote [aria-pressed][data-name^="筛选 /"] p { color: #4d5770; }
+.school-vote [aria-pressed][data-name^="分类标签 /"] img { filter: brightness(0) saturate(100%) opacity(.65); }
+.school-vote [aria-pressed="true"][data-name^="分类标签 /"],
+.school-vote [aria-pressed="true"][data-name^="筛选 /"] { background-color: #4c679f; }
+.school-vote [aria-pressed="true"][data-name^="分类标签 /"] p,
+.school-vote [aria-pressed="true"][data-name^="筛选 /"] p { color: white; }
+.school-vote [aria-pressed="true"][data-name^="分类标签 /"] img { filter: brightness(0) invert(1); }
+@media (prefers-reduced-motion: reduce) {
+  .school-vote [aria-pressed][data-name^="分类标签 /"],
+  .school-vote [aria-pressed][data-name^="筛选 /"] { transition: none; }
 }
 .school-vote-rows {
   width: 658.8px;

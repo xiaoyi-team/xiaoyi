@@ -101,7 +101,7 @@ export default function Component667375({ title, rows, cutoff, totalVotes, resul
           </p>
         </div>
       </div>
-      <button type="button" className="absolute bg-[#5b80b6] block cursor-pointer h-[40px] left-[405px] overflow-hidden rounded-[22px] top-[302px] w-[108px]" data-node-id="8574:252" data-name="返回列表">
+      <button data-return-feedback type="button" className="absolute bg-[#5b80b6] block cursor-pointer h-[40px] left-[405px] overflow-hidden rounded-[22px] top-[302px] w-[108px]" data-node-id="8574:252" data-name="返回列表">
         <p className="[word-break:break-word] absolute font-['Noto_Serif_SC:Bold'] font-bold leading-[24px] left-[26px] text-[14px] text-left text-white top-[9px] whitespace-nowrap" data-node-id="8574:253">
           返回列表
         </p>
